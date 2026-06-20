@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MUJI 無印良品｜客服查詢小幫手</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Microsoft JhengHei', 'PingFang TC', sans-serif; background: #f5f5f5; min-height: 100vh; display: flex; justify-content: center; padding: 24px 16px; }
+  .container { width: 100%; max-width: 800px; background: #fff; border-radius: 12px; box-shadow: 0 2px 16px rgba(0,0,0,0.08); overflow: hidden; height: fit-content; }
+  .header { display: flex; align-items: center; gap: 12px; padding: 1.1rem 1.5rem; border-bottom: 1px solid #eee; background: #fff; }
+  .logo { width: 40px; height: 40px; background: #B81C22; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .logo span { color: #fff; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; }
+  .header-title { font-size: 16px; font-weight: 600; color: #1a1a1a; }
+  .header-sub { font-size: 12px; color: #888; margin-top: 2px; }
+  .search-area { padding: 1.1rem 1.5rem; border-bottom: 1px solid #eee; background: #fafafa; }
+  .search-box { display: flex; gap: 8px; }
+  .search-box input { flex: 1; padding: 10px 14px; border-radius: 8px; border: 1px solid #ddd; font-size: 14px; font-family: inherit; background: #fff; color: #1a1a1a; transition: border-color 0.15s; }
+  .search-box input:focus { outline: none; border-color: #B81C22; }
+  .search-box button { padding: 10px 20px; background: #B81C22; color: #fff; border: none; border-radius: 8px; font-size: 14px; font-family: inherit; cursor: pointer; white-space: nowrap; font-weight: 500; }
+  .search-box button:hover { background: #9e1720; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .chip { padding: 5px 13px; border-radius: 20px; border: 1px solid #ddd; font-size: 12px; cursor: pointer; background: #fff; color: #666; font-family: inherit; transition: all 0.15s; }
+  .chip:hover { border-color: #B81C22; color: #B81C22; background: #fff5f5; }
+  .hint { font-size: 11px; color: #B81C22; padding: 6px 1.5rem 0; display: none; }
+  .result-count { font-size: 12px; color: #888; padding: 10px 1.5rem 0; display: none; }
+  .results { padding: 1rem 1.5rem 1.5rem; display: flex; flex-direction: column; gap: 10px; }
+  .empty { padding: 3rem 1.5rem; text-align: center; color: #aaa; font-size: 14px; }
+  .empty i { font-size: 36px; display: block; margin-bottom: 10px; opacity: 0.3; }
+  .result-card { border: 1px solid #eee; border-radius: 10px; overflow: hidden; }
+  .card-header { display: flex; align-items: center; justify-content: space-between; padding: 11px 14px; background: #f9f9f9; cursor: pointer; transition: background 0.15s; }
+  .card-header:hover { background: #f0f0f0; }
+  .card-left { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+  .cat-tag { padding: 2px 9px; border-radius: 10px; font-size: 11px; font-weight: 600; background: #fdecea; color: #B81C22; white-space: nowrap; flex-shrink: 0; }
+  .card-title { font-size: 13px; font-weight: 500; color: #1a1a1a; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .expand-icon { color: #aaa; font-size: 16px; flex-shrink: 0; transition: transform 0.2s; }
+  .expand-icon.open { transform: rotate(180deg); }
+  .card-body { display: none; padding: 14px 16px; border-top: 1px solid #eee; }
+  .card-body.open { display: block; }
+  .qa-answer { font-size: 13px; line-height: 1.8; color: #333; white-space: pre-wrap; }
+  .qa-answer a { color: #B81C22; text-decoration: underline; word-break: break-all; }
+  .qa-answer a:hover { opacity: 0.8; }
+  .notice-box { background: #fff8e1; border: 1px solid #ffe082; border-radius: 6px; padding: 8px 12px; font-size: 12px; color: #7a5c00; margin-bottom: 10px; line-height: 1.6; }
+  .tmpl-section { margin-top: 12px; padding-top: 12px; border-top: 1px solid #eee; }
+  .tmpl-label { font-size: 12px; font-weight: 600; color: #888; margin-bottom: 6px; display: flex; align-items: center; gap: 4px; }
+  .tmpl-box { background: #fafafa; border-left: 3px solid #B81C22; padding: 10px 14px; font-size: 13px; line-height: 1.75; white-space: pre-wrap; color: #333; border-radius: 0 6px 6px 0; margin-bottom: 6px; }
+  .tmpl-box a { color: #B81C22; text-decoration: underline; word-break: break-all; }
+  .tmpl-box.shopee { border-left-color: #EE4D2D; }
+  .tmpl-box.shopee a { color: #EE4D2D; }
+  .copy-btn { display: inline-flex; align-items: center; gap: 4px; padding: 5px 12px; border-radius: 6px; border: 1px solid #ddd; font-size: 12px; cursor: pointer; background: #fff; color: #666; font-family: inherit; margin-bottom: 8px; transition: all 0.15s; }
+  .copy-btn:hover { background: #f5f5f5; }
+  .copy-btn.copied { color: #2d7a1f; border-color: #2d7a1f; background: #f0fff0; }
+  mark { background: #fff3c4; color: inherit; border-radius: 2px; padding: 0 2px; }
+  .footer { padding: 12px 1.5rem; border-top: 1px solid #eee; text-align: center; font-size: 11px; color: #bbb; background: #fafafa; }
+
+  .tab-bar{display:flex;border-bottom:2px solid #eee;background:#fafafa;}
+  .tab-btn{flex:1;padding:11px 0;font-size:14px;font-family:inherit;border:none;background:none;cursor:pointer;color:#888;font-weight:500;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all 0.15s;}
+  .tab-btn.active{color:#B81C22;border-bottom-color:#B81C22;}
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+  .store-search-area{padding:1rem 1.5rem;border-bottom:1px solid #eee;background:#fafafa;}
+  .store-search-box{display:flex;gap:8px;}
+  .store-search-box input{flex:1;padding:10px 14px;border-radius:8px;border:1px solid #ddd;font-size:14px;font-family:inherit;background:#fff;}
+  .store-search-box input:focus{outline:none;border-color:#B81C22;}
+  .store-search-box button{padding:10px 20px;background:#B81C22;color:#fff;border:none;border-radius:8px;font-size:14px;font-family:inherit;cursor:pointer;font-weight:500;}
+  .store-search-box button:hover{background:#9e1720;}
+  .service-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+  .svc-chip{padding:5px 12px;border-radius:20px;border:1px solid #ddd;font-size:12px;cursor:pointer;background:#fff;color:#666;font-family:inherit;transition:all 0.15s;}
+  .svc-chip:hover,.svc-chip.active{border-color:#B81C22;color:#B81C22;background:#fff5f5;}
+  .store-results{padding:1rem 1.5rem 1.5rem;display:flex;flex-direction:column;gap:10px;}
+  .store-count{font-size:12px;color:#888;padding:8px 1.5rem 0;}
+  .store-card{border:1px solid #eee;border-radius:10px;overflow:hidden;}
+  .store-card-header{padding:11px 14px;background:#f9f9f9;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:background 0.15s;}
+  .store-card-header:hover{background:#f0f0f0;}
+  .store-name-row{display:flex;align-items:center;gap:8px;flex:1;min-width:0;}
+  .city-tag{padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;background:#E8F4FD;color:#1A73A7;white-space:nowrap;flex-shrink:0;}
+  .store-name{font-size:13px;font-weight:500;color:#1a1a1a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .store-body{display:none;padding:12px 16px;border-top:1px solid #eee;}
+  .store-body.open{display:block;}
+  .store-info-row{display:flex;gap:6px;margin-bottom:6px;font-size:13px;color:#444;align-items:flex-start;}
+  .store-info-row i{color:#B81C22;flex-shrink:0;margin-top:1px;}
+  .svc-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px;}
+  .svc-tag{padding:3px 9px;border-radius:12px;font-size:11px;background:#F9E5E6;color:#B81C22;font-weight:500;}
+  .svc-tag.highlight{background:#B81C22;color:#fff;}
+  .store-empty{padding:2.5rem 1.5rem;text-align:center;color:#aaa;font-size:14px;}
+
+  .size-tab-area{padding:1rem 1.5rem;border-bottom:1px solid #eee;background:#fafafa;}
+  .cat-chips{display:flex;flex-wrap:wrap;gap:8px;}
+  .cat-chip{padding:7px 16px;border-radius:20px;border:1px solid #ddd;font-size:13px;cursor:pointer;background:#fff;color:#555;font-family:inherit;font-weight:500;transition:all 0.15s;}
+  .cat-chip:hover{border-color:#B81C22;color:#B81C22;}
+  .cat-chip.active{background:#B81C22;color:#fff;border-color:#B81C22;}
+  .size-content{padding:1rem 1.5rem 1.5rem;}
+  .size-section{margin-bottom:20px;}
+  .size-section-title{font-size:13px;font-weight:600;color:#1a1a1a;margin-bottom:4px;}
+  .size-section-note{font-size:11px;color:#999;margin-bottom:8px;}
+  .size-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .size-table{border-collapse:collapse;width:100%;min-width:360px;font-size:12px;}
+  .size-table th{background:#B81C22;color:#fff;padding:7px 10px;text-align:center;white-space:nowrap;font-weight:600;}
+  .size-table th:first-child{background:#8a1218;text-align:left;}
+  .size-table td{padding:6px 10px;text-align:center;border:1px solid #eee;color:#333;white-space:nowrap;}
+  .size-table td:first-child{background:#f9f9f9;font-weight:500;text-align:left;color:#555;}
+  .size-table tr:hover td{background:#fff5f5;}
+  .size-table tr:hover td:first-child{background:#f0e8e8;}
+  .size-tip{font-size:11px;color:#888;padding:10px 0 0;line-height:1.6;}
+
+  .manual-search-area{padding:1rem 1.5rem;border-bottom:1px solid #eee;background:#fafafa;}
+  .manual-search-box{display:flex;gap:8px;}
+  .manual-search-box input{flex:1;padding:10px 14px;border-radius:8px;border:1px solid #ddd;font-size:14px;font-family:inherit;background:#fff;color:#1a1a1a;}
+  .manual-search-box input:focus{outline:none;border-color:#B81C22;}
+  .manual-search-box button{padding:10px 20px;background:#B81C22;color:#fff;border:none;border-radius:8px;font-size:14px;font-family:inherit;cursor:pointer;font-weight:500;}
+  .manual-search-box button:hover{background:#9e1720;}
+  .manual-cat-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+  .manual-chip{padding:5px 13px;border-radius:20px;border:1px solid #ddd;font-size:12px;cursor:pointer;background:#fff;color:#666;font-family:inherit;transition:all 0.15s;}
+  .manual-chip:hover,.manual-chip.active{border-color:#B81C22;color:#B81C22;background:#fff5f5;}
+  .manual-results{padding:1rem 1.5rem 1.5rem;display:flex;flex-direction:column;gap:8px;}
+  .manual-count{font-size:12px;color:#888;padding:8px 1.5rem 0;}
+  .manual-card{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px;border:1px solid #eee;border-radius:10px;background:#fff;transition:background 0.15s;}
+  .manual-card:hover{background:#fafafa;}
+  .manual-card-left{display:flex;align-items:center;gap:8px;min-width:0;flex:1;}
+  .manual-cat-tag{padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;background:#E8F4FD;color:#1A73A7;white-space:nowrap;flex-shrink:0;}
+  .manual-name{font-size:13px;color:#1a1a1a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .manual-barcode{font-size:11px;color:#aaa;margin-top:2px;}
+  .manual-link{display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border-radius:6px;background:#B81C22;color:#fff;font-size:12px;font-family:inherit;text-decoration:none;white-space:nowrap;flex-shrink:0;}
+  .manual-link:hover{background:#9e1720;}
+  .manual-link.deleted{background:#ccc;cursor:not-allowed;}
+  .manual-empty{padding:3rem 1.5rem;text-align:center;color:#aaa;font-size:14px;}
+  .manual-tip{font-size:11px;color:#888;padding:8px 1.5rem 0;line-height:1.6;}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="logo"><span>MUJI</span></div>
+    <div>
+      <div class="header-title">MUJI 客服查詢小幫手</div>
+      <div class="header-sub">知識庫 254 筆 × 78 家門市 × 尺寸 × 說明書 351 筆</div>
+    </div>
+  </div>
+
+    <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('qa')"><i class="ti ti-search"></i> 知識庫查詢</button>
+    <button class="tab-btn" onclick="switchTab('store')"><i class="ti ti-map-pin"></i> 門市服務查詢</button>
+    <button class="tab-btn" onclick="switchTab('size')"><i class="ti ti-ruler"></i> 尺寸查詢</button>
+    <button class="tab-btn" onclick="switchTab('manual')"><i class="ti ti-book"></i> 商品說明書</button>
+  </div>
+
+  <div id="tab-qa" class="tab-panel active">
+<div class="search-area">
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="輸入客戶問題，例如：高雄門市、退換貨怎麼申請？" onkeydown="if(event.key==='Enter')doSearch()">
+      <button onclick="doSearch()"><i class="ti ti-search"></i> 搜尋</button>
+    </div>
+    <div class="chips">
+      <button class="chip" onclick="quickSearch('退換貨')">退換貨</button>
+      <button class="chip" onclick="quickSearch('Passport 點數')">Passport 點數</button>
+      <button class="chip" onclick="quickSearch('超商取貨')">超商取貨</button>
+      <button class="chip" onclick="quickSearch('行李箱維修')">行李箱維修</button>
+      <button class="chip" onclick="quickSearch('大型家具配送')">大型家具配送</button>
+      <button class="chip" onclick="quickSearch('發票')">發票</button>
+      <button class="chip" onclick="quickSearch('聯名卡')">聯名卡</button>
+      <button class="chip" onclick="quickSearch('禮物包裝')">禮物包裝</button>
+      <button class="chip" onclick="quickSearch('應徵')">應徵</button>
+    </div>
+  </div>
+
+  <div id="hint" class="hint"></div>
+  <div id="resultCount" class="result-count"></div>
+  <div id="results" class="results">
+    <div class="empty"><i class="ti ti-search"></i>輸入關鍵字搜尋知識庫<br><span style="font-size:12px;margin-top:4px;display:block">例如：退換貨、點數、配送、保固、高雄門市</span></div>
+  </div>
+
+    </div><!-- end tab-qa -->
+
+  <div id="tab-store" class="tab-panel">
+    <div class="store-search-area">
+      <div class="store-search-box">
+        <input type="text" id="storeInput" placeholder="輸入門市名稱或地區，例如：夢時代、高雄、台北" onkeydown="if(event.key==='Enter')doStoreSearch()">
+        <button onclick="doStoreSearch()"><i class="ti ti-search"></i> 搜尋</button>
+      </div>
+      <div class="service-chips" id="svcChips"></div>
+    </div>
+    <div id="storeCount" class="store-count" style="display:none"></div>
+    <div id="storeResults" class="store-results">
+      <div class="store-empty"><i class="ti ti-map-pin" style="font-size:36px;display:block;margin-bottom:10px;opacity:0.3"></i>輸入門市名稱查詢服務內容<br>或點選服務項目找提供該服務的門市<br><span style="font-size:12px;margin-top:4px;display:block">例如：刺繡、夢時代、高雄、Interior Advisor</span></div>
+    </div>
+  </div><!-- end tab-store -->
+  <div id="tab-size" class="tab-panel">
+    <div class="size-tab-area">
+      <div class="cat-chips" id="catChips">
+        <button class="cat-chip active" onclick="selectCat('女裝',this)">女裝</button>
+        <button class="cat-chip" onclick="selectCat('男裝',this)">男裝</button>
+        <button class="cat-chip" onclick="selectCat('MUJI LABO',this)">MUJI LABO</button>
+        <button class="cat-chip" onclick="selectCat('童裝',this)">童裝</button>
+        <button class="cat-chip" onclick="selectCat('內衣',this)">內衣</button>
+        <button class="cat-chip" onclick="selectCat('鞋類',this)">鞋類</button>
+      </div>
+    </div>
+    <div class="size-content" id="sizeContent"></div>
+  </div><!-- end tab-size -->
+  <div id="tab-manual" class="tab-panel">
+    <div class="manual-search-area">
+      <div class="manual-search-box">
+        <input type="text" id="manualInput" placeholder="輸入商品名稱或條碼，例如：時鐘、風扇、4550..." onkeydown="if(event.key==='Enter')doManualSearch()">
+        <button onclick="doManualSearch()"><i class="ti ti-search"></i> 搜尋</button>
+      </div>
+      <div class="manual-cat-chips" id="manualCatChips"></div>
+    </div>
+    <div id="manualCount" class="manual-count" style="display:none"></div>
+    <div id="manualResults" class="manual-results">
+      <div class="manual-empty"><i class="ti ti-book" style="font-size:36px;display:block;margin-bottom:10px;opacity:0.3"></i>輸入商品名稱或條碼搜尋說明書<br><span style="font-size:12px;margin-top:4px;display:block">例如：時鐘、咖啡機、風扇、行李箱</span></div>
+    </div>
+    <div class="manual-tip" id="manualTip" style="display:none">※ 點擊「查看PDF」可開啟說明書，部分說明書需要網路連線。<br>※ 如無法開啟，可將條碼最後8碼填入：https://www.muji.com/tw/instruction/pdf/[8碼].pdf</div>
+  </div><!-- end tab-manual -->
+
+<script>
+const MANUALS = [{"c":"標籤工具","n":"空氣循環風扇/擺頭型/大","b":"4550583727338","u":"https://www.muji.com/tw/instruction/pdf/83727338.pdf","d":true},{"c":"標籤工具","n":"標籤工具/LED燈","b":"4547315236930","u":"https://www.muji.com/tw/instruction/pdf/15236930.pdf","d":false},{"c":"標籤工具","n":"標籤工具/計步器","b":"4547315236916","u":"https://www.muji.com/tw/instruction/pdf/15236916.pdf","d":false},{"c":"標籤工具","n":"標籤工具/溫濕度計","b":"4547315816187","u":"https://www.muji.com/tw/instruction/pdf/15816187.pdf","d":false},{"c":"標籤工具","n":"標籤工具/鬧鐘","b":"4547315236893","u":"https://www.muji.com/tw/instruction/pdf/15236893.pdf","d":false},{"c":"標籤工具","n":"標籤工具/攜帶掛勺","b":"4550182223590","u":"https://www.muji.com/tw/instruction/pdf/82223590.pdf","d":false},{"c":"時鐘","n":"車站時鐘","b":"4550182928501","u":"https://consumerservice.muji.tw/backend/pdf/4550182928501.pdf","d":false},{"c":"時鐘","n":"指針式壁鐘/小/白.黑","b":"4550344275702","u":"https://consumerservice.muji.tw/backend/pdf/4550344275702.pdf","d":false},{"c":"時鐘","n":"指針式壁鐘/小/白.黑","b":"4550344275719","u":"https://consumerservice.muji.tw/backend/pdf/4550344275702.pdf","d":false},{"c":"時鐘","n":"指針式壁鐘/大/白.黑","b":"4550344275689","u":"https://consumerservice.muji.tw/backend/pdf/4550344275689.pdf","d":false},{"c":"時鐘","n":"指針式壁鐘/大/白.黑","b":"4550344275696","u":"https://consumerservice.muji.tw/backend/pdf/4550344275689.pdf","d":false},{"c":"時鐘","n":"山毛櫸指針式壁鐘/大/原色","b":"4550344275726","u":"https://consumerservice.muji.tw/backend/pdf/4550344275726.pdf","d":false},{"c":"時鐘","n":"山毛櫸指針式壁鐘/大/原色","b":"4549337330030","u":"https://www.muji.com/tw/instruction/pdf/37330030.pdf","d":false},{"c":"時鐘","n":"山毛櫸指針式壁鐘/大/深棕","b":"4549337330047","u":"https://www.muji.com/tw/instruction/pdf/37330030.pdf","d":false},{"c":"時鐘","n":"山毛櫸指針式壁鐘/大/深棕","b":"4550344275733","u":"https://consumerservice.muji.tw/backend/pdf/4550344275733.pdf","d":false},{"c":"時鐘","n":"腕錶/公園時鐘/黑色/寬","b":"4549738967484","u":"https://www.muji.com/tw/instruction/pdf/38967484.pdf","d":false},{"c":"時鐘","n":"指針式鬧鐘","b":"4550182114300","u":"https://consumerservice.muji.tw/backend/pdf/4550182114300.pdf","d":false},{"c":"時鐘","n":"腕錶/公園時鐘/原色/寬","b":"4549738967491","u":"https://www.muji.com/tw/instruction/pdf/38967484.pdf","d":false},{"c":"時鐘","n":"腕錶/公園時鐘/黑色/細","b":"4549738967507","u":"https://www.muji.com/tw/instruction/pdf/38967484.pdf","d":false},{"c":"時鐘","n":"腕錶/公園時鐘/原色/細","b":"4549738967514","u":"https://www.muji.com/tw/instruction/pdf/38967484.pdf","d":false},{"c":"時鐘","n":"腕錶/太陽能/黑色","b":"4549738967408","u":"https://www.muji.com/tw/instruction/pdf/38967408.pdf","d":false},{"c":"時鐘","n":"腕錶/太陽能/灰色","b":"4549738967422","u":"https://www.muji.com/tw/instruction/pdf/38967408.pdf","d":false},{"c":"時鐘","n":"腕錶/太陽能/白色","b":"4549738967446","u":"https://www.muji.com/tw/instruction/pdf/38967408.pdf","d":false},{"c":"時鐘","n":"腕錶/時鐘/黑色","b":"4549738967521","u":"https://www.muji.com/tw/instruction/pdf/38967521.pdf","d":false},{"c":"時鐘","n":"腕錶/時鐘/銀色","b":"4549738967538","u":"https://www.muji.com/tw/instruction/pdf/38967521.pdf","d":false},{"c":"時鐘","n":"車站時鐘/迷你/附立架/白","b":"4549738397878","u":"https://www.muji.com/tw/instruction/pdf/4549738397878.pdf","d":false},{"c":"時鐘","n":"浴室電子鐘","b":"4934761152516","u":"https://consumerservice.muji.tw/backend/pdf/4934761152516.pdf","d":false},{"c":"時鐘","n":"指針式鬧鐘/白","b":"4549337494503","u":"https://www.muji.com/tw/instruction/pdf/4549337494503.pdf","d":false},{"c":"時鐘","n":"數位時鐘／中&小／附萬鐘功能","b":"4547315831999","u":"https://consumerservice.muji.tw/backend/pdf/4547315831999.pdf","d":false},{"c":"時鐘","n":"數位時鐘／中&小／附萬鐘功能","b":"4547315832002","u":"https://consumerservice.muji.tw/backend/pdf/4547315831999.pdf","d":false},{"c":"時鐘","n":"數位時鐘／中&小／附萬鐘功能","b":"4547315832019","u":"https://consumerservice.muji.tw/backend/pdf/4547315831999.pdf","d":false},{"c":"時鐘","n":"數位時鐘／中&小／附萬鐘功能","b":"4547315832026","u":"https://consumerservice.muji.tw/backend/pdf/4547315831999.pdf","d":false},{"c":"時鐘","n":"數位時鐘/附可調整式大音量鬧鈴/白色","b":"4547315832637","u":"https://consumerservice.muji.tw/backend/pdf/4547315832637.pdf","d":false},{"c":"時鐘","n":"數位溫濕度計/白色.黑色","b":"4547315832392","u":"https://consumerservice.muji.tw/backend/pdf/4547315832392.pdf","d":false},{"c":"時鐘","n":"數位溫濕度計/白色.黑色","b":"4547315832408","u":"https://consumerservice.muji.tw/backend/pdf/4547315832392.pdf","d":false},{"c":"時鐘","n":"數位時鐘/大/白","b":"4547315831975","u":"https://www.muji.com/tw/instruction/pdf/15831975.pdf","d":false},{"c":"時鐘","n":"數位時鐘/大/黑","b":"4547315831982","u":"https://www.muji.com/tw/instruction/pdf/15831975.pdf","d":false},{"c":"時鐘","n":"咕咕鐘/白.棕.薄紅","b":"4547315832491","u":"https://consumerservice.muji.tw/backend/pdf/4547315832491.pdf","d":false},{"c":"時鐘","n":"咕咕鐘/白.棕.薄紅","b":"4549337035836","u":"https://consumerservice.muji.tw/backend/pdf/4547315832491.pdf","d":false},{"c":"時鐘","n":"咕咕鐘/白.棕.薄紅","b":"4549337330009","u":"https://consumerservice.muji.tw/backend/pdf/4547315832491.pdf","d":false},{"c":"時鐘","n":"咕咕鐘/綠","b":"4548076742364","u":"https://www.muji.com/tw/instruction/pdf/1733654.pdf","d":false},{"c":"時鐘","n":"公園時鐘/迷你/白","b":"4547315832460","u":"https://consumerservice.muji.tw/backend/pdf/4547315832460.pdf","d":false},{"c":"時鐘","n":"公園時鐘/迷你/白","b":"4550344275740","u":"https://consumerservice.muji.tw/backend/pdf/4547315832460.pdf","d":false},{"c":"時鐘","n":"公園時鐘/迷你/黑","b":"4550344275757","u":"https://consumerservice.muji.tw/backend/pdf/4550344275757.pdf","d":false},{"c":"時鐘","n":"公園時鐘/迷你/棕","b":"4547315832453","u":"https://www.muji.com/tw/instruction/pdf/15832453.pdf","d":false},{"c":"時鐘","n":"胡桃木鬧鐘/深棕","b":"4548718627455","u":"https://www.muji.com/tw/instruction/pdf/18627455.pdf","d":false},{"c":"時鐘","n":"車站鬧鐘/象牙白","b":"4547315553990","u":"https://www.muji.com/tw/instruction/pdf/15553990.pdf","d":false},{"c":"時鐘","n":"山毛櫸鬧鐘","b":"4547315832682","u":"https://consumerservice.muji.tw/backend/pdf/4547315832682.pdf","d":false},{"c":"時鐘","n":"山毛櫸溫濕度計","b":"4547315832699","u":"https://www.muji.com/tw/instruction/pdf/15832699.pdf","d":false},{"c":"時鐘","n":"指針式壁鐘/小/白","b":"4547315915217","u":"https://www.muji.com/tw/instruction/pdf/15915217.pdf","d":false},{"c":"時鐘","n":"指針式壁鐘/小/黑","b":"4547315915224","u":"https://www.muji.com/tw/instruction/pdf/15915217.pdf","d":false},{"c":"時鐘","n":"指針式壁鐘/小/銀","b":"4547315915231","u":"https://www.muji.com/tw/instruction/pdf/15915217.pdf","d":false},{"c":"時鐘","n":"指針式壁鐘/大/白","b":"4547315915163","u":"https://www.muji.com/tw/instruction/pdf/15915163.pdf","d":false},{"c":"時鐘","n":"指針式壁鐘/大/黑","b":"4547315915170","u":"https://www.muji.com/tw/instruction/pdf/15915163.pdf","d":false},{"c":"時鐘","n":"指針式壁鐘/大/銀","b":"4547315915187","u":"https://www.muji.com/tw/instruction/pdf/15915163.pdf","d":false},{"c":"時鐘","n":"橡膠壁鐘","b":"4934761833439","u":"https://www.muji.com/tw/instruction/pdf/1833439.pdf","d":false},{"c":"時鐘","n":"指針式浴室鐘","b":"4550182114317","u":"https://www.muji.tw/instruction/4550182114317.pdf","d":false},{"c":"家電","n":"DC馬達風扇","b":"4550182122763","u":"https://consumerservice.muji.tw/backend/pdf/4550182122763.pdf","d":false},{"c":"家電","n":"行動無水香氛機","b":"4550002494063","u":"https://www.muji.com/tw/instruction/pdf/MJPAD1GL.pdf","d":false},{"c":"家電","n":"空氣循環風扇/小/白","b":"4550002435769","u":"https://www.muji.com/tw/instruction/pdf/MJCF18TW.pdf","d":false},{"c":"家電","n":"空氣循環風扇/小/黑","b":"4550002435820","u":"https://www.muji.com/tw/instruction/pdf/MJCF18TW.pdf","d":false},{"c":"家電","n":"USB桌上型風扇.擺頭型/低噪音","b":"4550002432058","u":"https://www.muji.com/tw/instruction/pdf/02432058.pdf","d":false},{"c":"家電","n":"USB桌上型風扇/低噪音/白","b":"4549738967347","u":"https://www.muji.com/tw/instruction/pdf/38967347.pdf","d":false},{"c":"家電","n":"USB桌上型風扇/低噪音/藍","b":"4549738634782","u":"https://www.muji.com/tw/instruction/pdf/38967347.pdf","d":false},{"c":"家電","n":"LED手電筒/小","b":"4549738940814","u":"https://consumerservice.muji.tw/backend/pdf/4549738940814.pdf","d":false},{"c":"家電","n":"家用電動食品混合器(攪拌機，附研磨功能)","b":"4549738886020","u":"https://consumerservice.muji.tw/backend/pdf/4549738886020.pdf","d":false},{"c":"家電","n":"USB桌上型風扇/低噪音/粉紅","b":"4549738634799","u":"https://www.muji.com/tw/instruction/pdf/38967347.pdf","d":false},{"c":"家電","n":"壁鐘.壁掛式CD音響用立架/銀","b":"4549337494541","u":"https://consumerservice.muji.tw/backend/pdf/4549337494541.pdf","d":false},{"c":"家電","n":"大容量超音波芬香噴霧器","b":"4549337765511","u":"https://consumerservice.muji.tw/backend/pdf/4549337765511.pdf","d":false},{"c":"家電","n":"LED手電筒/大","b":"4549738940807","u":"https://www.muji.com/tw/instruction/pdf/38940807.pdf","d":false},{"c":"家電","n":"音波電動牙刷","b":"4549738967330","u":"https://www.muji.com/tw/instruction/pdf/4549738967330.pdf","d":false},{"c":"家電","n":"旅行用吹風機","b":"4549337143517","u":"https://www.muji.com/tw/instruction/pdf/4549337143517.pdf","d":false},{"c":"家電","n":"空氣循環風扇","b":"4549738309840","u":"https://www.muji.com/tw/instruction/pdf/4549738309840.pdf","d":false},{"c":"家電","n":"壁掛式CD音響/白","b":"4548076475620","u":"https://www.muji.com/tw/instruction/pdf/76475620.pdf","d":false},{"c":"家電","n":"壁掛式CD音響/黑","b":"4548076475705","u":"https://www.muji.com/tw/instruction/pdf/76475620.pdf","d":false},{"c":"家電","n":"超音波芬香噴霧器","b":"4712893519649","u":"https://www.muji.com/tw/instruction/pdf/ADSD2TW.pdf","d":false},{"c":"家電","n":"體重計","b":"4549738967378","u":"https://consumerservice.muji.tw/backend/pdf/4549738967378.pdf","d":false},{"c":"家電","n":"炊飯電子鍋/附飯匙架.3杯","b":"4549337186552","u":"https://www.muji.com/tw/instruction/pdf/MJRC3ATW.pdf","d":false},{"c":"家電","n":"空氣清淨機","b":"4547315987863","u":"https://www.muji.com/tw/instruction/pdf/4547315987863.pdf","d":false},{"c":"家電","n":"USB桌上型風扇.擺頭型/低噪音","b":"4548076292753","u":"https://www.muji.com/tw/instruction/pdf/76292753.pdf","d":false},{"c":"家電","n":"USB桌上型風扇/低噪音/白","b":"4934761378640","u":"https://www.muji.com/tw/instruction/pdf/61378640.pdf","d":false},{"c":"家電","n":"USB桌上型風扇/低噪音/黑","b":"4547315236602","u":"https://www.muji.com/tw/instruction/pdf/61378640.pdf","d":false},{"c":"家電","n":"USB桌上型風扇/低噪音/藍","b":"4547315236619","u":"https://www.muji.com/tw/instruction/pdf/61378640.pdf","d":false},{"c":"家電","n":"USB桌上型風扇/低噪音/粉紅","b":"4547315236626","u":"https://www.muji.com/tw/instruction/pdf/61378640.pdf","d":false},{"c":"家電","n":"USB桌上型風扇/低噪音/綠","b":"4549337142794","u":"https://www.muji.com/tw/instruction/pdf/61378640.pdf","d":false},{"c":"家電","n":"電熱水壺","b":"4547315968657","u":"https://www.muji.com/tw/instruction/pdf/MJEK5ATW.pdf","d":false},{"c":"家電","n":"自動按壓式烤麵包機","b":"4547315968602","u":"https://www.muji.com/tw/instruction/pdf/MJPT6ATW.pdf","d":false},{"c":"家電","n":"攜帶式電動刮鬍刀","b":"4548076749981","u":"https://www.muji.com/tw/instruction/pdf/MJPT6ATW.pdf","d":false},{"c":"家電","n":"電動燙睫毛器","b":"4548076746454","u":"https://www.muji.com/tw/instruction/pdf/6746454.pdf","d":false},{"c":"家電","n":"電動修容刀","b":"4548076745785","u":"https://www.muji.com/tw/instruction/pdf/6745785.pdf","d":false},{"c":"家電","n":"廚房用計時器/圓形","b":"4548718365760","u":"https://www.muji.com/tw/instruction/pdf/8365760.pdf","d":false},{"c":"家電","n":"太陽能廚房用秤","b":"4548718919321","u":"https://www.muji.com/tw/instruction/pdf/8919321.pdf","d":false},{"c":"家電","n":"簡約體重計","b":"4547315021468","u":"https://www.muji.com/tw/instruction/pdf/15021468.pdf","d":false},{"c":"家電","n":"智慧型手機用充電式電池.6200mAh","b":"4547315820207","u":"https://www.muji.com/tw/instruction/pdf/15820207.pdf","d":false},{"c":"家電","n":"智慧型手機用充電式電池.3100mAh","b":"4547315820191","u":"https://www.muji.com/tw/instruction/pdf/15820191.pdf","d":false},{"c":"家電","n":"三輪車/象牙白","b":"4549738654803","u":"https://www.muji.tw/instruction/4549738654803.pdf","d":false},{"c":"家電","n":"三輪車/紅色","b":"4549738654810","u":"https://www.muji.tw/instruction/4549738654803.pdf","d":false},{"c":"家電","n":"三輪車/黃色","b":"4549738654827","u":"https://www.muji.tw/instruction/4549738654803.pdf","d":false},{"c":"燈具","n":"LED布置立燈","b":"4934761451718","u":"https://www.muji.com/tw/instruction/pdf/61451718.pdf","d":false},{"c":"燈具","n":"LED布置桌燈","b":"4934761451725","u":"https://www.muji.com/tw/instruction/pdf/61451725.pdf","d":false},{"c":"燈具","n":"LED手提燈","b":"4934761833668","u":"https://www.muji.com/tw/instruction/pdf/61833668.pdf","d":false},{"c":"燈具","n":"LED感應式掛燈","b":"4549337494572","u":"https://www.muji.com/tw/instruction/pdf/4549337494572.pdf","d":false},{"c":"燈具","n":"長臂式檯燈用燈座","b":"4549738326526","u":"https://www.muji.com/tw/instruction/pdf/4549738326526.pdf","d":false},{"c":"燈具","n":"長臂式檯燈用固定夾","b":"4549738326533","u":"https://www.muji.com/tw/instruction/pdf/4549738326533.pdf","d":false},{"c":"燈具","n":"長臂式檯燈用落地燈","b":"4549738326540","u":"https://www.muji.com/tw/instruction/pdf/4549738326540.pdf","d":false},{"c":"燈具","n":"長臂式檯燈/正方形","b":"4549738397977","u":"https://www.muji.com/tw/instruction/pdf/4549738397977.pdf","d":false},{"c":"燈具","n":"長臂式檯燈/長方形","b":"4549738397991","u":"https://www.muji.com/tw/instruction/pdf/4549738397991.pdf","d":false},{"c":"廚具&餐具","n":"攜帶式透明水壺","b":"4550512399971","u":"https://www.muji.com/tw/instruction/pdf/12399971.pdf","d":false},{"c":"廚具&餐具","n":"攜帶式透明水壺","b":"4550512399964","u":"https://www.muji.com/tw/instruction/pdf/12399964.pdf","d":false},{"c":"廚具&餐具","n":"攜帶式透明水壺","b":"4550512399957","u":"https://www.muji.com/tw/instruction/pdf/12399957.pdf","d":false},{"c":"廚具&餐具","n":"卡式爐.迷你用收納盒","b":"4549337494565","u":"https://consumerservice.muji.tw/backend/pdf/4549337494565.pdf","d":false},{"c":"廚具&餐具","n":"卡式爐迷你說明書","b":"4549337494558","u":"https://consumerservice.muji.tw/backend/pdf/4549337494558.pdf","d":false},{"c":"廚具&餐具","n":"卡式爐說明書","b":"4550002423261","u":"https://consumerservice.muji.tw/backend/pdf/4550002423261.pdf","d":false},{"c":"廚具&餐具","n":"無把手不鏽鋼保溫杯/約300ml","b":"4549738395492","u":"https://www.muji.tw/instruction/4549738395492.pdf","d":false},{"c":"廚具&餐具","n":"無把手不鏽鋼保溫杯/約450ml","b":"4549738395485","u":"https://www.muji.tw/instruction/4549738395492.pdf","d":false},{"c":"廚具&餐具","n":"鑄製煎鍋/約直徑22cm","b":"4547315822201","u":"https://www.muji.tw/instruction/4547315822201.pdf","d":false},{"c":"廚具&餐具","n":"鑄製煎鍋/約直徑26cm","b":"4547315822218","u":"https://www.muji.tw/instruction/4547315822201.pdf","d":false},{"c":"廚具&餐具","n":"不鏽鋁合全面三層鍋/14cm","b":"4547315257799","u":"https://www.muji.tw/instruction/4547315257799.pdf","d":false},{"c":"廚具&餐具","n":"不鏽鋁合全面三層單手鍋/附鍋蓋/16cm","b":"4547315257805","u":"https://www.muji.tw/instruction/4547315257799.pdf","d":false},{"c":"廚具&餐具","n":"不鏽鋁合全面三層單手鍋/附鍋蓋/18cm","b":"4547315257812","u":"https://www.muji.tw/instruction/4547315257799.pdf","d":false},{"c":"廚具&餐具","n":"不鏽鋁合全面三層兩手鍋/附鍋蓋/20cm","b":"4547315257829","u":"https://www.muji.tw/instruction/4547315257799.pdf","d":false},{"c":"廚具&餐具","n":"不鏽鋁合全面三層兩手鍋/附鍋蓋/20cm深","b":"4547315257836","u":"https://www.muji.tw/instruction/4547315257799.pdf","d":false},{"c":"廚具&餐具","n":"不鏽鋁合全面三層兩手鍋/附鍋蓋/22cm淺","b":"4547315257843","u":"https://www.muji.tw/instruction/4547315257799.pdf","d":false},{"c":"廚具&餐具","n":"不鏽鋼平底速熱水壺/小/1.1L","b":"4934761830629","u":"https://www.muji.tw/instruction/4934761830629.pdf","d":false},{"c":"廚具&餐具","n":"不鏽鋼平底速熱水壺/大/2.0L","b":"4934761830636","u":"https://www.muji.tw/instruction/4934761830629.pdf","d":false},{"c":"廚具&餐具","n":"壓克力冷水筒/2L","b":"4547315294671","u":"https://www.muji.com/tw/instruction/pdf/15294688.pdf","d":false},{"c":"廚具&餐具","n":"壓克力冷水筒/1L","b":"4547315294688","u":"https://www.muji.com/tw/instruction/pdf/15294688.pdf","d":false},{"c":"廚具&餐具","n":"密閉式琺瑯保存容器/深型.小","b":"4934761337562","u":"https://www.muji.tw/instruction/4934761337562.pdf","d":false},{"c":"廚具&餐具","n":"密閉式琺瑯保存容器/深型.中","b":"4934761337579","u":"https://www.muji.tw/instruction/4934761337562.pdf","d":false},{"c":"廚具&餐具","n":"密閉式琺瑯保存容器/深型.大","b":"4934761337586","u":"https://www.muji.tw/instruction/4934761337562.pdf","d":false},{"c":"廚具&餐具","n":"密閉式琺瑯保存容器/大","b":"4934761337609","u":"https://www.muji.tw/instruction/4934761337562.pdf","d":false},{"c":"廚具&餐具","n":"密閉式琺瑯保存容器/中","b":"4934761337616","u":"https://www.muji.tw/instruction/4934761337562.pdf","d":false},{"c":"廚具&餐具","n":"耐熱玻璃瓶/大","b":"4945247243857","u":"https://www.muji.tw/instruction/4945247243857.pdf","d":false},{"c":"廚具&餐具","n":"耐熱玻璃瓶/小","b":"4945247243840","u":"https://www.muji.tw/instruction/4945247243857.pdf","d":false},{"c":"廚具&餐具","n":"耐熱玻璃壺/大","b":"4548076388470","u":"https://www.muji.com/tw/instruction/pdf/76388463.pdf","d":false},{"c":"廚具&餐具","n":"耐熱玻璃壺/小","b":"4548076388463","u":"https://www.muji.com/tw/instruction/pdf/76388463.pdf","d":false},{"c":"廚具&餐具","n":"碳酸玻璃密封罐/225ml","b":"4547315759521","u":"https://www.muji.com/tw/instruction/pdf/15759514.pdf","d":false},{"c":"廚具&餐具","n":"碳酸玻璃密封罐/500ml","b":"4547315759538","u":"https://www.muji.com/tw/instruction/pdf/15759514.pdf","d":false},{"c":"廚具&餐具","n":"碳酸玻璃密封罐/750ml","b":"4934761838304","u":"https://www.muji.com/tw/instruction/pdf/15759514.pdf","d":false},{"c":"廚具&餐具","n":"碳酸玻璃密封罐/1000ml","b":"4934761838311","u":"https://www.muji.com/tw/instruction/pdf/15759514.pdf","d":false},{"c":"廚具&餐具","n":"炊飯土鍋/1.5合","b":"4934761052069","u":"https://www.muji.com/tw/instruction/pdf/1052069.pdf","d":false},{"c":"廚具&餐具","n":"炊飯土鍋/3合","b":"4934761052076","u":"https://www.muji.com/tw/instruction/pdf/1052069.pdf","d":false},{"c":"廚具&餐具","n":"伊賀燒輕量土鍋/白釉/3~5人/8A","b":"4550002526726","u":"https://www.muji.tw/instruction/4550002526719.pdf","d":false},{"c":"廚具&餐具","n":"伊賀燒輕量土鍋/黑釉/3~5人/8A","b":"4550002526740","u":"https://www.muji.tw/instruction/4550002526719.pdf","d":false},{"c":"廚具&餐具","n":"伊賀燒輕量土鍋/白釉/2~3人/8A","b":"4550002526719","u":"https://www.muji.tw/instruction/4550002526719.pdf","d":false},{"c":"廚具&餐具","n":"伊賀燒輕量土鍋/黑釉/2~3人/8A","b":"4550002526733","u":"https://www.muji.tw/instruction/4550002526719.pdf","d":false},{"c":"廚具&餐具","n":"聚丙烯馬克杯/400ml","b":"4550002526801","u":"https://www.muji.tw/instruction/4550002526801.pdf","d":false},{"c":"廚具&餐具","n":"聚丙烯旋蓋圓形便當盒/白色/460ml","b":"4550002181062","u":"https://www.muji.tw/instruction/4550002181062.pdf","d":false},{"c":"廚具&餐具","n":"聚丙烯旋蓋圓形便當盒/白色/290ml","b":"4550002181079","u":"https://www.muji.tw/instruction/4550002181062.pdf","d":false},{"c":"廚具&餐具","n":"聚丙烯旋蓋圓形便當盒/白色/205ml","b":"4550002181086","u":"https://www.muji.tw/instruction/4550002181062.pdf","d":false},{"c":"廚具&餐具","n":"聚丙烯旋蓋圓形便當盒/黑色/460ml","b":"4550002181093","u":"https://www.muji.tw/instruction/4550002181062.pdf","d":false},{"c":"廚具&餐具","n":"聚丙烯旋蓋圓形便當盒/黑色/290ml","b":"4550002181161","u":"https://www.muji.tw/instruction/4550002181062.pdf","d":false},{"c":"廚具&餐具","n":"聚丙烯旋蓋圓形便當盒/黑色/205ml","b":"4550002181178","u":"https://www.muji.tw/instruction/4550002181062.pdf","d":false},{"c":"廚具&餐具","n":"牛皮紙製組合式面紙盒/桌上用","b":"4550002526238","u":"https://www.muji.tw/instruction/4550002526238.pdf","d":false},{"c":"廚具&餐具","n":"牛皮紙製組合式面紙盒","b":"4550002526245","u":"https://www.muji.tw/instruction/4550002526238.pdf","d":false},{"c":"廚具&餐具","n":"萬古燒單人土鍋/白釉","b":"4549738744719","u":"https://www.muji.tw/instruction/4549738744719.pdf","d":false},{"c":"廚具&餐具","n":"萬古燒單人土鍋/黑釉","b":"4549738744726","u":"https://www.muji.tw/instruction/4549738744719.pdf","d":false},{"c":"廚具&餐具","n":"麵粉保存容器/2200ml","b":"4550002526818","u":"https://www.muji.tw/instruction/4550002526818.pdf","d":false},{"c":"廚具&餐具","n":"麵粉保存容器/1500ml","b":"4550002526825","u":"https://www.muji.tw/instruction/4550002526818.pdf","d":false},{"c":"廚具&餐具","n":"麵粉保存容器/710ml","b":"4550002526832","u":"https://www.muji.tw/instruction/4550002526818.pdf","d":false},{"c":"廚具&餐具","n":"麵粉保存容器/660ml","b":"4550002526849","u":"https://www.muji.tw/instruction/4550002526818.pdf","d":false},{"c":"廚具&餐具","n":"不鏽鋼麵包刀/8A","b":"4550002766436","u":"https://www.muji.tw/instruction/4550002766436.pdf","d":false},{"c":"廚具&餐具","n":"鋼製水平吊衣架","b":"4547315820726","u":"https://www.muji.tw/instruction/4547315820726.pdf","d":false},{"c":"廚具&餐具","n":"不鏽鋼保溫杯/350ml","b":"4549337185319","u":"https://www.muji.tw/instruction/4549337185319.pdf","d":false},{"c":"廚具&餐具","n":"不鏽鋼保溫杯/500ml","b":"4549337185326","u":"https://www.muji.tw/instruction/4549337185319.pdf","d":false},{"c":"廚具&餐具","n":"PP上蓋可選式垃圾桶/小/20L袋用","b":"4549738359791","u":"https://www.muji.tw/instruction/4549738359791.pdf","d":false},{"c":"廚具&餐具","n":"PP上蓋可選式垃圾桶/大/30L袋用","b":"4549738359807","u":"https://www.muji.tw/instruction/4549738359791.pdf","d":false},{"c":"家具","n":"壁掛家具/相框/A4/橡木","b":"4549738988809","u":"https://www.muji.com/tw/instruction/pdf/38988809.pdf","d":false},{"c":"家具","n":"壁掛家具/相框/A5/橡木","b":"4549738988816","u":"https://www.muji.com/tw/instruction/pdf/38988816.pdf","d":false},{"c":"家具","n":"壁掛家具/相框/明信片/橡木","b":"4549738988823","u":"https://www.muji.com/tw/instruction/pdf/38988823.pdf","d":false},{"c":"家具","n":"高椅背和室沙發/本體/1人座/8S","b":"4550002405236","u":"https://www.muji.com/tw/instruction/pdf/4550002405236.pdf","d":false},{"c":"家具","n":"高椅背和室沙發用腳凳本體/8S","b":"4550002405113","u":"https://www.muji.com/tw/instruction/pdf/4550002405113.pdf","d":false},{"c":"家具","n":"橡木凳子/圓腳","b":"4550002065966","u":"https://www.muji.com/tw/instruction/pdf/4550002065966.pdf","d":false},{"c":"家具","n":"橡木長凳/圓腳/8S","b":"4550002065959","u":"https://www.muji.com/tw/instruction/pdf/4550002065959.pdf","d":false},{"c":"家具","n":"橡木組合櫃/寬82.5cm/高型基本組","b":"4549738918066","u":"https://www.muji.com/tw/instruction/pdf/4549738918066.pdf","d":false},{"c":"家具","n":"胡桃木組合櫃/寬82.5cm/高型基本組","b":"4549738918059","u":"https://www.muji.com/tw/instruction/pdf/4549738918066.pdf","d":false},{"c":"家具","n":"LD兩用長凳","b":"4549738734376","u":"https://www.muji.com/tw/instruction/pdf/4549738734376.pdf","d":false},{"c":"家具","n":"LD兩用凳","b":"4549738370017","u":"https://www.muji.com/tw/instruction/pdf/4549738734376.pdf","d":false},{"c":"家具","n":"橡木玄關衣帽架","b":"4547315914739","u":"https://www.muji.com/tw/instruction/pdf/15874873.pdf","d":false},{"c":"家具","n":"胡桃木玄關衣帽架","b":"4549337154476","u":"https://www.muji.com/tw/instruction/pdf/15874873.pdf","d":false},{"c":"家具","n":"胡桃木組合櫃/書桌組","b":"4549738918035","u":"https://www.muji.com/tw/instruction/pdf/38918035.pdf","d":false},{"c":"家具","n":"橡木組合櫃/書桌組","b":"4549738918042","u":"https://www.muji.com/tw/instruction/pdf/38918035.pdf","d":false},{"c":"家具","n":"壁掛家具/L型棚板44cm/橡木","b":"4549337287341","u":"https://www.muji.com/tw/instruction/pdf/4549337287341.pdf","d":false},{"c":"家具","n":"壁掛家具/L型棚板88cm/橡木","b":"4549337287358","u":"https://www.muji.com/tw/instruction/pdf/4549337287341.pdf","d":false},{"c":"家具","n":"壁掛家具/L型棚板44cm/胡桃木","b":"4549337287426","u":"https://www.muji.com/tw/instruction/pdf/4549337287341.pdf","d":false},{"c":"家具","n":"壁掛家具/L型棚板88cm/胡桃木","b":"4549337287433","u":"https://www.muji.com/tw/instruction/pdf/4549337287341.pdf","d":false},{"c":"家具","n":"壁掛家具/箱/44cm/橡木","b":"4549337287365","u":"https://www.muji.com/tw/instruction/pdf/4549337287365.pdf","d":false},{"c":"家具","n":"壁掛家具/箱/88cm/橡木","b":"4549337287372","u":"https://www.muji.com/tw/instruction/pdf/4549337287365.pdf","d":false},{"c":"家具","n":"壁掛家具/箱/44cm/胡桃木","b":"4549337287440","u":"https://www.muji.com/tw/instruction/pdf/4549337287365.pdf","d":false},{"c":"家具","n":"壁掛家具/箱/88cm/胡桃木","b":"4549337287457","u":"https://www.muji.com/tw/instruction/pdf/4549337287365.pdf","d":false},{"c":"家具","n":"壁掛家具/長押44cm/橡木","b":"4549337287389","u":"https://www.muji.com/tw/instruction/pdf/4549337287389.pdf","d":false},{"c":"家具","n":"壁掛家具/長押88cm/橡木","b":"4549337287396","u":"https://www.muji.com/tw/instruction/pdf/4549337287389.pdf","d":false},{"c":"家具","n":"壁掛家具/長押44cm/胡桃木","b":"4549337287471","u":"https://www.muji.com/tw/instruction/pdf/4549337287389.pdf","d":false},{"c":"家具","n":"壁掛家具/長押88cm/胡桃木","b":"4549337287488","u":"https://www.muji.com/tw/instruction/pdf/4549337287389.pdf","d":false},{"c":"家具","n":"壁掛家具/掛鉤/橡木","b":"4549337287402","u":"https://www.muji.com/tw/instruction/pdf/37287402.pdf","d":false},{"c":"家具","n":"壁掛家具/掛鉤/胡桃木","b":"4549337287419","u":"https://www.muji.com/tw/instruction/pdf/37287419.pdf","d":false},{"c":"家具","n":"壁掛家具/轉角架/橡木","b":"4549337462038","u":"https://www.muji.com/tw/instruction/pdf/37462038.pdf","d":false},{"c":"家具","n":"壁掛家具/轉角架/胡桃木","b":"4549337462069","u":"https://www.muji.com/tw/instruction/pdf/37462069.pdf","d":false},{"c":"家具","n":"壁掛家具/三連掛鉤/橡木","b":"4549337462045","u":"https://www.muji.com/tw/instruction/pdf/37462045.pdf","d":false},{"c":"家具","n":"壁掛家具/三連掛鉤/胡桃木","b":"4549337462076","u":"https://www.muji.com/tw/instruction/pdf/37462076.pdf","d":false},{"c":"家具","n":"壁掛家具/箱/1格/橡木真","b":"4549337462052","u":"https://www.muji.com/tw/instruction/pdf/37462052.pdf","d":false},{"c":"家具","n":"壁掛家具/箱/1格/胡桃木","b":"4549337462083","u":"https://www.muji.com/tw/instruction/pdf/37462083.pdf","d":false},{"c":"家具","n":"鋼製沙發凳本體/羽毛獨立筒","b":"4549337408104","u":"https://www.muji.com/tw/instruction/pdf/37408104.pdf","d":false},{"c":"家具","n":"鋼製羽毛獨立筒沙發/2.5人","b":"4549337408135","u":"https://www.muji.com/tw/instruction/pdf/37408135.pdf","d":false},{"c":"家具","n":"鋼製羽毛獨立筒沙發/2人","b":"4549337413764","u":"https://www.muji.com/tw/instruction/pdf/37408135.pdf","d":false},{"c":"家具","n":"鋼製羽絨獨立筒沙發/3人","b":"4549337415454","u":"https://www.muji.com/tw/instruction/pdf/37415447.pdf","d":false},{"c":"家具","n":"鋼製羽絨獨立筒沙發/2.5人","b":"4549337415461","u":"https://www.muji.com/tw/instruction/pdf/37415447.pdf","d":false},{"c":"家具","n":"鋼製羽絨獨立筒沙發/2人","b":"4549337415447","u":"https://www.muji.com/tw/instruction/pdf/37415447.pdf","d":false},{"c":"家具","n":"組合沙發/本體/大/半型扶手(右)","b":"4550002528010","u":"https://www.muji.com/tw/instruction/pdf/02528027.pdf","d":false},{"c":"家具","n":"組合沙發/本體/大/半型扶手(左)","b":"4550002528027","u":"https://www.muji.com/tw/instruction/pdf/02528027.pdf","d":false},{"c":"家具","n":"組合沙發/本體/大/半型背墊","b":"4550002528034","u":"https://www.muji.com/tw/instruction/pdf/02528034.pdf","d":false},{"c":"家具","n":"組合沙發/本體/大/附扶手/9S","b":"4550002527983","u":"https://www.muji.com/tw/instruction/pdf/38986942.pdf","d":false},{"c":"家具","n":"組合沙發/本體/大/附扶手","b":"4549738986942","u":"https://www.muji.com/tw/instruction/pdf/38986942.pdf","d":false},{"c":"家具","n":"組合沙發/本體/小/附扶手/9S","b":"4550002527952","u":"https://www.muji.com/tw/instruction/pdf/38986942.pdf","d":false},{"c":"家具","n":"組合沙發/本體/小/附扶手","b":"4549738666318","u":"https://www.muji.com/tw/instruction/pdf/38986942.pdf","d":false},{"c":"家具","n":"組合沙發/本體/大/無扶手/9S","b":"4550002527990","u":"https://www.muji.com/tw/instruction/pdf/38986959.pdf","d":false},{"c":"家具","n":"組合沙發/本體/大/無扶手","b":"4549738986959","u":"https://www.muji.com/tw/instruction/pdf/38986959.pdf","d":false},{"c":"家具","n":"組合沙發/本體/小/無扶手/9S","b":"4550002527969","u":"https://www.muji.com/tw/instruction/pdf/38986959.pdf","d":false},{"c":"家具","n":"組合沙發/本體/小/無扶手","b":"4549738666325","u":"https://www.muji.com/tw/instruction/pdf/38986959.pdf","d":false},{"c":"家具","n":"組合沙發/本體/大/沙發凳/9S","b":"4550002528003","u":"https://www.muji.com/tw/instruction/pdf/38986966.pdf","d":false},{"c":"家具","n":"組合沙發/本體/大/沙發凳","b":"4549738986966","u":"https://www.muji.com/tw/instruction/pdf/38986966.pdf","d":false},{"c":"家具","n":"組合沙發/本體/小/沙發凳/9S","b":"4550002527976","u":"https://www.muji.com/tw/instruction/pdf/38986966.pdf","d":false},{"c":"家具","n":"組合沙發/本體/小/沙發凳","b":"4549738666332","u":"https://www.muji.com/tw/instruction/pdf/38986966.pdf","d":false},{"c":"家具","n":"沙發本體/2人座/聚氨酯獨立筒/9S","b":"4550182008067","u":"https://www.muji.com/tw/instruction/pdf/82008074.pdf","d":false},{"c":"家具","n":"沙發本體/2.5人座/聚氨酯獨立筒/9S","b":"4550182008074","u":"https://www.muji.com/tw/instruction/pdf/82008074.pdf","d":false},{"c":"家具","n":"沙發本體/3人座/聚氨酯獨立筒/9S","b":"4550182011432","u":"https://www.muji.com/tw/instruction/pdf/82011432.pdf","d":false},{"c":"家具","n":"沙發本體/2人座/羽毛獨立筒/9S","b":"4550182011401","u":"https://www.muji.com/tw/instruction/pdf/82011418.pdf","d":false},{"c":"家具","n":"沙發本體/2.5人座/羽毛獨立筒/9S","b":"4550182011418","u":"https://www.muji.com/tw/instruction/pdf/82011418.pdf","d":false},{"c":"家具","n":"沙發本體/3人座/羽毛獨立筒/9S","b":"4550182011425","u":"https://www.muji.com/tw/instruction/pdf/82011425.pdf","d":false},{"c":"家具","n":"沙發本體/3人座/羽毛獨立筒/躺椅型(右)/9S","b":"4550182011449","u":"https://www.muji.com/tw/instruction/pdf/82011449.pdf","d":false},{"c":"家具","n":"沙發本體/3人座/羽毛獨立筒/躺椅型(左)/9S","b":"4550182011456","u":"https://www.muji.com/tw/instruction/pdf/82011449.pdf","d":false},{"c":"家具","n":"沙發本體/2.5人座/羽毛獨立筒/高椅背型/9S","b":"4550182011463","u":"https://www.muji.com/tw/instruction/pdf/82011463.pdf","d":false},{"c":"家具","n":"沙發凳/羽毛獨立筒/9S","b":"4550182008098","u":"https://www.muji.com/tw/instruction/pdf/82008098.pdf","d":false},{"c":"家具","n":"沙發凳/聚氨酯獨立筒/9S","b":"4550182008104","u":"https://www.muji.com/tw/instruction/pdf/82008104.pdf","d":false},{"c":"家具","n":"無垢材橢圓餐桌/橡木/寬150CM","b":"4550182009217","u":"https://www.muji.com/tw/instruction/pdf/82009217.pdf","d":false},{"c":"家具","n":"無垢材橢圓餐桌/橡木/寬180CM","b":"4550182009224","u":"https://www.muji.com/tw/instruction/pdf/82009217.pdf","d":false},{"c":"家具","n":"無垢材橢圓餐桌/胡桃木/寬150CM","b":"4550182049527","u":"https://www.muji.com/tw/instruction/pdf/82009217.pdf","d":false},{"c":"家具","n":"無垢材橢圓餐桌/胡桃木/寬180CM","b":"4550182049534","u":"https://www.muji.com/tw/instruction/pdf/82009217.pdf","d":false},{"c":"家具","n":"無垢材餐桌/附抽屜/橡木/寬80CM","b":"4550182009316","u":"https://www.muji.com/tw/instruction/pdf/82009316.pdf","d":false},{"c":"家具","n":"無垢材餐桌/附抽屜/橡木/寬140CM","b":"4550182009323","u":"https://www.muji.com/tw/instruction/pdf/82009316.pdf","d":false},{"c":"家具","n":"無垢材餐桌/附抽屜/橡木/寬180CM","b":"4550182009330","u":"https://www.muji.com/tw/instruction/pdf/82009316.pdf","d":false},{"c":"家具","n":"無垢材餐桌/附抽屜/胡桃木/寬80CM","b":"4550182049466","u":"https://www.muji.com/tw/instruction/pdf/82009316.pdf","d":false},{"c":"家具","n":"無垢材餐桌/附抽屜/胡桃木/寬140CM","b":"4550182049473","u":"https://www.muji.com/tw/instruction/pdf/82009316.pdf","d":false},{"c":"家具","n":"無垢材餐桌/附抽屜/胡桃木/寬180CM","b":"4550182049480","u":"https://www.muji.com/tw/instruction/pdf/82009316.pdf","d":false},{"c":"家具","n":"無垢材矮桌/附抽屜/橡木/90x45CM","b":"4550182009347","u":"https://www.muji.com/tw/instruction/pdf/82009347.pdf","d":false},{"c":"家具","n":"無垢材矮桌/附抽屜/橡木/110x55CM","b":"4550182009200","u":"https://www.muji.com/tw/instruction/pdf/82009347.pdf","d":false},{"c":"家具","n":"無垢材矮桌/附抽屜/胡桃木/90x45CM","b":"4550182049497","u":"https://www.muji.com/tw/instruction/pdf/82009347.pdf","d":false},{"c":"家具","n":"無垢材矮桌/附抽屜/胡桃木/110x55CM","b":"4550182049510","u":"https://www.muji.com/tw/instruction/pdf/82009347.pdf","d":false},{"c":"家具","n":"無垢材橢圓餐桌/橡木/摺疊加長80-120","b":"4550182009248","u":"https://www.muji.com/tw/instruction/pdf/82009248.pdf","d":false},{"c":"家具","n":"無垢材橢圓餐桌/胡桃木/摺疊加長80-120","b":"4550182049558","u":"https://www.muji.com/tw/instruction/pdf/82009248.pdf","d":false},{"c":"家具","n":"無垢材橢圓餐桌/橡木/摺疊加長140-220","b":"4550182009231","u":"https://www.muji.com/tw/instruction/pdf/82009231.pdf","d":false},{"c":"家具","n":"無垢材橢圓餐桌/胡桃木/摺疊加長140-220","b":"4550182049541","u":"https://www.muji.com/tw/instruction/pdf/82009231.pdf","d":false},{"c":"家具","n":"SUS追加用側片/不鏽鋼/大/2S","b":"4934761179223","u":"https://www.muji.com/tw/instruction/pdf/61179223.pdf","d":false},{"c":"家具","n":"SUS追加用側片/不鏽鋼/中/2S","b":"4934761179230","u":"https://www.muji.com/tw/instruction/pdf/61179223.pdf","d":false},{"c":"家具","n":"SUS追加用側片/不鏽鋼/小/2S","b":"4934761179247","u":"https://www.muji.com/tw/instruction/pdf/61179223.pdf","d":false},{"c":"家具","n":"SUS追加用側片/不鏽鋼/迷你/2S","b":"4934761179254","u":"https://www.muji.com/tw/instruction/pdf/61179223.pdf","d":false},{"c":"家具","n":"SUS追加用側片/灰/大/2S","b":"4934761179629","u":"https://www.muji.com/tw/instruction/pdf/61179223.pdf","d":false},{"c":"家具","n":"SUS追加用側片/灰/中/2S","b":"4934761179636","u":"https://www.muji.com/tw/instruction/pdf/61179223.pdf","d":false},{"c":"家具","n":"SUS追加用側片/灰/小/2S","b":"4934761179643","u":"https://www.muji.com/tw/instruction/pdf/61179223.pdf","d":false},{"c":"家具","n":"SUS追加用側片/灰/迷你/2S","b":"4934761179650","u":"https://www.muji.com/tw/instruction/pdf/61179223.pdf","d":false},{"c":"家具","n":"SUS追加用側片/亮面淺灰/迷你/9S","b":"4550002998363","u":"https://www.muji.com/tw/instruction/pdf/61179223.pdf","d":false},{"c":"家具","n":"SUS追加用側片/亮面淺灰/小/9S","b":"4550002998370","u":"https://www.muji.com/tw/instruction/pdf/61179223.pdf","d":false},{"c":"家具","n":"SUS追加用側片/亮面淺灰/中/9S","b":"4550002998387","u":"https://www.muji.com/tw/instruction/pdf/61179223.pdf","d":false},{"c":"家具","n":"SUS追加用側片/亮面淺灰/大/9S","b":"4550002998394","u":"https://www.muji.com/tw/instruction/pdf/61179223.pdf","d":false},{"c":"家具","n":"SUS追加棚/不鏽鋼/84/9S","b":"4550002998509","u":"https://www.muji.com/tw/instruction/pdf/02998509.pdf","d":false},{"c":"家具","n":"SUS追加棚/不鏽鋼/56/9S","b":"4550002998516","u":"https://www.muji.com/tw/instruction/pdf/02998509.pdf","d":false},{"c":"家具","n":"SUS追加棚/不鏽鋼/42/9S","b":"4550002998523","u":"https://www.muji.com/tw/instruction/pdf/02998509.pdf","d":false},{"c":"家具","n":"SUS追加棚/鋼製/亮面淺灰/84/9S","b":"4550002998547","u":"https://www.muji.com/tw/instruction/pdf/02998509.pdf","d":false},{"c":"家具","n":"SUS追加棚/鋼製/亮面淺灰/56/9S","b":"4550002998554","u":"https://www.muji.com/tw/instruction/pdf/02998509.pdf","d":false},{"c":"家具","n":"SUS追加棚/鋼製/亮面淺灰/42/9S","b":"4550002998561","u":"https://www.muji.com/tw/instruction/pdf/02998509.pdf","d":false},{"c":"家具","n":"SUS交叉棒/不鏽鋼/84/大/2S","b":"4934761179261","u":"https://www.muji.com/tw/instruction/pdf/61179261.pdf","d":false},{"c":"家具","n":"SUS交叉棒/不鏽鋼/42-56/小/2S","b":"4934761179278","u":"https://www.muji.com/tw/instruction/pdf/61179261.pdf","d":false},{"c":"家具","n":"SUS交叉棒/灰/84/大/2S","b":"4934761179667","u":"https://www.muji.com/tw/instruction/pdf/61179261.pdf","d":false},{"c":"家具","n":"SUS交叉棒/灰/42-56/小/2S","b":"4934761179674","u":"https://www.muji.com/tw/instruction/pdf/61179261.pdf","d":false},{"c":"家具","n":"SUS交叉棒/亮面淺灰/84/大/9S","b":"4550002998738","u":"https://www.muji.com/tw/instruction/pdf/61179261.pdf","d":false},{"c":"家具","n":"SUS交叉棒/亮面淺灰/42-56/小/9S","b":"4550002998745","u":"https://www.muji.com/tw/instruction/pdf/61179261.pdf","d":false},{"c":"家具","n":"SUS側板/大/亮面淺灰/9S","b":"4550182141160","u":"https://www.muji.com/tw/instruction/pdf/82141177.pdf","d":false},{"c":"家具","n":"SUS側板/小/亮面淺灰/9S","b":"4550182141177","u":"https://www.muji.com/tw/instruction/pdf/82141177.pdf","d":false},{"c":"家具","n":"SUS側板/小/不鏽鋼/2S","b":"4934761179285","u":"https://www.muji.com/tw/instruction/pdf/82141177.pdf","d":false},{"c":"家具","n":"SUS側板/小/淺灰","b":"4548076580898","u":"https://www.muji.com/tw/instruction/pdf/82141177.pdf","d":false},{"c":"家具","n":"SUS側板/大/深灰","b":"4548076581406","u":"https://www.muji.com/tw/instruction/pdf/82141177.pdf","d":false},{"c":"家具","n":"SUS側板/小/深灰","b":"4548076580904","u":"https://www.muji.com/tw/instruction/pdf/82141177.pdf","d":false},{"c":"家具","n":"SUS背板/小/84cm/亮面淺灰/9S","b":"4550182141184","u":"https://www.muji.com/tw/instruction/pdf/76580973.pdf","d":false},{"c":"家具","n":"SUS背板/小/56cm/亮面淺灰/9S","b":"4550182141191","u":"https://www.muji.com/tw/instruction/pdf/76580973.pdf","d":false},{"c":"家具","n":"SUS背板/大/84cm/亮面淺灰/9S","b":"4550182141207","u":"https://www.muji.com/tw/instruction/pdf/76580973.pdf","d":false},{"c":"家具","n":"SUS背板/大/56cm/亮面淺灰/9S","b":"4550182141214","u":"https://www.muji.com/tw/instruction/pdf/76580973.pdf","d":false},{"c":"家具","n":"SUS背板/大/84cm/深灰","b":"4548076580775","u":"https://www.muji.com/tw/instruction/pdf/76580973.pdf","d":false},{"c":"家具","n":"SUS背板/大/56cm/深灰","b":"4548076580782","u":"https://www.muji.com/tw/instruction/pdf/76580973.pdf","d":false},{"c":"家具","n":"SUS背板/小/84cm/淺灰","b":"4548076580959","u":"https://www.muji.com/tw/instruction/pdf/76580973.pdf","d":false},{"c":"家具","n":"SUS背板/小/56cm/淺灰","b":"4548076580966","u":"https://www.muji.com/tw/instruction/pdf/76580973.pdf","d":false},{"c":"家具","n":"SUS背板/大/84cm/淺灰","b":"4548076580973","u":"https://www.muji.com/tw/instruction/pdf/76580973.pdf","d":false},{"c":"家具","n":"SUS背板/大/56cm/淺灰","b":"4548076580980","u":"https://www.muji.com/tw/instruction/pdf/76580973.pdf","d":false},{"c":"家具","n":"SUS背板/小/84cm/深灰","b":"4548076580997","u":"https://www.muji.com/tw/instruction/pdf/76580973.pdf","d":false},{"c":"家具","n":"SUS背板/小/56cm/深灰","b":"4548076581000","u":"https://www.muji.com/tw/instruction/pdf/76580973.pdf","d":false},{"c":"家具","n":"SUS層板高度調整金具/不鏽鋼系列用","b":"4548076580850","u":"https://www.muji.com/tw/instruction/pdf/02998851.pdf","d":false},{"c":"家具","n":"SUS層板高度調整金具/SUS灰色系列用","b":"4548076580867","u":"https://www.muji.com/tw/instruction/pdf/02998851.pdf","d":false},{"c":"家具","n":"SUS層板高度調整金具/SUS亮面淺灰系列用","b":"4550002998851","u":"https://www.muji.com/tw/instruction/pdf/02998851.pdf","d":false},{"c":"家具","n":"SUS不鏽鋼層架組/寬/大/9S","b":"4550002999032","u":"https://www.muji.com/tw/instruction/pdf/02999131.pdf","d":false},{"c":"家具","n":"SUS不鏽鋼層架組/大/9S","b":"4550002999063","u":"https://www.muji.com/tw/instruction/pdf/02999131.pdf","d":false},{"c":"家具","n":"SUS鋼製層架組/亮面淺灰/寬/大/9S","b":"4550002999094","u":"https://www.muji.com/tw/instruction/pdf/02999131.pdf","d":false},{"c":"家具","n":"SUS鋼製層架組/亮面淺灰/大/9S","b":"4550002999131","u":"https://www.muji.com/tw/instruction/pdf/02999131.pdf","d":false},{"c":"家具","n":"SUS不鏽鋼層架組/寬/中/9S","b":"4550002999049","u":"https://www.muji.com/tw/instruction/pdf/02999148.pdf","d":false},{"c":"家具","n":"SUS不鏽鋼層架組/中/9S","b":"4550002999070","u":"https://www.muji.com/tw/instruction/pdf/02999148.pdf","d":false},{"c":"家具","n":"SUS鋼製層架組/亮面淺灰/寬/中/9S","b":"4550002999100","u":"https://www.muji.com/tw/instruction/pdf/02999148.pdf","d":false},{"c":"家具","n":"SUS鋼製層架組/亮面淺灰/中/9S","b":"4550002999148","u":"https://www.muji.com/tw/instruction/pdf/02999148.pdf","d":false},{"c":"家具","n":"SUS不鏽鋼層架組/寬/小/9S","b":"4550002999056","u":"https://www.muji.com/tw/instruction/pdf/02999155.pdf","d":false},{"c":"家具","n":"SUS不鏽鋼層架組/小/9S","b":"4550002999087","u":"https://www.muji.com/tw/instruction/pdf/02999155.pdf","d":false},{"c":"家具","n":"SUS鋼製層架組/亮面淺灰/寬/小/9S","b":"4550002999117","u":"https://www.muji.com/tw/instruction/pdf/02999155.pdf","d":false},{"c":"家具","n":"SUS鋼製層架組/亮面淺灰/小/9S","b":"4550002999155","u":"https://www.muji.com/tw/instruction/pdf/02999155.pdf","d":false},{"c":"家具","n":"組合床台帆布收納籃用軌道/SS","b":"4549738370260","u":"https://www.muji.com/tw/instruction/pdf/38370260.pdf","d":false},{"c":"家具","n":"組合床台帆布收納籃用軌道/S","b":"4549738370277","u":"https://www.muji.com/tw/instruction/pdf/38370260.pdf","d":false},{"c":"家具","n":"組合床台帆布收納籃用軌道/SD","b":"4549738370284","u":"https://www.muji.com/tw/instruction/pdf/38370260.pdf","d":false},{"c":"家具","n":"組合床台帆布收納籃用軌道/D","b":"4549738370291","u":"https://www.muji.com/tw/instruction/pdf/38370260.pdf","d":false},{"c":"家具","n":"組合床台帆布收納籃用軌道/Q","b":"4549738370307","u":"https://www.muji.com/tw/instruction/pdf/38370260.pdf","d":false},{"c":"家具","n":"組合床台用帆布收納籃/小","b":"4549738370321","u":"https://www.muji.com/tw/instruction/pdf/38370260.pdf","d":false},{"c":"家具","n":"組合床台用帆布收納籃/大","b":"4549738370338","u":"https://www.muji.com/tw/instruction/pdf/38370338.pdf","d":false},{"c":"家具","n":"橡木薄型收納架/寬型/大/深22cm","b":"4549738749820","u":"https://www.muji.com/tw/instruction/pdf/38370338.pdf","d":false},{"c":"家具","n":"橡木薄型收納架/大/深22cm","b":"4549738749530","u":"https://www.muji.com/tw/instruction/pdf/38749530.pdf","d":false},{"c":"家具","n":"橡木薄型收納架/寬型/小/深22cm","b":"4549738749837","u":"https://www.muji.com/tw/instruction/pdf/38749530.pdf","d":false},{"c":"家具","n":"橡木薄型收納架/小/深22cm","b":"4549738749547","u":"https://www.muji.com/tw/instruction/pdf/38749547.pdf","d":false},{"c":"家具","n":"橡木薄型收納架/追加組/寬型/深22cm","b":"4549738749554","u":"https://www.muji.com/tw/instruction/pdf/38749547.pdf","d":false},{"c":"家具","n":"橡木薄型收納架/追加組/深22cm","b":"4549738749561","u":"https://www.muji.com/tw/instruction/pdf/38749561.pdf","d":false},{"c":"家具","n":"橡木薄型收納架/轉角用/大/深22cm","b":"4549738749615","u":"https://www.muji.com/tw/instruction/pdf/38749615.pdf","d":false},{"c":"家具","n":"橡木薄型收納架/轉角用/小/深22cm","b":"4549738749622","u":"https://www.muji.com/tw/instruction/pdf/38749622.pdf","d":false},{"c":"家具","n":"橡木薄型收納架/追棚/寬型/深22cm","b":"4549738749653","u":"https://www.muji.com/tw/instruction/pdf/38749653.pdf","d":false},{"c":"家具","n":"橡木薄型收納架/追棚/深22cm","b":"4549738749660","u":"https://www.muji.com/tw/instruction/pdf/38749653.pdf","d":false},{"c":"家具","n":"橡木薄型收納架/轉角用追加棚/深22cm","b":"4549738749691","u":"https://www.muji.com/tw/instruction/pdf/38749691.pdf","d":false},{"c":"家具","n":"橡木薄型收納架用書擋","b":"4549738749714","u":"https://www.muji.com/tw/instruction/pdf/38749714.pdf","d":false},{"c":"家具","n":"橡木薄型收納架用層板檔板/寬型","b":"4549738749721","u":"https://www.muji.com/tw/instruction/pdf/38749721.pdf","d":false},{"c":"家具","n":"橡木薄型收納架用層板檔板","b":"4549738749738","u":"https://www.muji.com/tw/instruction/pdf/38749721.pdf","d":false},{"c":"家具","n":"不織布分隔袋/大/4格/2入","b":"4550002502867","u":"https://www.muji.com/tw/instruction/pdf/02502867.pdf","d":false},{"c":"家具","n":"不織布分隔袋/中/4格/2入","b":"4550002502874","u":"https://www.muji.com/tw/instruction/pdf/02502867.pdf","d":false},{"c":"家具","n":"不織布分隔袋/小/4格/2入","b":"4550002502881","u":"https://www.muji.com/tw/instruction/pdf/02502867.pdf","d":false},{"c":"家具","n":"不織布分隔袋/大/12格/1入","b":"4550002502898","u":"https://www.muji.com/tw/instruction/pdf/02502867.pdf","d":false},{"c":"家具","n":"橡木組合收納櫃/半型/抽屜/2段","b":"4550002528706","u":"https://www.muji.com/tw/instruction/pdf/02528720.pdf","d":false},{"c":"家具","n":"胡桃木組合收納櫃/半型/抽屜/2段","b":"4550002528713","u":"https://www.muji.com/tw/instruction/pdf/02528720.pdf","d":false},{"c":"家具","n":"橡木組合收納櫃/半型/抽屜/1段","b":"4550002528720","u":"https://www.muji.com/tw/instruction/pdf/02528720.pdf","d":false},{"c":"家具","n":"胡桃木組合收納櫃/半型/抽屜/1段","b":"4550002528737","u":"https://www.muji.com/tw/instruction/pdf/02528720.pdf","d":false},{"c":"家具","n":"橡木組合收納櫃/半型/開放式","b":"4550002528744","u":"https://www.muji.com/tw/instruction/pdf/02528720.pdf","d":false},{"c":"家具","n":"胡桃木組合收納櫃/半型/開放式","b":"4550002528751","u":"https://www.muji.com/tw/instruction/pdf/02528720.pdf","d":false},{"c":"家具","n":"橡木組合收納櫃/半型/抽屜/2個","b":"4550002528515","u":"https://www.muji.com/tw/instruction/pdf/02528720.pdf","d":false},{"c":"家具","n":"胡桃木組合收納櫃/半型/抽屜/2個","b":"4550002528522","u":"https://www.muji.com/tw/instruction/pdf/02528720.pdf","d":false},{"c":"家具","n":"工作椅/灰/09","b":"4548718121298","u":"https://www.muji.com/tw/instruction/pdf/18121298.pdf","d":false},{"c":"家具","n":"工作椅/黑/09","b":"4548718121304","u":"https://www.muji.com/tw/instruction/pdf/18121298.pdf","d":false},{"c":"家具","n":"工作椅手把/灰/09","b":"4548718121861","u":"https://www.muji.com/tw/instruction/pdf/18121861.pdf","d":false},{"c":"家具","n":"工作椅手把/黑/09","b":"4548718121878","u":"https://www.muji.com/tw/instruction/pdf/18121861.pdf","d":false},{"c":"家具","n":"松木矮桌/可折疊/19A","b":"4550002460785","u":"https://www.muji.com/tw/instruction/pdf/02460785.pdf","d":false},{"c":"家具","n":"簡約圓椅/深灰/9A","b":"4550182484670","u":"https://www.muji.com/tw/instruction/pdf/82484670.pdf","d":false},{"c":"家具","n":"簡約圓椅/淺灰/9A","b":"4550182484687","u":"https://www.muji.com/tw/instruction/pdf/82484670.pdf","d":false},{"c":"家具","n":"壁掛家具/相框/A3/橡木","b":"4549738988793","u":"https://www.muji.com/tw/instruction/pdf/38988793.pdf","d":false},{"c":"食品","n":"DIY印度烙餅200g(4片份)","b":"4550182144338","u":"https://consumerservice.muji.tw/backend/pdf/4550182144338.pdf","d":false}];
+const MANUAL_CATS = ['全部','家具','廚具&餐具','時鐘','家電','燈具','標籤工具','食品'];
+let activeManualCat = '全部';
+
+function initManualCats(){
+  const wrap = document.getElementById('manualCatChips');
+  if(wrap.children.length > 0) return;
+  MANUAL_CATS.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.className = 'manual-chip' + (cat==='全部'?' active':'');
+    btn.textContent = cat;
+    btn.onclick = () => {
+      document.querySelectorAll('.manual-chip').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeManualCat = cat;
+      doManualSearch();
+    };
+    wrap.appendChild(btn);
+  });
+}
+
+function doManualSearch(){
+  initManualCats();
+  const raw = document.getElementById('manualInput').value.trim().toLowerCase();
+  let results = MANUALS;
+
+  // 類別篩選
+  if(activeManualCat !== '全部'){
+    results = results.filter(m => m.c === activeManualCat);
+  }
+
+  // 關鍵字篩選
+  if(raw){
+    results = results.filter(m =>
+      m.n.toLowerCase().includes(raw) ||
+      m.b.toLowerCase().includes(raw) ||
+      m.c.toLowerCase().includes(raw)
+    );
+  }
+
+  if(!raw && activeManualCat === '全部'){
+    // 未輸入時顯示提示
+    document.getElementById('manualCount').style.display='none';
+    document.getElementById('manualTip').style.display='none';
+    document.getElementById('manualResults').innerHTML='<div class="manual-empty"><i class="ti ti-book" style="font-size:36px;display:block;margin-bottom:10px;opacity:0.3"></i>輸入商品名稱或條碼搜尋說明書<br><span style="font-size:12px;margin-top:4px;display:block">例如：時鐘、咖啡機、風扇，或直接輸入條碼</span></div>';
+    return;
+  }
+
+  const cntEl = document.getElementById('manualCount');
+  const tipEl = document.getElementById('manualTip');
+  const cont = document.getElementById('manualResults');
+
+  if(!results.length){
+    cntEl.style.display='none';
+    tipEl.style.display='none';
+    cont.innerHTML='<div class="manual-empty"><i class="ti ti-mood-empty" style="font-size:36px;display:block;margin-bottom:10px;opacity:0.3"></i>找不到相關商品說明書<br><span style="font-size:12px;margin-top:4px;display:block">試試其他關鍵字，或直接輸入條碼</span></div>';
+    return;
+  }
+
+  cntEl.style.display='block';
+  cntEl.textContent = `找到 ${results.length} 筆說明書`;
+  tipEl.style.display='block';
+
+  cont.innerHTML = results.slice(0,50).map(m => {
+    const linkBtn = m.d
+      ? `<span class="manual-link deleted"><i class="ti ti-alert-circle"></i> 連結已失效</span>`
+      : `<a class="manual-link" href="${m.u}" target="_blank" rel="noopener"><i class="ti ti-file-type-pdf"></i> 查看PDF</a>`;
+    return `<div class="manual-card">
+      <div class="manual-card-left">
+        <span class="manual-cat-tag">${m.c}</span>
+        <div>
+          <div class="manual-name">${m.n}</div>
+          <div class="manual-barcode">條碼：${m.b}</div>
+        </div>
+      </div>
+      ${linkBtn}
+    </div>`;
+  }).join('') + (results.length > 50 ? `<div style="text-align:center;font-size:12px;color:#aaa;padding:8px">顯示前50筆，請輸入更精確的關鍵字縮小範圍</div>` : '');
+}
+</script>
+
+
+<script>
+const SIZE_DATA = {"女裝":[{"title":"女裝上衣（2022春夏以前）","note":"針織衫、休閒衫、襯衫","headers":["量法","XS","S","M","L","XL","XXL"],"rows":[["身長","150~156","153~159","156~162","159~165","162~168","165~171"],["胸圍","74~80","77~83","80~86","83~89","89~95","95~101"],["腰圍","56~62","59~65","62~68","66~72","72~78","78~84"],["臀圍","81~87","84~90","87~93","91~97","97~103","103~109"]]},{"title":"女裝上衣（2022秋冬起）","note":"針織衫、休閒衫、襯衫","headers":["量法","XS","S","M","L","XL","XXL"],"rows":[["身長","149~153","151~157","155~161","159~165","163~169","167~173"],["胸圍","73~77","75~81","80~86","85~91","90~96","95~101"],["腰圍","56~60","58~64","63~69","68~74","73~79","78~84"],["臀圍","80~84","83~89","88~94","93~99","98~104","103~109"]]},{"title":"女裝上衣（特殊尺碼·春夏）","note":"XS~S / M~L / ONE SIZE","headers":["量法","XS~S","M~L","ONE SIZE"],"rows":[["身長","150~159","156~165","153~165"],["胸圍","74~83","80~89","77~95"],["腰圍","56~65","62~72","59~72"],["臀圍","81~90","87~97","84~97"]]},{"title":"女裝下著·腰圍對照（XS~XXL）","note":"裙/褲類","headers":["量法","XS","S","M","L","XL","XXL"],"rows":[["腰圍(cm)","56~62","59~65","62~68","66~72","72~78","78~84"]]},{"title":"女裝下著·腰圍對照（吋數）","note":"","headers":["腰圍(吋)","22","23","24","25","26","27","28","29","30"],"rows":[["腰圍(cm)","56","58.5","61","63.5","66","68.5","71","73.5","76"]]}],"男裝":[{"title":"男裝上衣（2022春夏以前）","note":"針織衫、休閒衫、襯衫","headers":["量法","XS","S","M","L","XL","XXL"],"rows":[["身長","155~165","—","165~175","—","175~185","—"],["胸圍","76~84","80~88","88~96","96~104","104~112","112~120"],["腰圍","64~72","68~76","76~84","84~92","92~100","100~108"],["臀圍","78~86","82~90","90~98","98~106","106~114","114~122"]]},{"title":"男裝上衣（2022秋冬起）","note":"針織衫、休閒衫、襯衫","headers":["量法","XS","S","M","L","XL","XXL"],"rows":[["身長","155~163","160~168","166~174","172~180","178~186","180~188"],["胸圍","76~84","80~88","88~96","96~104","104~112","112~120"],["腰圍","64~72","68~76","76~84","84~92","92~100","100~108"],["臀圍","78~86","82~90","90~98","98~106","106~114","114~122"]]},{"title":"男裝下著·腰圍吋數對照","note":"","headers":["腰圍(吋)","28","29","30","31","32","33","34","35","36"],"rows":[["腰圍(cm)","71","73.5","76","78.5","81","83.5","86","88.5","91"]]},{"title":"男裝下著·腰圍 XS~XXL 對照","note":"","headers":["量法","XS","S","M","L","XL","XXL"],"rows":[["腰圍(cm)","64~72","68~76","76~84","84~92","92~100","100~108"]]}],"MUJI LABO":[{"title":"LABO 女裝上衣（2024秋冬起）","note":"","headers":["量法","S","M","L","XL"],"rows":[["身長","151~157","155~161","159~165","163~169"],["胸圍","75~81","80~86","85~91","90~96"]]},{"title":"LABO 女裝下著·腰圍","note":"","headers":["量法","S","M","L","XL"],"rows":[["腰圍(cm)","58~64","63~69","68~74","73~79"]]},{"title":"LABO 女裝緊身褲·臀圍","note":"","headers":["量法","S","M","L","XL"],"rows":[["臀圍(cm)","83~89","88~94","93~99","98~104"]]},{"title":"LABO 男裝上衣（2024秋冬起）","note":"","headers":["量法","XS","S","M","L","XL"],"rows":[["身長","154~162","160~168","166~174","172~180","178~186"],["胸圍","76~84","80~88","88~96","96~104","104~112"]]},{"title":"LABO 男裝下著·腰圍","note":"","headers":["量法","XS","S","M","L","XL"],"rows":[["腰圍(cm)","64~72","68~76","76~84","84~92","92~100"]]}],"童裝":[{"title":"新生兒","note":"","headers":["尺寸","60","70","80"],"rows":[["建議年齡","3~6個月","6個月~1歲","1歲~1歲半"],["身高(cm)","55~65","65~75","75~85"],["體重(kg)","6","9","11"]]},{"title":"幼兒","note":"","headers":["尺寸","80","90","100"],"rows":[["建議年齡","1歲~1歲半","1歲半~2歲半","3歲~4歲"],["身高(cm)","75~85","85~95","95~105"],["體重(kg)","11","13","16"],["帽子尺寸","50","50~52","50~52"],["襪款(cm)","11~15","11~15","15~19"],["鞋款(cm)","13","14~15","15~16"]]},{"title":"兒童（2022春夏以前）","note":"","headers":["尺寸","110","120","130","140","150"],"rows":[["建議年齡","5~6歲","7~8歲","9~10歲","11~12歲","13~14歲"],["身高(cm)","105~115","115~125","125~135","135~145","145~155"],["女童胸圍","53~59","57~63","61~67","64~72","70~78"],["女童腰圍","47~53","49~55","51~57","54~60","57~63"],["男童胸圍","55~61","59~65","63~69","68~76","74~82"],["男童腰圍","49~55","51~57","53~59","56~64","60~68"]]},{"title":"兒童（2022秋冬起）","note":"","headers":["尺寸","110","120","130","140","150","160"],"rows":[["建議年齡","5~6歲","7~8歲","9~10歲","11~12歲","13~14歲","15~16歲"],["身高(cm)","105~115","115~125","125~135","135~145","145~155","155~165"],["女童胸圍","54~60","58~64","62~68","66~74","71~79","76~84"],["女童腰圍","48~54","50~56","52~58","55~61","58~64","61~67"],["男童胸圍","54~60","58~64","63~69","68~76","74~82","80~88"],["男童腰圍","48~54","50~56","52~58","55~63","59~67","63~71"]]}],"內衣":[{"title":"女內衣家居服（2022春夏以前）","note":"","headers":["量法","S","M","L","XL","XXL"],"rows":[["身長","153~159","156~162","159~165","162~168","165~171"],["胸圍","77~83","80~86","83~89","89~95","95~101"],["腰圍","59~65","62~68","66~72","72~78","78~84"],["臀圍","84~90","87~93","91~97","97~103","103~109"]]},{"title":"女內衣家居服（2022秋冬起）","note":"","headers":["量法","S","M","L","XL","XXL"],"rows":[["身長","151~157","155~161","159~165","163~169","167~173"],["胸圍","75~81","80~86","85~91","90~96","95~101"],["腰圍","58~64","63~69","68~74","73~79","78~84"],["臀圍","83~89","88~94","93~99","98~104","103~109"]]},{"title":"男內衣家居服（2022春夏以前）","note":"","headers":["量法","S","M","L","XL","XXL"],"rows":[["身長","155~165","165~175","—","175~185","—"],["胸圍","80~88","88~96","96~104","104~112","112~120"],["腰圍","68~76","76~84","84~92","92~100","100~108"],["臀圍","82~90","90~98","98~106","106~114","114~122"]]},{"title":"男內衣家居服（2022秋冬起）","note":"","headers":["量法","S","M","L","XL","XXL"],"rows":[["身長","155~163","160~168","166~174","172~180","178~186"],["胸圍","80~88","88~96","96~104","104~112","112~120"],["腰圍","68~76","76~84","84~92","92~100","100~108"],["臀圍","82~90","90~98","98~106","106~114","114~122"]]}],"鞋類":[{"title":"女鞋尺寸對照","note":"日本 cm ↔ 各國尺寸","headers":["","22","22.5","23","23.5","24","24.5","25.5"],"rows":[["日本(cm)","22","22.5","23","23.5","24","24.5","25.5"],["美國(US)","4½","5","5½","6","6½","7","7½"],["英國(UK)","3","3½","4","4½","5","5½","6"],["義大利","34","35","36","37","38","39","40"],["法國(FR)","34","35","35.5","36","36.5","37","37.5"]]},{"title":"男鞋尺寸對照","note":"日本 cm ↔ 各國尺寸","headers":["","24.5","25","25.5","26","26.5","27","27.5"],"rows":[["日本(cm)","24.5","25","25.5","26","26.5","27","27.5"],["美國(US)","6½","7","7½","8","8½","9","9½"],["英國(UK)","6","6½","7","7½","8","8½","9"],["義大利","39","40","41","42","43","44","45"],["法國(FR)","39","40","41","42","43","44","45"]]}]};
+
+function selectCat(cat, btn) {
+  document.querySelectorAll('.cat-chip').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderSize(cat);
+}
+
+function renderSize(cat) {
+  const sections = SIZE_DATA[cat] || [];
+  const cont = document.getElementById('sizeContent');
+  cont.innerHTML = sections.map(sec => {
+    const headerRow = '<tr>' + sec.headers.map((h,i) =>
+      `<th${i===0?' style="width:80px"':''}>${h}</th>`).join('') + '</tr>';
+    const bodyRows = sec.rows.map(row =>
+      '<tr>' + row.map((cell,i) => i===0?`<td>${cell}</td>`:`<td>${cell}</td>`).join('') + '</tr>'
+    ).join('');
+    return `<div class="size-section">
+      <div class="size-section-title">${sec.title}</div>
+      ${sec.note?`<div class="size-section-note">${sec.note}</div>`:''}
+      <div class="size-table-wrap">
+        <table class="size-table">
+          <thead>${headerRow}</thead>
+          <tbody>${bodyRows}</tbody>
+        </table>
+      </div>
+    </div>`;
+  }).join('') + '<div class="size-tip">※ 尺寸僅供參考，因個人體型差異，建議試穿後再購買。<br>※ 上衣以身長、胸圍為主要參考；下著以腰圍、臀圍為主要參考。</div>';
+}
+
+// 初始化顯示女裝
+document.addEventListener('DOMContentLoaded', () => renderSize('女裝'));
+setTimeout(() => renderSize('女裝'), 100);
+</script>
+
+
+<script>
+const STORES = [{"n":"崇光門市","a":"台北市大安區忠孝東路三段300號6F 無印良品","p":"(02)87720151","h":"平日：11:00~21:30 假日：11:00~22:00 備註：營業時間依百貨公告為主","c":"台北","s":["門市自取","Styling Advisor","Interior Advisor","家飾訂製","WiFi","停車場","可刷卡"]},{"n":"微風門市","a":"台北市松山區復興南路一段39號3F 無印良品","p":"(02)87724817","h":"平日：11:00~21:30 假日：11:00~22:00 備註：營業時間依百貨公告為主","c":"台北","s":["門市自取","Interior Advisor","良品市場","給水服務","foodpanda外送","交換繪本","家飾訂製","MUJI RENOVATION","童裝","WiFi","停車場","可刷卡"]},{"n":"遠企門市","a":"台北市大安區敦化南路二段203號B1F 無印良品","p":"(02)23777751","h":"平日：11:00~21:30 假日：11:00~22:00 備註：營業時間依百貨公告為主","c":"台北","s":["門市自取","foodpanda外送","WiFi","停車場","可刷卡"]},{"n":"南京門市","a":"台北市松山區南京東路三段337號1F 無印良品","p":"(02)27155551","h":"平日：11:00~21:30 假日：11:00~22:00 備註：營業時間依百貨公告為主","c":"台北","s":["門市自取","Styling Advisor","Interior Advisor","foodpanda外送","WiFi","停車場","可刷卡","國旅卡"]},{"n":"統一時代門市","a":"台北市信義區忠孝東路五段8號B2F 無印良品","p":"(02)87860851","h":"平日：11:00~21:30 假日：11:00~22:00 備註：營業時間依百貨公司為主","c":"台北","s":["Styling Advisor","Interior Advisor","良品市場","foodpanda外送","冷凍食品","家飾訂製","MUJI RENOVATION","MUJI Labo","童裝","WiFi","停車場","可刷卡"]},{"n":"Café&Meal 統一時代","a":"台北市信義區忠孝東路五段8號B2F 無印良品","p":"(02)23458551","h":"平日：11:00~21:30 假日：11:00~22:00 備註：營業時間依百貨公司為主","c":"台北","s":["WiFi","停車場","可刷卡"]},{"n":"松高餐飲門市","a":"台北市信義區松高路16號1F、2F 無印良品","p":"(02)27223351","h":"週日至週三(包含國定假日當天)：11:00-20:30 週四到週六(國定假日前一天)：11:00-21:00 ※營業時間至百貨公司打烊前一小時。","c":"台北","s":["家飾訂製","WiFi","停車場","可刷卡","國旅卡"]},{"n":"松高門市","a":"台北市信義區松高路16號1F、2F 無印良品","p":"(02)27223351","h":"平日：11:00~21:30 假日：11:00~22:00 備註：營業時間依百貨公告為主","c":"台北","s":["門市自取","Styling Advisor","Interior Advisor","MUJI POCKET","植栽","ReMUJI","良品市場","給水服務","冷凍食品","MUJI BOOKS","Open MUJI","刺繡服務","MUJI Labo","童裝","WiFi","停車場","可刷卡","國旅卡"]},{"n":"南西門市","a":"台北市中山區南京西路12號 6F 無印良品","p":"(02)25236651","h":"平日：11:00~21:30 假日：11:00~22:00 備註：營業時間依百貨公司為主","c":"台北","s":["Styling Advisor","Interior Advisor","冷凍食品","MUJI Labo","WiFi","停車場","可刷卡","國旅卡"]},{"n":"松山車站門市","a":"台北市信義區松山路11號3F 無印良品","p":"(02)25287751","h":"平日：11:00~21:30 假日：11:00~22:00 備註：營業時間依百貨公告為主","c":"台北","s":["門市自取","Styling Advisor","Interior Advisor","foodpanda外送","交換繪本","童裝","WiFi","停車場","可刷卡"]},{"n":"台北車站門市","a":"台北市中正區北平西路3號2F 無印良品","p":"(02)23123351","h":"平日：10:00~22:00 假日：10:00~22:00 備註：營業時間依百貨公司為主","c":"台北","s":["WiFi","可刷卡"]},{"n":"館前門市","a":"台北市中正區忠孝西路一段66號3F 無印良品","p":"(02)23116951","h":"平日：11:00~21:30 假日：11:00~22:00 備註：營業時間依百貨公告為主","c":"台北","s":["門市自取","Styling Advisor","良品市場","WiFi","停車場","可刷卡","國旅卡"]},{"n":"大全聯內湖門市","a":"台北市內湖區舊宗路一段188號2F 無印良品","p":"(02)27905551","h":"平日：10:00~22:00 假日：10:00~22:00 備註：營業時間依百貨公司為主","c":"台北","s":["冷凍食品","童裝","WiFi","停車場","可刷卡"]},{"n":"誠品西門門市","a":"台北市萬華區峨嵋街52號B1F 無印良品","p":"(02)23819909","h":"平日：11:30~22:00 假日：11:30~22:00 備註：營業時間依百貨公司為主","c":"台北","s":["foodpanda外送","WiFi","停車場","可刷卡","國旅卡"]},{"n":"景美門市","a":"台北市文山區景興路188號3~4F 無印良品","p":"(02)29307751","h":"【週日-週四】11:00- 21:30 【週五、週六、國定假日及前一日】11:00-22:00","c":"台北","s":["門市自取","Styling Advisor","MUJI POCKET","foodpanda外送","交換繪本","MUJI BOOKS","文具蓋印","童裝","WiFi","停車場","可刷卡"]},{"n":"美麗華門市","a":"台北市中山區敬業三路20號百樂園漾館2F 無印良品","p":"(02)85020851","h":"平日：11:00~22:00 假日：11:00~22:00 備註：營業時間依百貨公告為主","c":"台北","s":["門市自取","Styling Advisor","Interior Advisor","MUJI POCKET","植栽","ReMUJI","良品市場","給水服務","foodpanda外送","冷凍食品","MUJI BOOKS","刺繡服務","家飾訂製","MUJI Labo","童裝","WiFi","停車場","可刷卡"]},{"n":"比漾門市","a":"新北市永和區中山路一段238號2F 無印良品","p":"(02)82316151","h":"平日：11:00~21:30 假日：11:00~22:00 備註：營業時間依百貨公司為主","c":"新北","s":["良品市場","foodpanda外送","WiFi","停車場","可刷卡","國旅卡"]},{"n":"南港車站門市","a":"台北市南港區忠孝東路七段369號C棟3F 無印良品","p":"(02)26535651","h":"平日：11:00~21:30 假日：11:00~22:00 備註：營業時間依百貨公司為主","c":"台北","s":["Interior Advisor","foodpanda外送","WiFi","停車場","可刷卡"]},{"n":"裕隆城門市","a":"新北市新店區中興路三段70號5樓 無印良品 裕隆城門市","p":"(02)29118851","h":"平日：11:00~21:30 假日：11:00~22:00 備註：營業時間依百貨公告為主","c":"新北","s":["門市自取","Styling Advisor","Interior Advisor","MUJI POCKET","植栽","ReMUJI","良品市場","給水服務","冷凍食品","交換繪本","木育廣場","Open MUJI","童裝","WiFi","停車場","可刷卡"]},{"n":"南港中信門市","a":"台北市南港區經貿二路186-1號C棟2F 無印良品","p":"(02)26537751","h":"平日：11:00~21:30 假日：11:00~21:30 備註：營業時間依百貨公告為主","c":"台北","s":["門市自取","foodpanda外送","WiFi","停車場","可刷卡"]},{"n":"Lalaportt南港門市","a":"台北市南港區經貿二路131號B1 無印良品","p":"(02)26536651","h":"平日：11:00~21:30 假日：11:00~22:00 備註：營業時間依百貨公司為主","c":"台北","s":["Interior Advisor","植栽","ReMUJI","良品市場","給水服務","冷凍食品","木育廣場","Open MUJI","童裝","WiFi","停車場","可刷卡","國旅卡"]},{"n":"高島屋門市","a":"台北市士林區忠誠路二段55號4F 無印良品","p":"(02)28330751","h":"平日：11:00~21:30 假日：11:00~22:00 備註：營業時間依百貨公司為主","c":"台北","s":["Interior Advisor","良品市場","foodpanda外送","冷凍食品","交換繪本","家飾訂製","童裝","WiFi","停車場","可刷卡"]},{"n":"環球門市","a":"新北市中和區中山路三段122號2F 無印良品","p":"(02)22238051","h":"平日：11:00~22:00 假日：11:00~22:00 備註：營業時間依百貨公司為主","c":"新北","s":["MUJI POCKET","foodpanda外送","WiFi","停車場","可刷卡"]},{"n":"徐匯門市","a":"新北市蘆洲區中山一路8號3F 無印良品","p":"(02)22811851","h":"平日：11:00~21:30 假日：11:00~22:00 備註：營業時間依百貨公司為主","c":"新北","s":["foodpanda外送","WiFi","停車場","可刷卡"]},{"n":"新店門市","a":"新北市新店區北宜路一段16號1F 無印良品","p":"(02)29103151","h":"平日：11:00~21:30 假日：10:30~21:30 備註：營業時間依百貨公司為主","c":"新北","s":["Styling Advisor","良品市場","給水服務","foodpanda外送","WiFi","可刷卡"]},{"n":"新板門市","a":"新北市板橋區新站路28號3F 無印良品","p":"(02)29511051","h":"平日：11:00~22:00 假日：11:00~22:00 備註：營業時間依百貨公司為主","c":"新北","s":["良品市場","foodpanda外送","WiFi","停車場","可刷卡"]},{"n":"板橋車站門市","a":"新北市板橋區縣民大道二段七號2樓2F","p":"(02)22725951","h":"平日：11:00~21:30 假日：11:00~22:00 備註：營業時間依百貨公司為主","c":"新北","s":["Interior Advisor","MUJI POCKET","良品市場","給水服務","冷凍食品","交換繪本","木育廣場","童裝","WiFi","停車場","可刷卡","國旅卡"]},{"n":"板中門市","a":"新北市板橋區中山路一段152號B1F","p":"(02)29517551","h":"平日：11:00~22:00 假日：11:00~22:00 備註：營業時間依百貨公告為主","c":"新北","s":["門市自取","foodpanda外送","停車場","可刷卡"]},{"n":"汐止門市","a":"新北市汐止區台五路一段93號D區1F","p":"(02)26971551","h":"平日：11:00~21:30 假日：11:00~22:00 備註：營業時間依百貨公告為主","c":"新北","s":["Interior Advisor","foodpanda外送","WiFi","停車場","可刷卡","國旅卡"]},{"n":"宏匯門市","a":"新北市新莊區新北大道四段3號2F","p":"(02)85227351","h":"平日：11:00~21:30 假日：11:00~22:00 備註：營業時間依百貨公告為主","c":"新北","s":["門市自取","Interior Advisor","良品市場","foodpanda外送","MUJI BOOKS","童裝","WiFi","停車場","可刷卡","國旅卡"]},{"n":"樹林門市","a":"新北市樹林區樹新路40-6號1F","p":"(02)29066651","h":"平日：11:00~22:00 假日：11:00~22:00 備註：營業時間依百貨公司為主","c":"新北","s":["Styling Advisor","foodpanda外送","WiFi","停車場","可刷卡"]},{"n":"林口門市","a":"桃園市龜山區復興一路8號2F","p":"(03)3181051","h":"平日：11:00~22:00 假日：11:00~22:00 備註：營業時間依百貨公司為主","c":"桃園","s":["Styling Advisor","foodpanda外送","WiFi","停車場","可刷卡"]},{"n":"MOP林口門市","a":"新北市林口區文化二路一段123號1F 無印良品","p":"(02)26009151","h":"【週一至週四】11:00-21:30 【週五、例假日前一日】11:00~22:00 【週六、週日、例假日】10:30~22:00","c":"新北","s":["Interior Advisor","MUJI POCKET","植栽","ReMUJI","良品市場","給水服務","冷凍食品","Open MUJI","刺繡服務","童裝","WiFi","停車場","可刷卡"]},{"n":"基隆門市","a":"基隆市中正區信一路177號3F","p":"(02)24251151","h":"平日：11:00~22:00 假日：11:00~22:00 備註：營業時間依百貨公司為主","c":"基隆","s":["foodpanda外送","WiFi","停車場","可刷卡"]},{"n":"桃園門市","a":"桃園市桃園區中正路20號3F","p":"(03)3362451","h":"平日：11:00~21:30 假日：11:00~22:00 備註：營業時間依百貨公告為主","c":"桃園","s":["門市自取","Styling Advisor","foodpanda外送","WiFi","停車場","可刷卡","國旅卡"]},{"n":"台茂門市","a":"桃園市蘆竹區南崁路一段112號B2F","p":"(03)3218551","h":"平日：11:00~22:00 假日：11:00~22:30 備註：營業時間依百貨公司為主","c":"桃園","s":["Styling Advisor","foodpanda外送","WiFi","停車場","可刷卡"]},{"n":"大全聯八德門市","a":"桃園市八德區介壽路二段148號1F","p":"(03)3639551","h":"平日：10:00~22:00 假日：10:00~22:00 備註：營業時間依百貨公司為主","c":"桃園","s":["門市自取","給水服務","冷凍食品","童裝","WiFi","停車場","可刷卡"]},{"n":"愛買桃園門市","a":"桃園市桃園區中山路939號","p":"(03)3605051","h":"平日：11:00~22:00 假日：11:00~22:00 備註：營業時間依百貨公司為主","c":"桃園","s":["門市自取","Styling Advisor","Interior Advisor","MUJI POCKET","給水服務","foodpanda外送","冷凍食品","童裝","WiFi","停車場","可刷卡"]},{"n":"大江門市","a":"桃園市中壢區中園路二段501號GBF","p":"(03)4680751","h":"平日：11:00~22:00 假日：11:00~22:30 備註：營業時間依百貨公司為主","c":"桃園","s":["Styling Advisor","foodpanda外送","WiFi","停車場","可刷卡","國旅卡"]},{"n":"大全聯中壢門市","a":"桃園市中壢區中北路二段468號","p":"(03)4368151","h":"平日：10:00~22:00 假日：10:00~22:00 備註：營業時間依百貨公告為主","c":"桃園","s":["門市自取","Styling Advisor","Interior Advisor","MUJI POCKET","ReMUJI","冷凍食品","童裝","WiFi","停車場","可刷卡"]},{"n":"中壢門市","a":"桃園市中壢區元化路357號3F","p":"(03)2806851","h":"平日：11:00~21:30 假日：11:00~22:00 備註：營業時間依百貨公告為主","c":"桃園","s":["門市自取","Styling Advisor","Interior Advisor","良品市場","foodpanda外送","MUJI BOOKS","MUJI RENOVATION","童裝","WiFi","停車場","可刷卡","國旅卡"]},{"n":"宜蘭門市","a":"宜蘭縣宜蘭市民權路二段38巷6號1F","p":"(03)9320651","h":"平日：11:00~21:30 假日：11:00~22:00 備註：營業時間依百貨公司為主","c":"宜蘭","s":["門市自取","Styling Advisor","WiFi","停車場","可刷卡","國旅卡"]},{"n":"竹北門市","a":"新竹縣竹北市莊敬北路18號5F","p":"(03)5508251","h":"平日：11:00~21:30 假日：11:00~22:00 備註：營業時間依百貨公告為主","c":"新竹","s":["門市自取","Interior Advisor","良品市場","foodpanda外送","交換繪本","MUJI BOOKS","木育廣場","童裝","WiFi","停車場","可刷卡"]},{"n":"巨城門市","a":"新竹市東區中央路229號B1F","p":"(03)5319951","h":"週日~週四 11：00~21：30 例假日等營業時間： 週五~週六(例假日前一日)11：00~22：00","c":"新竹","s":["門市自取","Interior Advisor","良品市場","冷凍食品","家飾訂製","MUJI RENOVATION","童裝","WiFi","停車場","可刷卡","國旅卡"]},{"n":"新竹大魯閣POP UP STORE","a":"新竹市北區大雅路88號B1F","p":"(03)5337151","h":"平日：11:00~22:00 假日：10:30~22:00 備註：營業時間依百貨公司為主","c":"新竹","s":["WiFi","停車場","可刷卡","國旅卡"]},{"n":"新竹門市","a":"新竹市東區西大路323號7F","p":"(03)5258051","h":"【週日-週四】11:00～21:30 【週五、週六、國定假日及前一日】11:00-22:00","c":"新竹","s":["Interior Advisor","foodpanda外送","停車場","可刷卡"]},{"n":"尚順門市","a":"苗栗縣頭份市育樂街8號3F","p":"(037)593351","h":"平日：11:00~21:30 假日：11:00~21:30 備註：營業時間依百貨公告為主","c":"苗栗","s":["門市自取","Interior Advisor","MUJI POCKET","ReMUJI","良品市場","給水服務","冷凍食品","交換繪本","MUJI BOOKS","木育廣場","Open MUJI","童裝","WiFi","停車場","可刷卡","國旅卡"]},{"n":"花蓮門市","a":"花蓮縣花蓮市和平路581號3F","p":"(03)8325951","h":"平日：11:00~21:30 假日：11:00~21:30 備註：營業時間依百貨公司為主","c":"花蓮","s":["Styling Advisor","Interior Advisor","foodpanda外送","WiFi","停車場","可刷卡","國旅卡"]},{"n":"豐原門市","a":"台中市豐原區復興路2號B1F","p":"(04)25122851","h":"平日：11:00~22:00 假日：10:30~22:00 備註：營業時間依百貨公告為主","c":"台中","s":["門市自取","foodpanda外送","WiFi","停車場","可刷卡","國旅卡"]},{"n":"愛買台中門市","a":"台中市西屯區中清路二段1199號B1F","p":"(04)24265551","h":"平日：11:00~21:00 假日：11:00~21:00 備註：愛買台中門市營業時間為11點-21點，商場營業時間為9點-22點30分","c":"台中","s":["門市自取","冷凍食品","WiFi","停車場","可刷卡"]},{"n":"中友門市","a":"台中市北區三民路三段161號B棟3F","p":"(04)22258751","h":"平日：11:00~21:30 假日：11:00~22:00 備註：營業時間依百貨公告為主","c":"台中","s":["門市自取","foodpanda外送","文具蓋印","WiFi","停車場","可刷卡","國旅卡"]},{"n":"Lalaport台中","a":"台中市東區進德路700號1樓(南館)","p":"(04)22116851","h":"平日：11:00~22:00 假日：10:30~22:00 備註：營業時間依百貨公告為主","c":"台中","s":["門市自取","Styling Advisor","Interior Advisor","MUJI POCKET","植栽","ReMUJI","良品市場","給水服務","foodpanda外送","冷凍食品","交換繪本","木育廣場","Open MUJI","家飾訂製","童裝","WiFi","停車場","可刷卡"]},{"n":"新時代台中門市","a":"台中市東區復興路四段186號3F","p":"(04)22205951","h":"平日：11:00~22:00 假日：10:30~22:00 備註：營業時間依百貨公告為主","c":"台中","s":["Interior Advisor","冷凍食品","WiFi","停車場","可刷卡"]},{"n":"金典門市","a":"台中市西區健行路1049號2F","p":"(04)23207751","h":"平日：11:00~21:30 假日：10:30~22:00 備註：營業時間依百貨公司為主","c":"台中","s":["Styling Advisor","Interior Advisor","MUJI POCKET","植栽","foodpanda外送","MUJI BOOKS","Open MUJI","MUJI RENOVATION","文具蓋印","童裝","WiFi","停車場","可刷卡"]},{"n":"中百門市","a":"台中市西屯區台灣大道三段251號10F","p":"(04)22556851","h":"平日：11:00~22:00 假日：10:30~22:00 備註：特殊假日營業時間依百貨公司為主","c":"台中","s":["Interior Advisor","foodpanda外送","WiFi","停車場","可刷卡","國旅卡"]},{"n":"台中門市","a":"台中市西屯區台灣大道三段301號11F","p":"(04)22517151","h":"平日：11:00~22:00 假日：10:30~22:00 備註：營業時間依百貨公告為主","c":"台中","s":["Styling Advisor","Interior Advisor","MUJI POCKET","良品市場","給水服務","冷凍食品","家飾訂製","MUJI Labo","童裝","WiFi","停車場","可刷卡","國旅卡"]},{"n":"文心門市","a":"台中市南屯區文心南路289號4F","p":"(04)24728951","h":"平日：11:00~22:00 假日：10:30~22:00 備註：營業時間依百貨公告為主","c":"台中","s":["門市自取","Interior Advisor","給水服務","foodpanda外送","冷凍食品","童裝","WiFi","停車場","可刷卡"]},{"n":"MOP台中港門市","a":"台中市梧棲區臺灣大道十段166號1F","p":"(04)26577951","h":"平日：11:00~21:30 假日：10:30~21:30 備註：營業時間依百貨公告為主","c":"台中","s":["Styling Advisor","冷凍食品","童裝","WiFi","停車場","可刷卡"]},{"n":"大全聯員林門市","a":"彰化縣埔心鄉瓦南村中山路319號1F","p":"(04)8370651","h":"平日：10:00~22:00 假日：10:00~22:00 備註：例假日：10:00~22:00","c":"彰化","s":["給水服務","冷凍食品","童裝","WiFi","停車場","可刷卡"]},{"n":"斗六門市","a":"雲林縣斗六市社口街261號1、2F","p":"(05)5326251","h":"平日：11:00~21:00 假日：11:00~21:30","c":"雲林","s":["Interior Advisor","MUJI POCKET","良品市場","給水服務","冷凍食品","交換繪本","童裝","WiFi","停車場","可刷卡","國旅卡"]},{"n":"耐斯門市","a":"嘉義市東區忠孝路600號B1F","p":"(05)2770651","h":"平日：11:00~22:00 假日：11:00~22:00 備註：營業時間依百貨公告為主","c":"嘉義","s":["門市自取","良品市場","foodpanda外送","WiFi","停車場","可刷卡","國旅卡"]},{"n":"台東門市","a":"台東縣台東市中山路328號3-5F","p":"(089)332951","h":"平日：11:00~22:00 假日：11:00~22:00 備註：營業時間依Google Maps營業時間為主","c":"台東","s":["Interior Advisor","ReMUJI","良品市場","給水服務","冷凍食品","MUJI BOOKS","木育廣場","Open MUJI","童裝","WiFi","停車場","可刷卡","國旅卡"]},{"n":"愛買台南門市","a":"台南市永康區中正南路533號2F","p":"(06)2535551","h":"週一~週四 11:00~20:00 週五 11:00~21:30 週六 10:00~21:30 週日 10:00~21:30","c":"台南","s":["門市自取","給水服務","冷凍食品","童裝","WiFi","停車場","可刷卡"]},{"n":"南紡門市","a":"台南市東區中華東路一段358號2F","p":"(06)2095251","h":"平日：11:00~22:00 假日：11:00~22:00 備註：營業時間依百貨公司為主","c":"台南","s":["Styling Advisor","Interior Advisor","良品市場","給水服務","foodpanda外送","冷凍食品","MUJI BOOKS","家飾訂製","童裝","WiFi","停車場","可刷卡","國旅卡"]},{"n":"中山門市","a":"台南市中西區中山路162號B1F","p":"(06)2227951","h":"平日：11:00~22:00 假日：11:00~22:00 備註：營業時間依百貨公司為主","c":"台南","s":["WiFi","停車場","可刷卡","國旅卡"]},{"n":"台南門市","a":"台南市中西區西門路一段658號5FA區","p":"(06)3030051","h":"平日：11:00~22:00 假日：11:00~22:00 備註：營業時間依百貨公告為主","c":"台南","s":["門市自取","Styling Advisor","Interior Advisor","植栽","良品市場","給水服務","冷凍食品","交換繪本","MUJI BOOKS","刺繡服務","家飾訂製","MUJI RENOVATION","童裝","WiFi","停車場","可刷卡","國旅卡"]},{"n":"MOP台南門市","a":"台南市歸仁區歸仁大道101號1F","p":"(06)3033051","h":"平日：11:00~21:30 假日：11:00~21:30 備註：營業時間依百貨公告為主","c":"台南","s":["Interior Advisor","給水服務","冷凍食品","WiFi","停車場","可刷卡"]},{"n":"義大門市","a":"高雄市大樹區學城路一段12號C區B1","p":"(07)6569251","h":"平日：11:00~22:00 假日：10:00~22:00 備註：營業時間依百貨公司為主","c":"高雄","s":["foodpanda外送","WiFi","停車場","可刷卡","國旅卡"]},{"n":"岡山門市","a":"高雄市岡山區捷安路1巷1號","p":"(07)6257951","h":"營業時間： 週一～週五 11:00~22:00 例假日等的營業時間：週六～週日及例假日 11:00~22:00 其他營業時間： 食憩區餐點供應時段： → 主食套餐：11:00~20:00，每日限量供應 → 飲料、甜點：全時段供應，最後點餐時間21:00","c":"高雄","s":["門市自取","Interior Advisor","ReMUJI","良品市場","給水服務","foodpanda外送","冷凍食品","MUJI BOOKS","木育廣場","Open MUJI","童裝","WiFi","停車場","可刷卡"]},{"n":"岡山餐飲門市","a":"高雄市岡山區捷安路1巷1號","p":"(07)6257951","h":"營業時間： 週一～週五 11:00~22:00 例假日等的營業時間：週六～週日及例假日 11:00~22:00 其他營業時間： 食憩區餐點供應時段： → 主食套餐：11:00~20:00，每日限量供應 → 飲料、甜點：全時段供應，最後點餐時間21:00","c":"高雄","s":["WiFi","停車場","可刷卡"]},{"n":"屏東門市","a":"屏東縣屏東市中正路72號2F","p":"(08)7335551","h":"平日：11:00~22:00 假日：10:30~22:00 備註：營業時間依百貨公告為主","c":"屏東","s":["門市自取","Interior Advisor","foodpanda外送","WiFi","停車場","可刷卡","國旅卡"]},{"n":"左營門市","a":"高雄市左營區高鐵路123號3F","p":"(07)3592351","h":"週一~週日 11:00～22:00","c":"高雄","s":["門市自取","Styling Advisor","冷凍食品","童裝","WiFi","停車場","可刷卡","國旅卡"]},{"n":"巨蛋門市","a":"高雄市左營區博愛二路777號3F","p":"(07)5552251","h":"週日~週四 : 11:00~22:00 週五、週六、例假日(含前一日) : 11:00~22:30","c":"高雄","s":["Styling Advisor","Interior Advisor","MUJI POCKET","良品市場","給水服務","foodpanda外送","冷凍食品","家飾訂製","MUJI RENOVATION","童裝","WiFi","停車場","可刷卡","國旅卡"]},{"n":"大立門市","a":"高雄市前金區五福三路59號B館1、2F","p":"(07)2815551","h":"平日：11:00~21:30 假日：11:00~21:30 備註：營業時間依百貨公司為主","c":"高雄","s":["Styling Advisor","Interior Advisor","MUJI POCKET","植栽","ReMUJI","良品市場","給水服務","foodpanda外送","冷凍食品","交換繪本","Open MUJI","刺繡服務","MUJI Labo","童裝","WiFi","停車場","可刷卡"]},{"n":"大立餐飲門市","a":"高雄市前金區五福三路59號 B館 1、2F","p":"(07)2815551","h":"平日：11:00~21:30 假日：11:00~21:30 備註：營業時間依百貨公告為主","c":"高雄","s":["WiFi","停車場","可刷卡"]},{"n":"三多門市","a":"高雄市苓雅區三多四路21號 B1F","p":"(07)3319751","h":"平日：11:00~21:30 假日：11:00~22:00 備註：營業時間依百貨公告為主","c":"高雄","s":["門市自取","Interior Advisor","foodpanda外送","WiFi","停車場","可刷卡"]},{"n":"夢時代門市","a":"高雄市前鎮區中華五路789號2F","p":"(07)9700551","h":"週一至週四：11:00~22:00 週五、假日前一天：11:00~22:30 週六、例假日：10:30~22:30 週日：10:30~22:00","c":"高雄","s":["Interior Advisor","良品市場","foodpanda外送","WiFi","停車場","可刷卡","國旅卡"]},{"n":"SKM PARK門市","a":"高雄市前鎮區中安路1之1號1F","p":"(07)7918151","h":"週一~週四 11:00～21:30 週五及例假日前一天 11:00～22:00 例假日 10:30~22:00","c":"高雄","s":["Interior Advisor","foodpanda外送","MUJI BOOKS","文具蓋印","童裝","WiFi","停車場","可刷卡","國旅卡"]}];
+
+const ALL_SERVICES = ['門市自取','Styling Advisor','Interior Advisor','MUJI POCKET','植栽','ReMUJI','良品市場','給水服務','foodpanda外送','冷凍食品','交換繪本','MUJI BOOKS','木育廣場','Open MUJI','刺繡服務','家飾訂製','MUJI RENOVATION','MUJI Labo','文具蓋印','童裝','WiFi','停車場','可刷卡','國旅卡'];
+
+// 同義詞：輸入這些詞 → 自動篩選對應服務
+const STORE_SYNONYMS = [
+  {triggers:['刺繡','繡名字','繡字'], svc:'刺繡服務'},
+  {triggers:['interior','空間','家具配置','裝潢諮詢'], svc:'Interior Advisor'},
+  {triggers:['styling','穿搭','衣著','服飾建議'], svc:'Styling Advisor'},
+  {triggers:['咖啡','研磨','coffee','pocket','muji pocket','自動販賣','飲料'], svc:'MUJI POCKET'},
+  {triggers:['植物','植栽','綠植'], svc:'植栽'},
+  {triggers:['remuji','二手','舊衣'], svc:'ReMUJI'},
+  {triggers:['良品市場','有機','食材'], svc:'良品市場'},
+  {triggers:['外送','foodpanda','熊貓'], svc:'foodpanda外送'},
+  {triggers:['冷凍','冷凍食品'], svc:'冷凍食品'},
+  {triggers:['繪本','交換繪本'], svc:'交換繪本'},
+  {triggers:['書','books','muji books'], svc:'MUJI BOOKS'},
+  {triggers:['兒童','木育','木製玩具'], svc:'木育廣場'},
+  {triggers:['文具','蓋印','印章'], svc:'文具蓋印'},
+  {triggers:['童裝','兒童服裝','小孩'], svc:'童裝'},
+  {triggers:['renovation','空間改造','裝修','室內設計'], svc:'MUJI RENOVATION'},
+  {triggers:['家飾','訂製','客製'], svc:'家飾訂製'},
+  {triggers:['wifi','網路'], svc:'WiFi'},
+  {triggers:['停車','停車場'], svc:'停車場'},
+  {triggers:['國旅卡','國民旅遊'], svc:'國旅卡'},
+  {triggers:['給水','補水','水','飲水'], svc:'給水服務'},
+  {triggers:['labo','muji labo'], svc:'MUJI Labo'},
+  {triggers:['open muji','展演','展覽'], svc:'Open MUJI'},
+  {triggers:['餐飲門市','café&meal','cafeandmeal'], svc:'__name_only__'},
+];
+
+let activeService = '';
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  event.target.closest('.tab-btn').classList.add('active');
+  if(tab==='store') renderSvcChips();
+}
+
+function renderSvcChips() {
+  const wrap = document.getElementById('svcChips');
+  if(wrap.children.length > 0) return;
+  ALL_SERVICES.forEach(svc => {
+    const btn = document.createElement('button');
+    btn.className = 'svc-chip';
+    btn.textContent = svc;
+    btn.onclick = () => toggleSvcChip(svc, btn);
+    wrap.appendChild(btn);
+  });
+}
+
+function toggleSvcChip(svc, btn) {
+  if(activeService === svc) {
+    activeService = '';
+    btn.classList.remove('active');
+  } else {
+    document.querySelectorAll('.svc-chip').forEach(b => b.classList.remove('active'));
+    activeService = svc;
+    btn.classList.add('active');
+  }
+  doStoreSearch();
+}
+
+function doStoreSearch() {
+  const raw = document.getElementById('storeInput').value.trim();
+  
+  // 同義詞偵測 → 自動點選服務chip
+  let detectedSvc = '';
+  let isCafeSearch = false;
+  let isNameOnlySearch = false;
+
+  if(raw) {
+    // 餐飲/餐廳類：直接搜門市名稱
+    const cafeKws = ['餐飲','餐廳','café','cafe','meal','dining'];
+    if(cafeKws.some(k => raw.toLowerCase().includes(k.toLowerCase()))) {
+      isCafeSearch = true;
+    }
+    // 其他同義詞偵測 → 對應服務
+    if(!isCafeSearch) {
+      for(const {triggers, svc} of STORE_SYNONYMS) {
+        if(triggers.some(t => raw.toLowerCase().includes(t.toLowerCase()))) {
+          detectedSvc = svc;
+          break;
+        }
+      }
+    }
+  }
+
+  // 套用偵測到的服務
+  if(detectedSvc && detectedSvc !== '__name_only__' && detectedSvc !== activeService) {
+    activeService = detectedSvc;
+    document.querySelectorAll('.svc-chip').forEach(b => {
+      b.classList.toggle('active', b.textContent === detectedSvc);
+    });
+  }
+
+  let results = STORES;
+
+  if(isCafeSearch) {
+    // 餐飲/餐廳 → 直接比對門市名稱，不套用服務篩選
+    results = results.filter(store =>
+      ['餐飲','café&meal'].some(k => store.n.toLowerCase().includes(k.toLowerCase()))
+    );
+  } else if(activeService) {
+    // 有選服務 → 先篩服務
+    results = results.filter(s => s.s.includes(activeService));
+    // 再用關鍵字篩地區（若有輸入地區名）
+    if(raw) {
+      const kws = raw.split(/[\s,，、]+/).filter(k=>k.length>=1);
+      const isServiceWord = STORE_SYNONYMS.some(({triggers}) =>
+        triggers.some(t => raw.toLowerCase().includes(t.toLowerCase()))
+      );
+      if(!isServiceWord) {
+        // 純地區/門市名搜尋
+        results = results.filter(store => {
+          const txt = (store.n + store.a + store.c).toLowerCase();
+          return kws.some(k => txt.includes(k.toLowerCase()));
+        });
+      }
+    }
+  } else if(raw) {
+    // 純關鍵字搜尋（門市名稱 or 地區 or 地址）
+    const kws = raw.split(/[\s,，、]+/).filter(k=>k.length>=1);
+    results = results.filter(store => {
+      const txt = (store.n + store.a + store.c).toLowerCase();
+      return kws.some(k => txt.includes(k.toLowerCase()));
+    });
+  }
+
+  renderStoreResults(results, activeService);
+}
+
+function renderStoreResults(results, highlightSvc) {
+  const cont = document.getElementById('storeResults');
+  const cntEl = document.getElementById('storeCount');
+
+  if(!results.length) {
+    cntEl.style.display='none';
+    cont.innerHTML='<div class="store-empty"><i class="ti ti-mood-empty" style="font-size:36px;display:block;margin-bottom:10px;opacity:0.3"></i>找不到符合的門市<br><span style="font-size:12px;margin-top:4px;display:block">試試其他關鍵字或服務項目</span></div>';
+    return;
+  }
+
+  cntEl.style.display='block';
+  cntEl.textContent = highlightSvc
+    ? `提供「${highlightSvc}」服務的門市共 ${results.length} 家`
+    : `找到 ${results.length} 家門市`;
+
+  cont.innerHTML = results.map((s,i) => {
+    const svcHTML = s.s.map(svc =>
+      `<span class="svc-tag${svc===highlightSvc?' highlight':''}">${svc}</span>`
+    ).join('');
+    return `<div class="store-card">
+      <div class="store-card-header" onclick="toggleStore(${i})">
+        <div class="store-name-row">
+          <span class="city-tag">${s.c||'其他'}</span>
+          <span class="store-name">${s.n}</span>
+        </div>
+        <i class="ti ti-chevron-down expand-icon" id="si-${i}"></i>
+      </div>
+      <div class="store-body" id="sb-${i}">
+        <div class="store-info-row"><i class="ti ti-map-pin"></i><span>${s.a}</span></div>
+        <div class="store-info-row"><i class="ti ti-phone"></i><span>${s.p}</span></div>
+        <div class="store-info-row"><i class="ti ti-clock"></i><span>${s.h}</span></div>
+        <div class="svc-tags">${svcHTML}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  if(results.length===1) {
+    document.getElementById('sb-0').classList.add('open');
+    document.getElementById('si-0').classList.add('open');
+  }
+}
+
+function toggleStore(i) {
+  document.getElementById('sb-'+i).classList.toggle('open');
+  document.getElementById('si-'+i).classList.toggle('open');
+}
+</script>
+<div class="footer">MUJI 無印良品｜客服教育訓練組　編製日期：2026年6月</div>
+</div>
+
+<script>
+const KB = [
+  {c:"01_品牌與門市資訊",q:"商品分類",a:"目前分類有：女裝、男裝、內衣、鞋子、包包/配件、童裝、MUJI LABO、MUJI WALKER、家具、收納、寢具織品、客廳織品、電器、文具、美容保養、芳香用品、旅行用品、廚房用品、餐具&餐桌用品、毛巾衛浴用品、清掃洗滌用品、植物園藝、露營用品、寵物用品、Gogoro 聯名配件、食品、友善環境&良品市場、零件專區"},
+  {c:"01_品牌與門市資訊",q:"品牌故事",a:"無印良品誕生於1980年，「無印良品」意味著「沒有品牌的好品質」。臺灣無印良品成立於2004年，隸屬日本良品計畫旗下，全台擁有超過60家門市。"},
+  {c:"01_品牌與門市資訊",q:"全省門市資訊查詢",a:"請至官網門市資訊頁面查詢各縣市門市地址、電話及營業時間：https://shop.muji.tw/v2/Shop/StoreList/41566\n\n可依縣市篩選，查詢高雄、台北、台中、新北、桃園、新竹等各縣市門市資訊。"},
+  {c:"01_品牌與門市資訊",q:"官網購物付款方式",a:"目前官網提供：信用卡（VISA/MasterCard/JCB）、ATM轉帳、超商代碼繳費、LINE Pay、街口支付。"},
+  {c:"01_品牌與門市資訊",q:"官網購物運送方式",a:"官網提供三種配送方式：一般宅配、超商取貨（7-ELEVEN、全家）、門市自取。"},
+  {c:"01_品牌與門市資訊",q:"仿冒品聲明",a:"無印良品對仿冒品深感遺憾，請消費者透過官方管道購買確保品質。如發現仿冒品歡迎通報客服。"},
+  {c:"01_品牌與門市資訊",q:"查詢近期門市活動",a:"建議下載MUJI passport APP，或加入LINE好友、Facebook粉絲專頁（MUJI無印良品生活研究所）、Instagram（@muji_taiwan）取得最新活動資訊。"},
+  {c:"01_品牌與門市資訊",q:"良品週間是什麼時候",a:"良品週間為不定期活動，詳細時間請至官網 https://shop.muji.tw 、MUJI passport APP或官方社群查詢最新消息。"},
+  {c:"01_品牌與門市資訊",q:"花車特賣會時間",a:"花車特賣會不定期舉辦，詳細時間請至官網活動頁 https://shop.muji.tw/site/events 查詢。"},
+  {c:"02_官網購物操作",q:"如何在官網購物下單",a:"步驟：1.前往 https://shop.muji.tw 選購商品加入購物車 2.點選「前往結帳」 3.登入帳號或訪客結帳 4.填寫收件資訊及付款方式 5.確認後送出，系統寄出訂單確認信。"},
+  {c:"02_官網購物操作",q:"付款方式有哪些",a:"官網支援：信用卡、LINE Pay、街口支付、超商代碼繳費、ATM轉帳。門市另支援現金、悠遊卡/一卡通、行動支付。"},
+  {c:"02_官網購物操作",q:"如何查詢訂單進度追蹤",a:"登入會員後至「我的帳戶」→「訂單紀錄」查看目前狀態，出貨後會寄送物流追蹤連結。"},
+  {c:"02_官網購物操作",q:"如何取消訂單",a:"訂單成立後若需取消，請儘速聯繫客服。訂單一旦進入出貨作業即無法取消，需改走退貨流程。"},
+  {c:"02_官網購物操作",q:"官網可以累積MUJI Passport點數嗎",a:"是的，官網購物時登入MUJI passport帳號，即可累積點數，結帳時也可選擇點數折抵。"},
+  {c:"03_配送與取貨",q:"配送時間要多久宅配",a:"宅配約3–5個工作天；超商取貨約3–5個工作天到店，到店後簡訊通知，7天內取件；門市自取約3–5個工作天，到達後簡訊通知，7天內取件。"},
+  {c:"03_配送與取貨",q:"超商取貨流程 7-11 全家",a:"結帳選「超商取貨」並選擇門市→付款後等待到貨通知→收到簡訊後7天內前往取件。超過7天未取，商品將退回。"},
+  {c:"03_配送與取貨",q:"門市自取流程取件",a:"結帳選「門市自取」並選門市→付款→商品到達後簡訊通知→攜帶身分證明文件至指定門市取件（7天內）。"},
+  {c:"03_配送與取貨",q:"超商取貨逾期未取過期",a:"超過7天未取，商品退回倉庫。退回後可重新安排出貨，請聯繫客服確認新的配送地址或取件門市。"},
+  {c:"03_配送與取貨",q:"可以指定到貨日期時間嗎",a:"目前官網暫不提供指定到貨日期或時間服務。"},
+  {c:"03_配送與取貨",q:"門市自取忘帶證件身分證",a:"取件時需出示身份證明文件，如忘記攜帶請暫緩取件，攜帶後再行前往。"},
+  {c:"03_配送與取貨",q:"可以延長取件天數嗎",a:"一般取件期限為通知後7天，如需延長請儘速聯繫客服確認是否可以處理。"},
+  {c:"03_配送與取貨",q:"選錯門市可以更改嗎",a:"訂單成立後若需更改取件門市，請儘速聯繫客服，視訂單狀態決定是否可以更改。"},
+  {c:"04_退換貨政策",q:"退換貨怎麼申請流程",a:"退換貨流程：1.確認商品符合條件（7天猶豫期、全新未使用、包裝完整）2.聯繫客服提供訂單編號及原因 3.客服確認後提供退貨方式 4.寄回後辦理退款，信用卡約7–14工作天，ATM/超商代碼約5–7工作天。"},
+  {c:"04_退換貨政策",q:"哪些商品不可以退換貨",a:"以下商品不可退換：食品類、內衣褲、已拆封個人衛生用品（牙刷等）、客製化或已剪裁商品、超過猶豫期（7天）的商品。"},
+  {c:"04_退換貨政策",q:"退款要多久時間",a:"信用卡退款：7–14個工作天（依各發卡銀行）；ATM轉帳/超商代碼：5–7個工作天退至原帳戶。"},
+  {c:"04_退換貨政策",q:"退換貨要回原門市嗎",a:"非必要，但建議至原消費門市退換。如至其他門市可能需提供購買證明。"},
+  {c:"04_退換貨政策",q:"收到商品有問題瑕疵怎麼辦",a:"請保留問題商品及包裝並拍照，立即聯繫客服說明情況，我們將協助辦理退換貨。"},
+  {c:"04_退換貨政策",q:"抵用券過期怎麼辦延期",a:"抵用券一旦過期恕無法延期使用，建議於效期內使用。如有特殊情況請聯繫客服說明。"},
+  {c:"04_退換貨政策",q:"家具可以退換嗎",a:"家具退換需於猶豫期（7天）內、商品全新未使用、保留原廠包裝。大型家具退換需安排物流，請聯繫客服辦理。"},
+  {c:"05_MUJI_Passport會員",q:"MUJI Passport怎麼加入申請",a:"下載MUJI passport APP（iOS/Android），完成手機號碼驗證後即可免費加入。"},
+  {c:"05_MUJI_Passport會員",q:"Passport點數怎麼累積賺取",a:"每消費NT$100累積1點，全台實體門市（結帳時出示條碼）及官網購物（登入會員後結帳）均可累積。\n\n注意：花車門市、全聯店中店、外送服務、電話訂購不可累積點數。\n\n點數自發送日起 365 天內有效（實體門市消費後第11天發送；官網於取貨成功後第11天發送）。"},
+  {c:"05_MUJI_Passport會員",q:"Passport點數怎麼折抵使用",a:"累積滿100點後可折抵，1點=NT$1，每次折抵需為100點的倍數。"},
+  {c:"05_MUJI_Passport會員",q:"生日禮怎麼取得優惠",a:"生日當月優惠將自動發放至MUJI passport APP，開啟APP即可查看優惠內容。"},
+  {c:"05_MUJI_Passport會員",q:"良品週間會員優惠折扣",a:"無印良品定期舉辦的會員優惠活動，持有MUJI passport的會員在活動期間消費可享特別折扣或加倍點數，具體內容依每次公告為準。"},
+  {c:"05_MUJI_Passport會員",q:"APP收不到驗證簡訊無法登入",a:"請確認：1.手機號碼格式正確（09xxxxxxxx）2.未開啟封鎖陌生號碼 3.切換WiFi與行動網路後重試 4.等待5分鐘後重新發送。仍無法收到請聯繫客服。"},
+  {c:"05_MUJI_Passport會員",q:"更換手機如何重新登入帳號",a:"重新安裝MUJI passport APP後，使用原手機號碼進行驗證，即可重新登入並恢復所有資料及點數。"},
+  {c:"05_MUJI_Passport會員",q:"如何查詢Passport ID會員編號",a:"開啟MUJI passport APP，至「我的頁面」即可查看會員ID。"},
+  {c:"05_MUJI_Passport會員",q:"如何退會註銷Passport帳號",a:"請至MUJI passport APP「設定」→「退會」，或聯繫客服協助辦理。退會後點數及資料將無法復原，請審慎考慮。"},
+  {c:"05_MUJI_Passport會員",q:"手機號碼可以變更嗎",a:"手機號碼變更需透過MUJI passport APP內的設定進行，或聯繫客服協助辦理。"},
+  {c:"05_MUJI_Passport會員",q:"Passport會費要多少免費",a:"MUJI passport會員完全免費，無需繳交任何會費。"},
+  {c:"05_MUJI_Passport會員",q:"退貨對點數有影響嗎扣除",a:"退貨時，已累積的消費點數將依退款金額扣除；若使用點數折抵後退貨，點數將退回至帳戶。"},
+  {c:"05_MUJI_Passport會員",q:"優惠券折價券在哪裡看",a:"開啟MUJI passport APP，點選「優惠券」分頁，即可查看目前持有的折價券及使用期限。"},
+  {c:"05_MUJI_Passport會員",q:"折價券優惠券怎麼使用",a:"門市：結帳時開啟APP折價券頁面，出示QR Code給店員掃描。官網：結帳時選擇「使用優惠券」輸入券號。"},
+  {c:"06_MUJI聯名卡",q:"MUJI聯名卡發卡行 停辦說明 重要公告",a:"【重要時間節點】\n・2025/1/1 起：停止申辦新卡（已申辦者如毀損/遺失需補發，請洽中國信託）\n・2026/1/1 起：聯名卡仍可刷卡結帳，但不再認定為 MUJI 會員，亦不提供消費回饋\n・2027/1/1 起：聯名卡完全失效，無法再用於結帳刷卡\n\n發卡行：中國信託商業銀行\n中國信託客服專線：(02)2745-8080\n中國信託線上智能客服：https://www.ctbcbank.com\n\n如需查詢 MUJI Dollar 累積狀況，請至門市收銀台出示卡片，由門市人員協助查詢。\n或聯繫台灣無印良品客服：0800-50-51-51（週一～週五 9:00-18:00）"},
+  {c:"06_MUJI聯名卡",q:"MUJI Dollar點數怎麼使用查詢 聯名卡",a:"MUJI Dollar 可在無印良品實體/餐飲門市消費時折抵，1 MUJI Dollar = NT$1。\n\n查詢方式：\n・至門市收銀台出示卡片，由門市人員協助查詢\n・洽中國信託客服：(02)2745-8080\n\n注意：MUJI Dollar 點數皆有使用期限，請提前規劃使用，逾期自動失效。"},
+  {c:"06_MUJI聯名卡",q:"聯名卡問題要找誰 中國信託",a:"聯名卡用卡相關需求（點數查詢、額度、補發、資料變更等），請洽中國信託商業銀行：\n・客服專線：(02)2745-8080\n・線上智能客服：https://www.ctbcbank.com\n\nMUJI 客服無法代為查詢卡片資訊，請直接聯繫中國信託辦理。"},
+  {c:"06_MUJI聯名卡",q:"聯名卡生日點數 MUJI Dollar 半年滿額回饋",a:"生日點數：前一年度於無印良品門市持聯名卡消費累積滿 NT$3,000，可於生日當月5日前獲得 MUJI Dollar 生日點數，使用期限至生日次月月底。\n\n半年滿額回饋：每半年（1–6月、7–12月）持聯名卡於門市刷卡累積滿 NT$3萬元以上，可享滿額加碼回饋 MUJI Dollar（最高3萬點）。\n\n注意：2026/1/1 起不再提供消費回饋，請把握剩餘時間使用。"},
+  {c:"07_即享券與禮券",q:"即享券怎麼使用兌換",a:"門市：結帳時出示即享券條碼或序號給店員使用。官網：結帳頁面輸入序號折抵。即享券不找零，不可與其他折扣同時使用，請注意有效期限。"},
+  {c:"07_即享券與禮券",q:"即享券餘額怎麼查詢",a:"可至門市請店員協助查詢，或至MUJI passport APP「優惠券」頁面查看即享券餘額。"},
+  {c:"07_即享券與禮券",q:"即享券退貨退款處理",a:"使用即享券消費的商品若申請退貨，退款金額將退回至即享券內，不得換現金。"},
+  {c:"07_即享券與禮券",q:"有沒有禮券禮物卡購買",a:"目前提供「即享券」（儲值型），可於門市或官網購買，面額有多種選擇，適合作為送禮使用。"},
+  {c:"08_電子發票",q:"為什麼沒收到發票電子發票",a:"官網消費預設開立電子發票並歸戶至手機載具。如未收到，請確認是否已設定載具，或至財政部電子發票整合服務平台查詢。"},
+  {c:"08_電子發票",q:"如何索取紙本發票",a:"請於下單時在備註欄說明需要紙本發票，或訂單成立後48小時內聯繫客服提出申請。"},
+  {c:"08_電子發票",q:"要開公司抬頭統編發票",a:"如需開立公司抬頭，請於結帳時填寫統一編號欄位，或訂單成立後儘速聯繫客服補開。逾期可能無法更改。"},
+  {c:"08_電子發票",q:"發票捐贈怎麼處理",a:"選擇發票捐贈後，系統直接將發票捐贈至指定公益團體，消費者不會收到發票正本。"},
+  {c:"08_電子發票",q:"發票中獎怎麼兌領",a:"電子發票中獎後若已歸戶至手機載具，獎金會自動匯入；或至超商ibon/FamiPort兌領。"},
+  {c:"08_電子發票",q:"電子發票歸戶手機載具",a:"可至官網會員帳號設定或MUJI passport APP中，填入手機號碼作為載具，即可自動歸戶。"},
+  {c:"09_大型家具",q:"大型家具配送說明運費",a:"大型家具採「到府配送」，訂單確認後約7–14個工作天，配送前會電話確認到府時間。請先確認電梯/走道尺寸是否可通行，基本服務送至玄關，搬至特定房間或組裝需加購服務。"},
+  {c:"09_大型家具",q:"大型家具退換貨",a:"大型家具退換需於猶豫期（7天）內提出，商品全新未使用、保留原廠包裝。退換貨需安排物流，請聯繫客服辦理。"},
+  {c:"09_大型家具",q:"家具保固說明申請",a:"家具保固期1年，涵蓋製造瑕疵及正常使用下的功能損壞。不包含人為損傷（碰撞、刮傷）、潮濕發霉、自行改裝或不當使用。申請保固請提供訂單編號、購買日期及問題照片。"},
+  {c:"09_大型家具",q:"木製家具發霉保固",a:"發霉屬於環境因素（潮濕）造成，一般不在保固範圍內。建議保持通風防潮；如有疑慮請聯繫客服說明情況。"},
+  {c:"09_大型家具",q:"家具甲醛問題味道",a:"MUJI家具符合日本JIS規範的甲醛釋放量標準。新家具若有輕微氣味，建議保持通風2–4週，氣味將逐漸消散。"},
+  {c:"09_大型家具",q:"沙發保固維修",a:"沙發保固1年，涵蓋布料或皮革非人為造成的損壞、骨架結構性問題。不含人為刮傷、污漬、寵物抓咬。"},
+  {c:"09_大型家具",q:"床墊保固維修",a:"床墊保固1年，涵蓋製造瑕疵、異常下陷。不含污漬、側邊受損、人為破壞。"},
+  {c:"09_大型家具",q:"搬家拆解家具服務",a:"如需拆解服務，請洽詢購買門市，部分門市或大型家具配送服務可提供拆解協助（可能收費）。"},
+  {c:"10_商品保固與維修",q:"行李箱拉桿箱保固說明",a:"行李箱保固期1年，涵蓋輪子異常、拉桿卡頓（非人為）、拉鍊製造瑕疵。不含刮傷、人為損壞、正常磨損。"},
+  {c:"10_商品保固與維修",q:"行李箱如何送修維修",a:"請攜帶行李箱及購買證明（收據或訂單確認信）至任一無印良品門市辦理送修。維修約2–4週，修好後電話通知取件。"},
+  {c:"10_商品保固與維修",q:"行李箱維修費用多少錢",a:"保固期內（1年）製造瑕疵免費維修。保固期外或人為損壞，維修費約NT$300–1,500（依損壞程度報價）。"},
+  {c:"10_商品保固與維修",q:"國外買的行李箱可以在台灣維修嗎",a:"可至台灣門市評估，但維修可行性及費用視商品型號而定，部分海外型號零件可能不易取得。"},
+  {c:"10_商品保固與維修",q:"電器保固說明故障維修",a:"電器商品保固1年，涵蓋非人為電路故障、製造瑕疵。不含液體滲入、人為損壞、使用不當。過保固的電器可洽門市評估是否維修。"},
+  {c:"10_商品保固與維修",q:"DC馬達風扇維修清潔",a:"DC馬達風扇故障請攜帶至門市，或聯繫客服確認全台維修據點。清潔時先關電源，依說明書拆開外蓋，以乾布清潔，不可水洗電機。"},
+  {c:"10_商品保固與維修",q:"門市電子支付悠遊卡",a:"門市支援LINE Pay、街口支付、Apple Pay、Google Pay，以及悠遊卡、一卡通等電子票證。"},
+  {c:"10_商品保固與維修",q:"電器海外使用電壓",a:"台灣電器為110V規格，在日本（100V）可使用，在歐美（220–240V）需使用變壓器，請查看商品規格確認。"},
+  {c:"10_商品保固與維修",q:"衣料尺寸對照表洗滌",a:"衣料品尺寸對照表請至官網商品頁面查看，或至門市索取。洗滌請依衣物標籤符號，深淺色分開洗、低溫烘乾或自然晾乾。"},
+  {c:"11_特色服務",q:"大宗採購企業團購洽詢",a:"企業採購請至官網大宗採購頁面 https://www.muji.tw/tw/business/ 或聯繫客服，提供：公司名稱、需求品項及數量、預計使用時間、聯絡人姓名及電話，由專員聯繫報價。"},
+  {c:"11_特色服務",q:"MUJI RENOVATION空間改造裝潢",a:"MUJI RENOVATION提供室內空間規劃設計服務，流程：1.填洽詢問卷 2.安排勘查 3.設計提案 4.簽約施工 5.完工驗收。費用NT$15,000起，詳情請至 https://renovation.muji.tw/"},
+  {c:"11_特色服務",q:"刺繡服務客製化",a:"刺繡服務於指定門市提供，可繡上文字或指定圖案，目前不接受完全客製化圖案，費用及可選項目請洽各門市確認。"},
+  {c:"11_特色服務",q:"遺失物協尋",a:"如在門市遺失物品，請儘速聯繫該門市確認是否有人拾獲，或洽詢客服協助通報。"},
+  {c:"12_人才招募",q:"如何應徵無印良品工作職缺",a:"請至官網「人才招募」頁面 https://www.muji.tw/tw/job/ 查看目前開放職缺，線上填寫應徵表單送出即完成應徵。履歷送出後約2–4週內收到通知。"},
+  {c:"12_人才招募",q:"應徵條件資格學歷",a:"基本條件：具服務熱忱、認同MUJI品牌理念、配合門市排班（含例假日）。學歷、科系不限，歡迎各背景人才應徵，無門市經驗亦可。"},
+  {c:"12_人才招募",q:"薪資福利員工優惠",a:"月薪社員薪資依學歷及經歷核定，提供勞健保、特休假、員工購物折扣、定期健康檢查、急難救助金、年度聯歡活動等。"},
+  // ── 補充：禮物包裝服務 ──
+  {c:"13_禮物包裝服務",q:"門市有禮物包裝服務嗎 包裝 禮盒",a:"有！於無印良品實體門市購買商品時，結帳時提出即可。\n\n【免費包裝｜紙袋】\n・大 23×41×15cm\n・中 26×42×7cm\n・小 21×35×7cm\n\n【付費包裝｜禮盒 NT$30】\n・掀蓋式：18.5×18.5×8cm／18.2×18.2×11cm／27.3×21.8×10.5cm\n・抽取式：22.6×30.5×5.6cm\n\n注意：禮物包裝服務由門市提供，官網購物無法選擇禮物包裝。"},
+  {c:"13_禮物包裝服務",q:"官網購物可以包裝禮盒嗎",a:"官網購物目前無法提供禮物包裝服務。如需禮物包裝，建議至實體門市購買，結帳時告知店員即可協助包裝。\n\n免費提供紙袋（大/中/小），禮盒包裝酌收 NT$30。"},
+  // ── 補充：Passport 重要細節 ──
+  {c:"05_MUJI_Passport會員",q:"Passport點數有效期限多久 過期",a:"點數自發送日起 365 天內有效，實際到期日以 MUJI Passport APP 內顯示為準，請留意避免點數過期失效。\n\n點數發送時間：\n・實體門市消費後第 11 天發送\n・官網購物於取貨/配送成功後第 11 天發送"},
+  {c:"05_MUJI_Passport會員",q:"哪些通路不能累積Passport點數 花車 全聯 外送",a:"以下通路消費無法累積 MUJI Passport 點數：\n・外部網路平台（非 MUJI 官網）\n・花車門市\n・全聯店中店\n・外送服務（foodpanda 等）\n・電話訂購\n\n可累積通路：全台實體門市（結帳時出示條碼）、MUJI 官網購物（登入會員後結帳）。"},
+  {c:"05_MUJI_Passport會員",q:"生日禮是什麼 生日優惠 抵用券",a:"完成 MUJI Passport 會員資料中的生日填寫後，生日當月可獲得 NT$150 抵用券。\n\n請確認 APP 內已填寫正確生日，並於當月內使用抵用券，逾月失效。"},
+  {c:"05_MUJI_Passport會員",q:"良品週間折扣幾折 週間優惠",a:"良品週間活動期間，出示 MUJI Passport 條碼結帳，可享 9 折優惠。\n\n活動時間不定期舉辦，請至 MUJI Passport APP 或官方社群查詢最新活動資訊。"},
+  {c:"05_MUJI_Passport會員",q:"折抵金額會再累積點數嗎",a:"使用禮券、MUJI Dollar、點數折抵等優惠的折抵金額，不再回饋點數。\n\n例如：消費 500 元，使用點數折抵 30 元，實際付款 470 元，只回饋 4 點（以實際付款金額計算）。"},
+  {c:"05_MUJI_Passport會員",q:"海外版MUJI Passport可以用嗎",a:"海外版 MUJI Passport 於台灣實體門市可享活動優惠，但無法累積點數。\n於官網購物時，無法使用海外版帳號，需申請台灣版。"},
+  // ── 補充：付款方式完整版 ──
+  {c:"02_官網購物操作",q:"官網付款方式有哪些 信用卡分期 悠遊付 Apple Pay",a:"目前官網支援以下付款方式：\n・信用卡（一次付清）\n・信用卡分期\n・超商付款（代碼繳費）\n・LINE Pay\n・街口支付\n・悠遊付\n・Apple Pay\n\n門市消費另支援現金、悠遊卡/一卡通、行動支付等。"},
+];
+
+const NOTICE_CATS = ['06_MUJI聯名卡'];
+
+const SYNONYM_MAP = [
+  {triggers:['高雄','台南','台中','台北','新北','桃園','新竹','苗栗','彰化','南投','雲林','嘉義','屏東','宜蘭','花蓮','台東','基隆','板橋','中和','永和','三重','新莊','林口','內湖','信義','大安','松山','中山','士林','天母','大立','漢神','新光三越','遠東','SOGO','微風','夢時代','環球'],add:['門市','全省門市']},
+  {triggers:['壞掉','故障','損壞','不能用','無法使用','修理','維修','送修'],add:['保固','維修']},
+  {triggers:['不想買','想退','要退','退掉','換掉'],add:['退換貨']},
+  {triggers:['統編','統一編號','公司行號','報帳'],add:['發票','統編']},
+  {triggers:['幾天到','何時到','到貨','快遞','物流'],add:['配送','配送時間']},
+  {triggers:['取消','不買了','撤單'],add:['取消訂單']},
+  {triggers:['禮物','送人','禮盒','包裝','紙袋'],add:['即享券','禮券','禮物包裝']},
+  {triggers:['查點數','看點數','點數餘額','剩多少點'],add:['Passport','點數']},
+  {triggers:['中信','中國信託','ctbc'],add:['聯名卡','中國信託']},
+];
+
+const TEMPLATES = {
+  "退換貨":{email:"親愛的顧客您好，\n\n感謝您聯繫無印良品客服！\n\n退換貨說明如下：\n・猶豫期：收到商品後 7 天內\n・商品須全新未使用、包裝完整\n・不可退換：食品、內衣褲、已拆封個人衛生用品\n\n請提供訂單編號及退換貨原因，我方確認後為您安排後續流程。退款約 7–14 個工作天。\n\n祝您購物愉快！\n無印良品 客服團隊 敬上",shopee:"您好！\n\n申請退換貨重點：\n✅ 收到商品 7 天內提出\n✅ 商品全新未使用、包裝完整\n❌ 食品/內衣/已拆封個人用品不可退\n\n請提供訂單編號和原因，我幫您確認後續！\n退款約 7–14 個工作天，感謝耐心～"},
+  "配送":{email:"親愛的顧客您好，\n\n感謝您聯繫無印良品客服！\n\n配送方式說明：\n・宅配到府：約 3–5 個工作天\n・超商取貨（7-11/全家）：到店後簡訊通知，7 天內取件\n・門市自取：到達後簡訊通知，7 天內取件（需攜帶身分證件）\n\n如有其他問題，歡迎隨時告知！\n\n無印良品 客服團隊 敬上",shopee:"您好！\n\n配送方式有三種：\n🏠 宅配：約 3–5 個工作天\n🏪 超商取貨：到店簡訊通知，7 天內去拿\n🏬 門市自取：到門市簡訊通知，7 天內取（帶身分證件）\n\n有其他問題歡迎繼續問！"},
+  "Passport":{email:"親愛的顧客您好，\n\n感謝您聯繫無印良品客服！\n\nMUJI Passport 點數說明：\n・每消費 NT$100 累積 1 點\n・官網及門市均可累積（門市需出示 QR Code）\n・100 點起可折抵，1 點 = NT$1\n・點數 2 年內有效\n\n如需進一步說明，歡迎告知！\n\n無印良品 客服團隊 敬上",shopee:"您好！\n\nMUJI Passport 點數規則：\n💰 消費 NT$100 得 1 點\n🛒 官網和門市都可累積\n🎁 100 點起折抵，1 點 = NT$1\n📅 點數 2 年有效\n\n有其他問題隨時告訴我！"},
+  "保固":{email:"親愛的顧客您好，\n\n感謝您聯繫無印良品客服！\n\n保固說明：\n・保固期：購買後 1 年\n・涵蓋：製造瑕疵、正常使用下的功能損壞\n・不含：人為損傷、發霉、自行改裝\n\n申請保固請提供購買日期、訂單編號及問題照片，我們將為您安排後續處理。\n\n無印良品 客服團隊 敬上",shopee:"您好！\n\n保固說明：\n📅 保固期：購買後 1 年\n✅ 涵蓋製造瑕疵、正常使用損壞\n❌ 不含人為損傷、發霉、改裝\n\n請提供訂單編號 + 問題照片，我幫您安排！"},
+  "發票":{email:"親愛的顧客您好，\n\n感謝您聯繫無印良品客服！\n\n電子發票說明：\n・官網消費預設開立電子發票，自動歸戶至手機載具\n・需紙本發票：請下單時備註，或訂單成立 48 小時內聯繫客服\n・需開公司抬頭：結帳時填寫統一編號，或儘速聯繫客服補開\n\n如有其他問題，歡迎隨時告知！\n\n無印良品 客服團隊 敬上",shopee:"您好！\n\n電子發票說明：\n📱 預設歸戶至手機載具\n📄 要紙本：下單備註或 48 小時內告知\n🏢 要開統編：結帳時填或儘快告訴我\n\n有其他問題歡迎繼續問～"},
+  "門市":{email:"親愛的顧客您好，\n\n感謝您聯繫無印良品客服！\n\n全台門市資訊請至官網查詢：\nhttps://shop.muji.tw/v2/Shop/StoreList/41566\n\n可依縣市篩選，查詢各門市地址、電話及營業時間。\n\n如有其他問題，歡迎隨時告知！\n\n無印良品 客服團隊 敬上",shopee:"您好！\n\n門市資訊請到官網查詢：\nhttps://shop.muji.tw/v2/Shop/StoreList/41566\n\n依縣市篩選就能找到最近的門市和營業時間喔！\n有其他問題歡迎繼續問～"},
+  "聯名卡":{email:"親愛的顧客您好，\n\n感謝您聯繫無印良品客服！\n\n關於 MUJI 無印良品聯名卡，重要說明如下：\n・2025/1/1 起：停止申辦新卡\n・2026/1/1 起：可刷卡結帳，但不再提供 MUJI 會員資格及消費回饋\n・2027/1/1 起：聯名卡完全失效\n\n聯名卡用卡相關問題（點數查詢、補發等），請洽發卡行：\n中國信託商業銀行 客服專線：(02)2745-8080\n\n如有其他問題，歡迎隨時告知！\n\n無印良品 客服團隊 敬上",shopee:"您好！\n\nMUJI 聯名卡重要說明：\n⚠️ 2025/1/1 起停止申辦新卡\n⚠️ 2026/1/1 起不再提供會員資格及消費回饋\n⚠️ 2027/1/1 起聯名卡完全失效\n\n卡片相關問題請聯繫發卡行：\n中國信託：(02)2745-8080\n\n有其他問題歡迎繼續問～"},
+};
+
+function toPlainText(html){const t=document.createElement('div');t.innerHTML=html;return t.innerText;}
+function linkify(t){return t.replace(/(https?:\/\/[^\s\u4e00-\u9fff，。！？、\n]+)/g,u=>`<a href="${u}" target="_blank" rel="noopener">${u}</a>`);}
+function getCatLabel(c){return c.replace(/^\d+_/,'');}
+function hl(text,kws){let r=text;kws.forEach(k=>{if(k.length<1)return;const re=new RegExp(k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi');r=r.replace(re,m=>`<mark>${m}</mark>`);});return r;}
+function getTemplate(q,a,c){const t=(q+a+c).toLowerCase();for(const k of ['退換貨','配送','Passport','保固','發票','聯名卡','門市']){if(t.includes(k.toLowerCase()))return{k,tmpl:TEMPLATES[k]};}return null;}
+function copyText(id,btn){const el=document.getElementById(id);navigator.clipboard.writeText(toPlainText(el.innerHTML)).then(()=>{btn.className='copy-btn copied';btn.innerHTML='<i class="ti ti-check"></i> 已複製';setTimeout(()=>{btn.className='copy-btn';btn.innerHTML='<i class="ti ti-copy"></i> 複製';},2000);});}
+function toggleCard(id){document.getElementById('body-'+id).classList.toggle('open');document.getElementById('icon-'+id).classList.toggle('open');}
+
+function doSearch(){
+  const raw=document.getElementById('searchInput').value.trim();
+  if(!raw)return;
+  // 偵測是否為門市查詢意圖 → 自動切換到門市分頁
+  const CITY_NAMES=['高雄','台南','台中','台北','新北','桃園','新竹','苗栗','彰化','南投','雲林','嘉義','屏東','宜蘭','花蓮','台東','基隆','板橋','中和','永和','三重','新莊','林口','內湖','信義','大安','松山','中山','士林','天母','岡山','楠梓','左營','鳳山','苓雅','三民','仁武'];
+  const isCitySearch=CITY_NAMES.some(c=>raw.includes(c));
+  const storeIntentKws=['餐飲','餐飲門市','café','cafe','meal','咖啡','coffee','門市查詢','哪個門市','哪家門市','哪間門市','門市有沒有','門市有哪些','有哪些門市','有刺繡','有停車','有wifi','有童裝','有良品市場','有renovation','有interior','有styling','有咖啡機','有植栽','有remuji','有給水','有文具蓋印','有muji books','有冷凍','有外送'];
+  if(isCitySearch||storeIntentKws.some(k=>raw.toLowerCase().includes(k.toLowerCase()))){
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.getElementById('tab-store').classList.add('active');
+    document.querySelectorAll('.tab-btn')[1].classList.add('active');
+    document.getElementById('storeInput').value=raw;
+    doStoreSearch();
+    return;
+  }
+  const rawKws=raw.split(/[\s,，、]+/).filter(k=>k.length>=1);
+  const extraKws=[];const hints=[];
+  SYNONYM_MAP.forEach(({triggers,add})=>{const m=triggers.filter(t=>raw.toLowerCase().includes(t.toLowerCase()));if(m.length){add.forEach(w=>{if(!extraKws.includes(w))extraKws.push(w);});hints.push(`「${m[0]}」→ 同時搜尋：${add.join('、')}`);} });
+  const allKws=[...new Set([...rawKws,...extraKws])];
+  const results=KB.map(item=>{let s=0;rawKws.forEach(k=>{const kl=k.toLowerCase();if(item.q.toLowerCase().includes(kl))s+=4;if(item.c.toLowerCase().includes(kl))s+=2;if(item.a.toLowerCase().includes(kl))s+=1;});extraKws.forEach(k=>{const kl=k.toLowerCase();if(item.q.toLowerCase().includes(kl))s+=3;if(item.c.toLowerCase().includes(kl))s+=2;if(item.a.toLowerCase().includes(kl))s+=1;});return{...item,score:s};}).filter(i=>i.score>0).sort((a,b)=>b.score-a.score).slice(0,8);
+
+  const cont=document.getElementById('results');
+  const cntEl=document.getElementById('resultCount');
+  const hintEl=document.getElementById('hint');
+  hintEl.style.display=hints.length?'block':'none';
+  if(hints.length)hintEl.innerHTML='<i class="ti ti-bulb"></i> '+hints.join('　');
+  if(!results.length){cntEl.style.display='none';cont.innerHTML='<div class="empty"><i class="ti ti-mood-empty"></i>找不到相關結果<br><span style="font-size:12px;margin-top:4px;display:block">試試其他關鍵字，例如：退換貨、點數、保固、門市</span></div>';return;}
+  cntEl.style.display='block';cntEl.textContent=`找到 ${results.length} 筆相關結果`;
+  cont.innerHTML=results.map((item,i)=>{
+    const td=getTemplate(item.q,item.a,item.c);
+    const hq=hl(item.q,allKws);
+    const ha=hl(linkify(item.a),allKws);
+    const isN=NOTICE_CATS.includes(item.c);
+    const notice=isN?'<div class="notice-box"><i class="ti ti-alert-triangle"></i> 聯名卡服務已調整，請以最新公告為準。如有用卡問題請洽中國信託：(02)2745-8080</div>':'';
+    let tmpl='';
+    if(td){const uid='t'+i;const eh=linkify(td.tmpl.email).replace(/\n/g,'<br>');const sh=linkify(td.tmpl.shopee).replace(/\n/g,'<br>');
+      tmpl=`<div class="tmpl-section"><div class="tmpl-label"><i class="ti ti-template"></i> 建議回覆範本</div><div class="tmpl-label"><i class="ti ti-mail"></i> Email</div><div class="tmpl-box" id="${uid}e">${eh}</div><button class="copy-btn" onclick="copyText('${uid}e',this)"><i class="ti ti-copy"></i> 複製</button><div class="tmpl-label" style="margin-top:8px"><i class="ti ti-message-2"></i> 蝦皮聊聊</div><div class="tmpl-box shopee" id="${uid}s">${sh}</div><button class="copy-btn" onclick="copyText('${uid}s',this)"><i class="ti ti-copy"></i> 複製</button></div>`;}
+    return`<div class="result-card"><div class="card-header" onclick="toggleCard(${i})"><div class="card-left"><span class="cat-tag">${getCatLabel(item.c)}</span><span class="card-title">${hq}</span></div><i class="ti ti-chevron-down expand-icon" id="icon-${i}"></i></div><div class="card-body ${i===0?'open':''}" id="body-${i}">${notice}<div class="qa-answer">${ha}</div>${tmpl}</div></div>`;
+  }).join('');
+  if(results.length)document.getElementById('icon-0').classList.add('open');
+}
+function quickSearch(kw){document.getElementById('searchInput').value=kw;doSearch();}
+</script>
+</body>
+</html>
