@@ -6,77 +6,112 @@
 <title>MUJI 無印良品｜客服查詢小幫手</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:"Microsoft JhengHei",sans-serif;background:#f8f8f8;color:#333}
-header{background:#B81C22;color:#fff;padding:16px 20px;display:flex;align-items:center;gap:12px}
-header h1{font-size:18px;font-weight:bold}
-header small{font-size:11px;opacity:.8;display:block;margin-top:2px}
-.badge{background:rgba(255,255,255,.2);border-radius:12px;padding:2px 10px;font-size:11px;margin-left:auto;white-space:nowrap}
-.tabs{display:flex;background:#fff;border-bottom:2px solid #B81C22;overflow-x:auto}
-.tab{padding:12px 20px;cursor:pointer;white-space:nowrap;font-size:14px;border-bottom:3px solid transparent;margin-bottom:-2px;transition:.2s}
+body{font-family:"Microsoft JhengHei",sans-serif;background:#f8f8f8;color:#333;font-size:14px}
+header{background:#B81C22;color:#fff;padding:14px 20px;display:flex;align-items:center;gap:10px}
+.logo{font-size:20px;font-weight:900;letter-spacing:2px}
+.header-info h1{font-size:16px;font-weight:bold}
+.header-info small{font-size:11px;opacity:.75}
+.badge{background:rgba(255,255,255,.2);border-radius:10px;padding:2px 10px;font-size:11px;margin-left:auto}
+.tabs{display:flex;background:#fff;border-bottom:2px solid #e0e0e0;overflow-x:auto;position:sticky;top:0;z-index:10;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.tab{padding:11px 16px;cursor:pointer;white-space:nowrap;font-size:13px;border-bottom:3px solid transparent;margin-bottom:-2px;color:#666;transition:.15s;display:flex;align-items:center;gap:5px}
 .tab.active{border-bottom-color:#B81C22;color:#B81C22;font-weight:bold}
-.tab:hover{background:#fef2f2}
-.panel{display:none;padding:16px}
+.tab:hover:not(.active){background:#fef8f8;color:#B81C22}
+.panel{display:none;padding:14px 16px;max-width:900px;margin:0 auto}
 .panel.active{display:block}
-.search-box{display:flex;gap:8px;margin-bottom:12px}
-.search-box input{flex:1;padding:10px 14px;border:1px solid #ddd;border-radius:8px;font-size:14px;font-family:inherit}
-.search-box input:focus{outline:none;border-color:#B81C22}
-.btn{padding:10px 18px;background:#B81C22;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px;font-family:inherit;white-space:nowrap}
+.search-row{display:flex;gap:8px;margin-bottom:10px}
+input[type=text]{flex:1;padding:9px 14px;border:1.5px solid #ddd;border-radius:8px;font-size:14px;font-family:inherit;transition:.15s}
+input[type=text]:focus{outline:none;border-color:#B81C22;box-shadow:0 0 0 3px rgba(184,28,34,.1)}
+.btn{padding:9px 16px;background:#B81C22;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-family:inherit}
 .btn:hover{background:#9a1519}
-.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
-.chip{padding:5px 12px;background:#fff;border:1px solid #ddd;border-radius:20px;cursor:pointer;font-size:12px;transition:.2s}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.chip{padding:4px 12px;background:#fff;border:1.5px solid #e0e0e0;border-radius:16px;cursor:pointer;font-size:12px;transition:.15s;color:#555}
 .chip:hover,.chip.active{background:#B81C22;color:#fff;border-color:#B81C22}
-.result-count{font-size:12px;color:#888;margin-bottom:8px}
-.card{background:#fff;border-radius:10px;padding:14px 16px;margin-bottom:10px;border-left:4px solid #B81C22;box-shadow:0 1px 4px rgba(0,0,0,.06)}
-.card-title{font-weight:bold;font-size:14px;margin-bottom:6px;color:#222}
-.card-content{font-size:13px;color:#555;line-height:1.7;white-space:pre-wrap}
-.card-cat{font-size:11px;color:#B81C22;margin-top:6px}
-.store-card{background:#fff;border-radius:10px;padding:14px 16px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.result-count{font-size:12px;color:#999;margin-bottom:8px}
+.card{background:#fff;border-radius:10px;padding:13px 15px;margin-bottom:9px;border-left:4px solid #B81C22;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.card-title{font-weight:bold;font-size:14px;margin-bottom:5px}
+.card-content{font-size:13px;color:#555;line-height:1.75}
+.card-cat{font-size:11px;color:#B81C22;margin-top:5px}
+.store-card{background:#fff;border-radius:10px;padding:13px 15px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
 .store-name{font-weight:bold;font-size:14px}
 .store-addr{font-size:12px;color:#666;margin-top:3px}
-.store-tel{font-size:12px;color:#B81C22;margin-top:2px}
-.store-services{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
-.svc-tag{background:#fef2f2;color:#B81C22;border:1px solid #fcd0d0;border-radius:4px;padding:2px 7px;font-size:11px}
-.size-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
-.size-tab{padding:6px 14px;background:#fff;border:1px solid #ddd;border-radius:20px;cursor:pointer;font-size:12px}
+.store-tel{font-size:12px;color:#B81C22;margin-top:2px;font-weight:bold}
+.store-svcs{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.svc{background:#fef2f2;color:#B81C22;border:1px solid #fcd0d0;border-radius:4px;padding:2px 7px;font-size:11px}
+.size-tabs{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
+.size-tab{padding:5px 13px;background:#fff;border:1.5px solid #ddd;border-radius:16px;cursor:pointer;font-size:12px;color:#555;transition:.15s}
 .size-tab.active{background:#B81C22;color:#fff;border-color:#B81C22}
-.size-table{width:100%;border-collapse:collapse;font-size:12px;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06)}
-.size-table th{background:#B81C22;color:#fff;padding:8px;text-align:center}
-.size-table td{padding:7px;text-align:center;border-bottom:1px solid #f0f0f0}
+.size-table{width:100%;border-collapse:collapse;font-size:12px;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.size-table th{background:#B81C22;color:#fff;padding:8px;text-align:center;font-weight:normal}
+.size-table td{padding:7px;text-align:center;border-bottom:1px solid #f2f2f2}
 .size-table tr:last-child td{border-bottom:none}
-.size-table tr:nth-child(even) td{background:#fef9f9}
-.manual-card{background:#fff;border-radius:8px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
-.manual-info{flex:1}
-.manual-name{font-size:13px;font-weight:bold}
-.manual-bc{font-size:11px;color:#999;margin-top:2px}
+.size-table tr:nth-child(even) td{background:#fdf8f8}
+.size-table td:first-child{background:#f9f9f9;font-weight:bold;color:#555;text-align:left;padding-left:12px}
+.manual-card{background:#fff;border-radius:8px;padding:11px 14px;margin-bottom:7px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.manual-info{flex:1;min-width:0}
 .manual-cat{font-size:11px;color:#B81C22}
-.pdf-btn{padding:7px 14px;background:#B81C22;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-family:inherit;text-decoration:none;white-space:nowrap}
+.manual-name{font-size:13px;font-weight:bold;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.manual-bc{font-size:11px;color:#aaa;margin-top:1px}
+.pdf-btn{padding:7px 13px;background:#B81C22;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-family:inherit;text-decoration:none;white-space:nowrap;flex-shrink:0}
 .pdf-btn:hover{background:#9a1519}
-.city-filter{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
-.empty{text-align:center;color:#bbb;padding:40px;font-size:14px}
-.note{font-size:11px;color:#999;margin-top:8px;line-height:1.6}
-.section-title{font-size:13px;font-weight:bold;color:#B81C22;margin:12px 0 8px;border-left:3px solid #B81C22;padding-left:8px}
+.empty{text-align:center;color:#ccc;padding:40px;font-size:14px}
+.note{font-size:11px;color:#aaa;margin-top:10px;line-height:1.7;padding:10px;background:#fff;border-radius:8px}
+/* 洗滌標示 */
+.laundry-group{margin-bottom:20px}
+.group-title{font-size:13px;font-weight:bold;color:#B81C22;border-left:3px solid #B81C22;padding-left:8px;margin-bottom:10px}
+.laundry-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
+.laundry-item{background:#fff;border-radius:10px;padding:12px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.07);display:flex;flex-direction:column;align-items:center;gap:8px}
+.laundry-item svg{display:block}
+.laundry-label{font-size:11px;color:#555;line-height:1.5}
+/* DC風扇 */
+.region-tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.region-tab{padding:5px 14px;background:#fff;border:1.5px solid #ddd;border-radius:16px;cursor:pointer;font-size:12px;color:#555;transition:.15s}
+.region-tab.active{background:#B81C22;color:#fff;border-color:#B81C22}
+.dc-card{background:#fff;border-radius:10px;padding:13px 15px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,.06);display:flex;align-items:flex-start;gap:12px}
+.dc-icon{font-size:22px;flex-shrink:0;margin-top:2px}
+.dc-info{flex:1}
+.dc-name{font-weight:bold;font-size:14px}
+.dc-addr{font-size:12px;color:#666;margin-top:2px}
+.dc-tel{font-size:13px;color:#B81C22;font-weight:bold;margin-top:3px}
+.dc-note{font-size:11px;color:#aaa;margin-top:10px;text-align:center}
+.section-label{font-size:12px;color:#999;margin:12px 0 8px;font-weight:bold}
+
+.fee-table{width:100%;border-collapse:collapse;margin:6px 0;font-size:12px}
+.fee-table td{padding:5px 10px;border:1px solid #f0e0e0}
+.fee-table tr:first-child td{background:#fdf0f0;font-weight:bold}
+.fee-table td:last-child{text-align:right;color:#B81C22;font-weight:bold}
+.content-list{list-style:none;padding:0;margin:4px 0}
+.content-list li{padding:3px 0 3px 16px;position:relative;line-height:1.6}
+.content-list li::before{content:"•";position:absolute;left:4px;color:#B81C22}
+.content-block{margin:4px 0}
+.content-num{display:inline-block;background:#B81C22;color:#fff;border-radius:50%;width:18px;height:18px;text-align:center;line-height:18px;font-size:11px;margin-right:5px;flex-shrink:0;vertical-align:middle}
+.content-row{display:flex;align-items:flex-start;gap:4px;margin:3px 0;line-height:1.6}
+.sub-num{display:inline-block;background:#f0e0e0;color:#B81C22;border-radius:3px;padding:0 5px;font-size:11px;margin-right:4px;white-space:nowrap}
 </style>
 </head>
 <body>
+
 <header>
-  <div>
-    <h1>🔍 MUJI 客服查詢小幫手</h1>
-    <small>知識庫 292筆 × 門市服務 × 尺寸查詢 × 說明書 351筆</small>
+  <div class="logo">MUJI</div>
+  <div class="header-info">
+    <h1>客服查詢小幫手</h1>
+    <small>知識庫 292筆 &times; 門市服務 &times; 尺寸查詢 &times; 說明書 351筆</small>
   </div>
   <span class="badge">2026.06</span>
 </header>
 
 <div class="tabs">
-  <div class="tab active" onclick="showTab('qa')">📚 知識庫查詢</div>
-  <div class="tab" onclick="showTab('store')">🏪 門市服務查詢</div>
-  <div class="tab" onclick="showTab('size')">📏 尺寸查詢</div>
-  <div class="tab" onclick="showTab('manual')">📄 商品說明書</div>
+  <div class="tab active" onclick="showTab('qa',this)">📚 知識庫查詢</div>
+  <div class="tab" onclick="showTab('store',this)">🏪 門市服務</div>
+  <div class="tab" onclick="showTab('size',this)">📏 尺寸查詢</div>
+  <div class="tab" onclick="showTab('manual',this)">📄 商品說明書</div>
+  <div class="tab" onclick="showTab('laundry',this)">🧺 洗滌標示</div>
+  <div class="tab" onclick="showTab('dc',this)">🔧 DC風扇維修</div>
 </div>
 
 <!-- 知識庫 -->
 <div id="tab-qa" class="panel active">
-  <div class="search-box">
-    <input id="qa-input" type="text" placeholder="輸入關鍵字搜尋…例如：退換貨、點數、配送、羊毛、洗滌" oninput="searchQA()" />
+  <div class="search-row">
+    <input id="qa-input" type="text" placeholder="輸入關鍵字…例如：退換貨、點數、羊毛洗滌、DC風扇" oninput="searchQA()">
   </div>
   <div class="chips" id="qa-chips"></div>
   <div class="result-count" id="qa-count"></div>
@@ -85,10 +120,10 @@ header small{font-size:11px;opacity:.8;display:block;margin-top:2px}
 
 <!-- 門市 -->
 <div id="tab-store" class="panel">
-  <div class="search-box">
-    <input id="store-input" type="text" placeholder="輸入門市名稱、縣市、或服務…例如：刺繡、高雄、夢時代" oninput="searchStore()" />
+  <div class="search-row">
+    <input id="store-input" type="text" placeholder="輸入門市名稱、縣市或服務…例如：刺繡、高雄、夢時代" oninput="searchStore()">
   </div>
-  <div class="city-filter" id="city-chips"></div>
+  <div class="chips" id="city-chips"></div>
   <div class="result-count" id="store-count"></div>
   <div id="store-results"></div>
 </div>
@@ -101,13 +136,27 @@ header small{font-size:11px;opacity:.8;display:block;margin-top:2px}
 
 <!-- 說明書 -->
 <div id="tab-manual" class="panel">
-  <div class="search-box">
-    <input id="manual-input" type="text" placeholder="輸入商品名稱或條碼…例如：風扇、時鐘、咖啡機" oninput="searchManual()" />
+  <div class="search-row">
+    <input id="manual-input" type="text" placeholder="輸入商品名稱或條碼…例如：風扇、時鐘、咖啡機" oninput="searchManual()">
   </div>
   <div class="result-count" id="manual-count"></div>
   <div id="manual-results"></div>
-  <p class="note">※ 點擊「查看PDF」可開啟說明書，部分說明書需要網路連線。<br>
-  ※ 如無法開啟，可將條碼最後8碼填入：https://www.muji.com/tw/instruction/pdf/[8碼].pdf</p>
+  <p class="note">※ 點擊「查看PDF」可開啟說明書，部分說明書需要網路連線。<br>※ 如無法開啟，可將條碼最後8碼填入：https://www.muji.com/tw/instruction/pdf/[8碼].pdf</p>
+</div>
+
+<!-- 洗滌標示 -->
+<div id="tab-laundry" class="panel">
+  <div id="laundry-content"></div>
+</div>
+
+<!-- DC風扇維修 -->
+<div id="tab-dc" class="panel">
+  <div class="search-row">
+    <input id="dc-input" type="text" placeholder="輸入縣市或服務中心名稱…例如：高雄、台中" oninput="searchDC()">
+  </div>
+  <div class="region-tabs" id="region-tabs"></div>
+  <div class="dc-note">🕐 服務時間：週一至週五 09:00–18:00</div>
+  <div style="margin-top:10px" id="dc-results"></div>
 </div>
 
 <script>
@@ -1052,313 +1101,274 @@ const STORES=[
 {"name":"宜蘭羅東店","city":"宜蘭","addr":"宜蘭縣羅東鎮中正北路6號B2","tel":"03-957-0990","services":["刺繡","印章"]}
 ];
 const SIZE_DATA={
-  "女裝上衣春夏":{
-    headers:["日本(cm)","XS","S","M","L","XL","XXL"],
-    rows:[
-      ["身長","150~156","153~159","156~162","159~165","162~168","165~171"],
-      ["胸圍","74~80","77~83","80~86","83~89","89~95","95~101"],
-      ["腰圍","56~62","59~65","62~68","66~72","72~78","78~84"],
-      ["臀圍","81~87","84~90","87~93","91~97","97~103","103~109"]
-    ]
-  },
-  "女裝上衣秋冬":{
-    headers:["日本(cm)","XS","S","M","L","XL","XXL"],
-    rows:[
-      ["身長","149~153","151~157","155~161","159~165","163~169","167~173"],
-      ["胸圍","73~77","75~81","80~86","85~91","90~96","95~101"],
-      ["腰圍","56~60","58~64","63~69","68~74","73~79","78~84"],
-      ["臀圍","81~85","83~89","88~94","93~99","98~104","103~109"]
-    ]
-  },
-  "女裝下著腰圍":{
-    headers:["腰圍(吋)","22","23","24","25","26","27","28","29"],
-    rows:[["腰圍(cm)","56","58.5","61","63.5","66","68.5","71","73.5"]]
-  },
-  "男裝上衣春夏":{
-    headers:["日本(cm)","XS","S","M","L","XL","XXL"],
-    rows:[
-      ["身長","155~165","","165~175","","175~185",""],
-      ["胸圍","76~84","80~88","88~96","96~104","104~112","112~120"],
-      ["腰圍","64~72","68~76","76~84","84~92","92~100","100~108"],
-      ["臀圍","78~86","82~90","90~98","98~106","106~114","114~122"]
-    ]
-  },
-  "男裝上衣秋冬":{
-    headers:["日本(cm)","XS","S","M","L","XL","XXL"],
-    rows:[
-      ["身長","155~163","160~168","166~174","172~180","178~186","180~188"],
-      ["胸圍","76~84","80~88","88~96","96~104","104~112","112~120"],
-      ["腰圍","64~72","68~76","76~84","84~92","92~100","100~108"],
-      ["臀圍","78~86","82~90","90~98","98~106","106~114","114~122"]
-    ]
-  },
-  "男裝下著腰圍":{
-    headers:["腰圍(吋)","28","29","30","31","32","33","34","35","36"],
-    rows:[["腰圍(cm)","71","73.5","76","78.5","81","83.5","86","88.5","91"]]
-  },
-  "LABO女裝上衣":{
-    headers:["日本(cm)","S","M","L","XL"],
-    rows:[
-      ["身長","151~157","155~161","159~165","163~169"],
-      ["胸圍","75~81","80~86","85~91","90~96"]
-    ]
-  },
-  "LABO男裝上衣":{
-    headers:["日本(cm)","XS","S","M","L","XL"],
-    rows:[
-      ["身長","154~162","160~168","166~174","172~180","178~186"],
-      ["胸圍","76~84","80~88","88~96","96~104","104~112"]
-    ]
-  },
-  "童裝新生兒":{
-    headers:["尺寸","60","70","80"],
-    rows:[
-      ["建議年齡","3~6個月","6個月~1歲","1~1.5歲"],
-      ["身高(cm)","55~65","65~75","75~85"],
-      ["體重(kg)","6","9","11"]
-    ]
-  },
-  "童裝幼兒":{
-    headers:["尺寸","80","90","100"],
-    rows:[
-      ["建議年齡","1~1.5歲","1.5~2.5歲","3~4歲"],
-      ["身高(cm)","75~85","85~95","95~105"],
-      ["體重(kg)","11","13","16"],
-      ["帽子尺寸","50","50~52","50~52"],
-      ["鞋款尺寸","13","14~15","15~16"]
-    ]
-  },
-  "童裝兒童春夏":{
-    headers:["尺寸","110","120","130","140","150"],
-    rows:[
-      ["建議年齡","5~6歲","7~8歲","9~10歲","11~12歲","13~14歲"],
-      ["身高(cm)","105~115","115~125","125~135","135~145","145~155"],
-      ["女童腰圍","47~53","49~55","51~57","53~59","56~63"],
-      ["男童腰圍","49~55","51~57","53~59","54~62","58~66"]
-    ]
-  },
-  "童裝兒童秋冬":{
-    headers:["尺寸","110","120","130","140","150"],
-    rows:[
-      ["建議年齡","4~6歲","6~7歲","8~9歲","10~12歲","13~14歲"],
-      ["身高(cm)","105~115","115~125","125~135","135~145","145~155"],
-      ["女童腰圍","47~53","49~55","51~57","54~60","57~63"],
-      ["男童腰圍","49~55","51~57","53~59","56~62","59~65"]
-    ]
-  },
-  "女內衣秋冬":{
-    headers:["日本(cm)","S","M","L","XL","XXL"],
-    rows:[
-      ["身長","151~157","155~161","159~165","163~169","167~173"],
-      ["胸圍","75~81","80~86","85~91","90~96","95~101"],
-      ["腰圍","58~64","63~69","68~74","73~79","78~84"],
-      ["臀圍","83~89","88~94","93~99","98~104","103~109"]
-    ]
-  },
-  "男內衣秋冬":{
-    headers:["日本(cm)","S","M","L","XL","XXL"],
-    rows:[
-      ["身長","160~168","166~174","172~180","178~186","180~188"],
-      ["胸圍","80~88","88~96","96~104","104~112","112~120"],
-      ["腰圍","68~76","76~84","84~92","92~100","100~108"],
-      ["臀圍","82~90","90~98","98~106","106~114","114~122"]
-    ]
-  },
-  "女鞋":{
-    headers:["日本(cm)","22","22.5","23","23.5","24","24.5","25.5"],
-    rows:[
-      ["美國(US)","4½","5","5½","6","6½","7","7½"],
-      ["英國(UK)","3","3½","4","4½","5","5½","6"],
-      ["義大利","34","35","36","37","38","39","40"],
-      ["法國","34","35","35.5","36","36.5","37","37.5"]
-    ]
-  },
-  "男鞋":{
-    headers:["日本(cm)","24.5","25","25.5","26","26.5","27","27.5"],
-    rows:[
-      ["美國(US)","6½","7","7½","8","8½","9","9½"],
-      ["英國(UK)","6","6½","7","7½","8","8½","9"],
-      ["義大利","39","40","41","42","43","44","45"],
-      ["法國","39","40","41","42","43","44","45"]
-    ]
-  }
+  "女裝上衣春夏":{headers:["日本(cm)","XS","S","M","L","XL","XXL"],rows:[["身長","150~156","153~159","156~162","159~165","162~168","165~171"],["胸圍","74~80","77~83","80~86","83~89","89~95","95~101"],["腰圍","56~62","59~65","62~68","66~72","72~78","78~84"],["臀圍","81~87","84~90","87~93","91~97","97~103","103~109"]]},
+  "女裝上衣秋冬":{headers:["日本(cm)","XS","S","M","L","XL","XXL"],rows:[["身長","149~153","151~157","155~161","159~165","163~169","167~173"],["胸圍","73~77","75~81","80~86","85~91","90~96","95~101"],["腰圍","56~60","58~64","63~69","68~74","73~79","78~84"],["臀圍","81~85","83~89","88~94","93~99","98~104","103~109"]]},
+  "女裝下著腰圍":{headers:["腰圍(吋)","22","23","24","25","26","27","28","29"],rows:[["腰圍(cm)","56","58.5","61","63.5","66","68.5","71","73.5"]]},
+  "男裝上衣春夏":{headers:["日本(cm)","XS","S","M","L","XL","XXL"],rows:[["身長","155~165","","165~175","","175~185",""],["胸圍","76~84","80~88","88~96","96~104","104~112","112~120"],["腰圍","64~72","68~76","76~84","84~92","92~100","100~108"],["臀圍","78~86","82~90","90~98","98~106","106~114","114~122"]]},
+  "男裝上衣秋冬":{headers:["日本(cm)","XS","S","M","L","XL","XXL"],rows:[["身長","155~163","160~168","166~174","172~180","178~186","180~188"],["胸圍","76~84","80~88","88~96","96~104","104~112","112~120"],["腰圍","64~72","68~76","76~84","84~92","92~100","100~108"],["臀圍","78~86","82~90","90~98","98~106","106~114","114~122"]]},
+  "男裝下著腰圍":{headers:["腰圍(吋)","28","29","30","31","32","33","34","35","36"],rows:[["腰圍(cm)","71","73.5","76","78.5","81","83.5","86","88.5","91"]]},
+  "LABO女裝上衣":{headers:["日本(cm)","S","M","L","XL"],rows:[["身長","151~157","155~161","159~165","163~169"],["胸圍","75~81","80~86","85~91","90~96"]]},
+  "LABO男裝上衣":{headers:["日本(cm)","XS","S","M","L","XL"],rows:[["身長","154~162","160~168","166~174","172~180","178~186"],["胸圍","76~84","80~88","88~96","96~104","104~112"]]},
+  "童裝新生兒":{headers:["尺寸","60","70","80"],rows:[["建議年齡","3~6個月","6個月~1歲","1~1.5歲"],["身高(cm)","55~65","65~75","75~85"],["體重(kg)","6","9","11"]]},
+  "童裝幼兒":{headers:["尺寸","80","90","100"],rows:[["建議年齡","1~1.5歲","1.5~2.5歲","3~4歲"],["身高(cm)","75~85","85~95","95~105"],["體重(kg)","11","13","16"],["帽子尺寸","50","50~52","50~52"],["鞋款尺寸","13","14~15","15~16"]]},
+  "童裝兒童春夏":{headers:["尺寸","110","120","130","140","150"],rows:[["建議年齡","5~6歲","7~8歲","9~10歲","11~12歲","13~14歲"],["身高(cm)","105~115","115~125","125~135","135~145","145~155"],["女童腰圍","47~53","49~55","51~57","53~59","56~63"],["男童腰圍","49~55","51~57","53~59","54~62","58~66"]]},
+  "童裝兒童秋冬":{headers:["尺寸","110","120","130","140","150"],rows:[["建議年齡","4~6歲","6~7歲","8~9歲","10~12歲","13~14歲"],["身高(cm)","105~115","115~125","125~135","135~145","145~155"],["女童腰圍","47~53","49~55","51~57","54~60","57~63"],["男童腰圍","49~55","51~57","53~59","56~62","59~65"]]},
+  "女內衣秋冬":{headers:["日本(cm)","S","M","L","XL","XXL"],rows:[["身長","151~157","155~161","159~165","163~169","167~173"],["胸圍","75~81","80~86","85~91","90~96","95~101"],["腰圍","58~64","63~69","68~74","73~79","78~84"],["臀圍","83~89","88~94","93~99","98~104","103~109"]]},
+  "男內衣秋冬":{headers:["日本(cm)","S","M","L","XL","XXL"],rows:[["身長","160~168","166~174","172~180","178~186","180~188"],["胸圍","80~88","88~96","96~104","104~112","112~120"],["腰圍","68~76","76~84","84~92","92~100","100~108"],["臀圍","82~90","90~98","98~106","106~114","114~122"]]},
+  "女鞋":{headers:["日本(cm)","22","22.5","23","23.5","24","24.5","25.5"],rows:[["美國(US)","4½","5","5½","6","6½","7","7½"],["英國(UK)","3","3½","4","4½","5","5½","6"],["義大利","34","35","36","37","38","39","40"],["法國","34","35","35.5","36","36.5","37","37.5"]]},
+  "男鞋":{headers:["日本(cm)","24.5","25","25.5","26","26.5","27","27.5"],rows:[["美國(US)","6½","7","7½","8","8½","9","9½"],["英國(UK)","6","6½","7","7½","8","8½","9"],["義大利","39","40","41","42","43","44","45"],["法國","39","40","41","42","43","44","45"]]}
 };
+const DC_CENTERS=[
+  {name:"南區服務中心",tel:"02-29385477",addr:"116台北市文山區木新路二段268號",region:"北部"},
+  {name:"北區服務中心",tel:"02-87706787",addr:"105台北市松山區民族東路708號",region:"北部"},
+  {name:"板雙服務中心",tel:"02-22680033",addr:"236新北市土城區中華路二段239號",region:"北部"},
+  {name:"三新服務中心",tel:"02-85225438",addr:"242新北市新莊區化成路417號",region:"北部"},
+  {name:"基隆服務中心",tel:"02-24515811",addr:"206基隆市七堵區福一街143號",region:"北部"},
+  {name:"宜蘭服務中心",tel:"03-9333623",addr:"260宜蘭市嵐峰路1段16號",region:"北部"},
+  {name:"桃園服務中心",tel:"03-3441640",addr:"338桃園縣蘆竹鄉龍安街2段310號",region:"北部"},
+  {name:"中壢服務中心",tel:"03-4581865",addr:"320桃園縣中壢市惠州街120號",region:"北部"},
+  {name:"新竹服務中心",tel:"03-5588736",addr:"302新竹縣竹北市光明三路135號",region:"北部"},
+  {name:"苗栗服務中心",tel:"037-636686",addr:"351苗栗縣頭份鎮民族路536號",region:"中部"},
+  {name:"台中服務中心",tel:"04-23130476",addr:"407台中市青海路一段188號",region:"中部"},
+  {name:"潭子服務中心",tel:"04-23918298",addr:"406台中市太平區育賢路117號",region:"中部"},
+  {name:"清水服務中心",tel:"04-26233422",addr:"436台中市清水區五權東路130號",region:"中部"},
+  {name:"彰化服務中心",tel:"04-7125299",addr:"500彰化市埔西街98號",region:"中部"},
+  {name:"草屯服務中心",tel:"049-2304451",addr:"542南投縣草屯鎮成功路一段52號",region:"中部"},
+  {name:"斗南服務中心",tel:"05-5974063",addr:"630雲林縣斗南鎮黎明二街24號",region:"中部"},
+  {name:"嘉義服務中心",tel:"05-2360048",addr:"600嘉義市博愛路二段567號",region:"中部"},
+  {name:"新營服務中心",tel:"06-6359492",addr:"730台南市新營區大德街22號",region:"南部"},
+  {name:"台南服務中心",tel:"06-2649174",addr:"702台南市大成路二段62號",region:"南部"},
+  {name:"高雄服務中心",tel:"07-3823686",addr:"807高雄市三民區灣興街84號",region:"南部"},
+  {name:"岡山服務中心",tel:"07-6226055",addr:"820高雄市岡山區岡山北路267號",region:"南部"},
+  {name:"屏東服務中心",tel:"08-7539840",addr:"900屏東市建南路150號",region:"南部"},
+  {name:"花蓮服務中心",tel:"03-8540168",addr:"970花蓮縣吉安鄉稻興一街7號",region:"東部"},
+  {name:"台東服務中心",tel:"089-324956",addr:"950台東市豐榮路191號1樓",region:"東部"},
+  {name:"金門服務中心",tel:"082-320395",addr:"893金門縣金城鎮金城新莊7巷6號",region:"離島"},
+  {name:"澎湖服務中心",tel:"06-9219462",addr:"880馬公市西文里63-28號",region:"離島"}
+];
+const LAUNDRY=[{"group":`水洗`,"items":[{"label":`不能水洗`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <path d="M8 36 L24 12 L40 36 Z" fill="none" stroke="#333" stroke-width="2.5"/>   <line x1="8" y1="36" x2="40" y2="36" stroke="#333" stroke-width="2.5"/>   <line x1="10" y1="10" x2="38" y2="38" stroke="#c00" stroke-width="2.5"/>   <line x1="38" y1="10" x2="10" y2="38" stroke="#c00" stroke-width="2.5"/> </svg>`},{"label":`手洗，水溫最高40度`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <path d="M8 36 L24 12 L40 36 Z" fill="none" stroke="#333" stroke-width="2.5"/>   <line x1="8" y1="36" x2="40" y2="36" stroke="#333" stroke-width="2.5"/>   <text x="24" y="30" text-anchor="middle" font-size="10" fill="#333">手洗</text> </svg>`},{"label":`可機洗，最高水溫30度，標準洗程`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <path d="M8 36 L24 12 L40 36 Z" fill="none" stroke="#333" stroke-width="2.5"/>   <line x1="8" y1="36" x2="40" y2="36" stroke="#333" stroke-width="2.5"/>   <text x="24" y="30" text-anchor="middle" font-size="11" font-weight="bold" fill="#333">30</text> </svg>`},{"label":`可機洗，最高水溫40度，溫和洗程`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <path d="M8 36 L24 12 L40 36 Z" fill="none" stroke="#333" stroke-width="2.5"/>   <line x1="8" y1="36" x2="40" y2="36" stroke="#333" stroke-width="2.5"/>   <text x="24" y="30" text-anchor="middle" font-size="11" font-weight="bold" fill="#333">40</text> </svg>`},{"label":`可機洗，最高水溫40度，極輕柔洗程`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <path d="M8 36 L24 12 L40 36 Z" fill="none" stroke="#333" stroke-width="2.5"/>   <line x1="8" y1="34" x2="40" y2="34" stroke="#333" stroke-width="2.5"/>   <line x1="8" y1="38" x2="40" y2="38" stroke="#333" stroke-width="2.5"/>   <text x="24" y="29" text-anchor="middle" font-size="10" font-weight="bold" fill="#333">40</text> </svg>`}]},{"group":`漂白`,"items":[{"label":`可使用任何漂白劑`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <polygon points="24,8 44,40 4,40" fill="none" stroke="#333" stroke-width="2.5"/> </svg>`},{"label":`只可使用氧化物漂白劑`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <polygon points="24,8 44,40 4,40" fill="none" stroke="#333" stroke-width="2.5"/>   <line x1="16" y1="20" x2="32" y2="36" stroke="#333" stroke-width="2"/>   <line x1="20" y1="16" x2="36" y2="32" stroke="#333" stroke-width="2"/> </svg>`},{"label":`不可漂白`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <polygon points="24,8 44,40 4,40" fill="none" stroke="#333" stroke-width="2.5"/>   <line x1="10" y1="10" x2="38" y2="38" stroke="#c00" stroke-width="2.5"/>   <line x1="38" y1="10" x2="10" y2="38" stroke="#c00" stroke-width="2.5"/> </svg>`}]},{"group":`自然乾燥`,"items":[{"label":`懸掛晾乾`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <rect x="6" y="6" width="36" height="36" rx="3" fill="none" stroke="#333" stroke-width="2.5"/>   <line x1="24" y1="12" x2="24" y2="36" stroke="#333" stroke-width="2.5"/> </svg>`},{"label":`懸掛滴乾`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <rect x="6" y="6" width="36" height="36" rx="3" fill="none" stroke="#333" stroke-width="2.5"/>   <line x1="19" y1="12" x2="19" y2="36" stroke="#333" stroke-width="2.5"/>   <line x1="29" y1="12" x2="29" y2="36" stroke="#333" stroke-width="2.5"/> </svg>`},{"label":`平攤晾乾`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <rect x="6" y="6" width="36" height="36" rx="3" fill="none" stroke="#333" stroke-width="2.5"/>   <line x1="12" y1="24" x2="36" y2="24" stroke="#333" stroke-width="2.5"/> </svg>`},{"label":`平攤滴乾`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <rect x="6" y="6" width="36" height="36" rx="3" fill="none" stroke="#333" stroke-width="2.5"/>   <line x1="12" y1="20" x2="36" y2="20" stroke="#333" stroke-width="2.5"/>   <line x1="12" y1="28" x2="36" y2="28" stroke="#333" stroke-width="2.5"/> </svg>`},{"label":`陰涼處懸掛晾乾`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <rect x="6" y="6" width="36" height="36" rx="3" fill="none" stroke="#333" stroke-width="2.5"/>   <line x1="6" y1="6" x2="42" y2="42" stroke="#333" stroke-width="2"/>   <line x1="24" y1="12" x2="24" y2="36" stroke="#333" stroke-width="2.5"/> </svg>`},{"label":`陰涼處平攤晾乾`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <rect x="6" y="6" width="36" height="36" rx="3" fill="none" stroke="#333" stroke-width="2.5"/>   <line x1="6" y1="6" x2="42" y2="42" stroke="#333" stroke-width="2"/>   <line x1="12" y1="24" x2="36" y2="24" stroke="#333" stroke-width="2.5"/> </svg>`}]},{"group":`翻滾烘乾`,"items":[{"label":`可烘乾，一般溫度（最高80度）`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <rect x="4" y="4" width="40" height="40" rx="4" fill="none" stroke="#333" stroke-width="2.5"/>   <circle cx="24" cy="24" r="14" fill="none" stroke="#333" stroke-width="2.5"/>   <circle cx="24" cy="24" r="2" fill="#333"/> </svg>`},{"label":`可烘乾，低溫（最高60度）`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <rect x="4" y="4" width="40" height="40" rx="4" fill="none" stroke="#333" stroke-width="2.5"/>   <circle cx="24" cy="24" r="14" fill="none" stroke="#333" stroke-width="2.5"/>   <circle cx="19" cy="24" r="2" fill="#333"/>   <circle cx="29" cy="24" r="2" fill="#333"/> </svg>`},{"label":`不可翻滾烘乾`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <rect x="4" y="4" width="40" height="40" rx="4" fill="none" stroke="#333" stroke-width="2.5"/>   <circle cx="24" cy="24" r="14" fill="none" stroke="#333" stroke-width="2.5"/>   <line x1="10" y1="10" x2="38" y2="38" stroke="#c00" stroke-width="2.5"/>   <line x1="38" y1="10" x2="10" y2="38" stroke="#c00" stroke-width="2.5"/> </svg>`}]},{"group":`熨燙`,"items":[{"label":`最高200度熨燙`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <path d="M6 16 Q6 30 24 30 Q42 30 42 16 L42 16 Z" fill="none" stroke="#333" stroke-width="2.5"/>   <rect x="20" y="30" width="8" height="10" fill="none" stroke="#333" stroke-width="2.5"/>   <circle cx="17" cy="20" r="2" fill="#333"/>   <circle cx="24" cy="20" r="2" fill="#333"/>   <circle cx="31" cy="20" r="2" fill="#333"/> </svg>`},{"label":`最高150度熨燙`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <path d="M6 16 Q6 30 24 30 Q42 30 42 16 L42 16 Z" fill="none" stroke="#333" stroke-width="2.5"/>   <rect x="20" y="30" width="8" height="10" fill="none" stroke="#333" stroke-width="2.5"/>   <circle cx="20" cy="20" r="2" fill="#333"/>   <circle cx="28" cy="20" r="2" fill="#333"/> </svg>`},{"label":`最高110度熨燙（不可蒸氣）`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <path d="M6 16 Q6 30 24 30 Q42 30 42 16 L42 16 Z" fill="none" stroke="#333" stroke-width="2.5"/>   <rect x="20" y="30" width="8" height="10" fill="none" stroke="#333" stroke-width="2.5"/>   <circle cx="24" cy="20" r="2" fill="#333"/> </svg>`},{"label":`不可熨燙`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <path d="M6 16 Q6 30 24 30 Q42 30 42 16 L42 16 Z" fill="none" stroke="#333" stroke-width="2.5"/>   <rect x="20" y="30" width="8" height="10" fill="none" stroke="#333" stroke-width="2.5"/>   <line x1="10" y1="10" x2="38" y2="38" stroke="#c00" stroke-width="2.5"/>   <line x1="38" y1="10" x2="10" y2="38" stroke="#c00" stroke-width="2.5"/> </svg>`}]},{"group":`乾洗／專業洗`,"items":[{"label":`可乾洗（四氯乙烯或石油系），標準程序`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <circle cx="24" cy="24" r="18" fill="none" stroke="#333" stroke-width="2.5"/>   <text x="24" y="29" text-anchor="middle" font-size="14" font-weight="bold" fill="#333">P</text> </svg>`},{"label":`可乾洗（石油系溶劑）`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <circle cx="24" cy="24" r="18" fill="none" stroke="#333" stroke-width="2.5"/>   <text x="24" y="29" text-anchor="middle" font-size="14" font-weight="bold" fill="#333">F</text> </svg>`},{"label":`不可專業乾洗`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <circle cx="24" cy="24" r="18" fill="none" stroke="#333" stroke-width="2.5"/>   <line x1="10" y1="10" x2="38" y2="38" stroke="#c00" stroke-width="2.5"/>   <line x1="38" y1="10" x2="10" y2="38" stroke="#c00" stroke-width="2.5"/> </svg>`}]}];
 
 // 同義詞
-const SYNONYMS={
-  '退貨':['退換貨','退款','鑑賞期','7天'],'換貨':['退換貨','換貨','瑕疵'],
-  '點數':['MUJI Passport','積點','回饋','折抵'],'passport':['muji passport','護照','會員'],
-  '配送':['運費','宅配','超商取貨','到貨'],'發票':['電子發票','統一編號','載具'],
-  '尺寸':['size','公分','cm'],'退款':['退貨','退款','信用卡'],
-  '保固':['維修','保固','故障'],'刺繡':['刺繡服務','繡字'],
-  '洗滌':['洗衣','清洗','保養'],'羊毛':['wool','羊毛','縮水'],
-  '素材':['材質','面料','纖維'],'收納':['整理','儲物'],
-  '家具':['桌子','椅子','床架','大型家具'],'聯名卡':['MUJI Card','信用卡','中信'],
-  '風扇':['電風扇','DC馬達','循環扇'],'維修':['修理','維修據點','服務中心']
-};
+const SYN={'退貨':['退換貨','退款','鑑賞期'],'換貨':['退換貨','瑕疵'],'點數':['MUJI Passport','積點','折抵'],'passport':['muji passport','會員'],'配送':['運費','宅配','超商取貨','到貨'],'發票':['電子發票','統一編號','載具'],'退款':['退貨','信用卡'],'保固':['維修','故障'],'刺繡':['刺繡服務'],'洗滌':['洗衣','清洗','保養'],'羊毛':['wool','縮水'],'素材':['材質','面料','纖維'],'家具':['桌子','椅子','床架'],'聯名卡':['MUJI Card','信用卡','中信'],'風扇':['電風扇','DC馬達','循環扇'],'維修':['修理','服務中心']};
 
-function expandKeyword(kw){
-  const terms=[kw.toLowerCase()];
-  for(const[k,v] of Object.entries(SYNONYMS)){
-    if(kw.includes(k)||v.some(s=>kw.includes(s))){
-      terms.push(k.toLowerCase(),...v.map(s=>s.toLowerCase()));
-    }
+function expandKW(kw){
+  const t=[kw.toLowerCase()];
+  for(const[k,v] of Object.entries(SYN)){
+    if(kw.includes(k)||v.some(s=>kw.includes(s))) t.push(k.toLowerCase(),...v.map(s=>s.toLowerCase()));
   }
-  return [...new Set(terms)];
+  return[...new Set(t)];
 }
 
-// 知識庫
-const QA_CHIPS=['退換貨','Passport 點數','超商取貨','配送運費','發票','聯名卡','大型家具','保固維修','洗滌保養','素材特性','刺繡服務'];
-
+// ── 知識庫 ──
+const QA_CHIPS=['退換貨','Passport 點數','超商取貨','配送運費','發票','聯名卡','大型家具','保固維修','洗滌保養','素材特性'];
 function initQAChips(){
   const el=document.getElementById('qa-chips');
   QA_CHIPS.forEach(c=>{
     const d=document.createElement('div');
     d.className='chip';d.textContent=c;
-    d.onclick=()=>{
-      document.getElementById('qa-input').value=c;
-      searchQA();
-      el.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));
-      d.classList.add('active');
-    };
+    d.onclick=()=>{document.getElementById('qa-input').value=c;searchQA();el.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));d.classList.add('active');};
     el.appendChild(d);
   });
 }
-
 function searchQA(){
   const kw=document.getElementById('qa-input').value.trim();
-  const res=document.getElementById('qa-results');
-  const cnt=document.getElementById('qa-count');
+  const res=document.getElementById('qa-results'),cnt=document.getElementById('qa-count');
   if(!kw){res.innerHTML='';cnt.textContent='';return;}
-  const terms=expandKeyword(kw);
-  const matched=QA.filter(q=>terms.some(t=>
-    q.t.toLowerCase().includes(t)||q.c.toLowerCase().includes(t)
-  ));
+  const terms=expandKW(kw);
+  const matched=QA.filter(q=>terms.some(t=>q.t.toLowerCase().includes(t)||q.c.toLowerCase().includes(t)));
   cnt.textContent=`找到 ${matched.length} 筆結果`;
-  if(!matched.length){res.innerHTML='<div class="empty">找不到相關資料，請嘗試其他關鍵字</div>';return;}
-  res.innerHTML=matched.slice(0,30).map(q=>`
-    <div class="card">
-      <div class="card-title">${q.t}</div>
-      <div class="card-content">${q.c}</div>
-      <div class="card-cat">${q.cat}</div>
-    </div>`).join('');
+  res.innerHTML=matched.length?matched.slice(0,30).map(q=>`<div class="card"><div class="card-title">${q.t}</div><div class="card-content">${q.c}</div><div class="card-cat">${q.cat}</div></div>`).join(''):'<div class="empty">找不到相關資料，請嘗試其他關鍵字</div>';
 }
 
-// 門市
+// ── 門市 ──
 const CITIES=[...new Set(STORES.map(s=>s.city))];
 let activeCity='';
-
 function initCityChips(){
   const el=document.getElementById('city-chips');
   ['全部',...CITIES].forEach(c=>{
     const d=document.createElement('div');
-    d.className='chip'+(c==='全部'?' active':'');
-    d.textContent=c;
-    d.onclick=()=>{
-      activeCity=c==='全部'?'':c;
-      el.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));
-      d.classList.add('active');
-      searchStore();
-    };
+    d.className='chip'+(c==='全部'?' active':'');d.textContent=c;
+    d.onclick=()=>{activeCity=c==='全部'?'':c;el.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));d.classList.add('active');searchStore();};
     el.appendChild(d);
   });
   renderStores(STORES);
 }
-
 function searchStore(){
   const kw=document.getElementById('store-input').value.trim().toLowerCase();
-  let filtered=activeCity?STORES.filter(s=>s.city===activeCity):STORES;
-  if(kw) filtered=filtered.filter(s=>
-    s.name.toLowerCase().includes(kw)||
-    s.city.includes(kw)||
-    s.addr.toLowerCase().includes(kw)||
-    s.services.some(sv=>sv.toLowerCase().includes(kw))
-  );
-  renderStores(filtered);
+  let list=activeCity?STORES.filter(s=>s.city===activeCity):STORES;
+  if(kw) list=list.filter(s=>s.name.toLowerCase().includes(kw)||s.city.includes(kw)||s.addr.includes(kw)||s.services.some(sv=>sv.toLowerCase().includes(kw)));
+  renderStores(list);
 }
-
 function renderStores(list){
   document.getElementById('store-count').textContent=`共 ${list.length} 家門市`;
-  document.getElementById('store-results').innerHTML=list.length?list.map(s=>`
-    <div class="store-card">
-      <div class="store-name">🏪 ${s.name}</div>
-      <div class="store-addr">📍 ${s.addr}</div>
-      <div class="store-tel">📞 ${s.tel}</div>
-      <div class="store-services">${s.services.map(sv=>`<span class="svc-tag">${sv}</span>`).join('')}</div>
-    </div>`).join(''):'<div class="empty">找不到符合的門市</div>';
+  document.getElementById('store-results').innerHTML=list.length?list.map(s=>`<div class="store-card"><div class="store-name">🏪 ${s.name}</div><div class="store-addr">📍 ${s.addr}</div><div class="store-tel">📞 ${s.tel}</div><div class="store-svcs">${s.services.map(sv=>`<span class="svc">${sv}</span>`).join('')}</div></div>`).join(''):'<div class="empty">找不到符合的門市</div>';
 }
 
-// 尺寸
-const SIZE_TABS=Object.keys(SIZE_DATA);
-let activeSize=SIZE_TABS[0];
-
+// ── 尺寸 ──
+const SIZE_TABS=Object.keys(SIZE_DATA);let activeSize=SIZE_TABS[0];
 function initSizeTabs(){
   const el=document.getElementById('size-tabs');
   SIZE_TABS.forEach(k=>{
-    const d=document.createElement('div');
-    d.className='size-tab'+(k===activeSize?' active':'');
-    d.textContent=k;
-    d.onclick=()=>{
-      activeSize=k;
-      el.querySelectorAll('.size-tab').forEach(x=>x.classList.remove('active'));
-      d.classList.add('active');
-      renderSize();
-    };
+    const d=document.createElement('div');d.className='size-tab'+(k===activeSize?' active':'');d.textContent=k;
+    d.onclick=()=>{activeSize=k;el.querySelectorAll('.size-tab').forEach(x=>x.classList.remove('active'));d.classList.add('active');renderSize();};
     el.appendChild(d);
   });
   renderSize();
 }
-
 function renderSize(){
   const data=SIZE_DATA[activeSize];
-  const rows=data.rows.map(r=>`<tr>${r.map((c,i)=>`<${i===0?'th style="background:#f5f5f5;color:#333"':'td'}>${c}</${i===0?'th':'td'}>`).join('')}</tr>`).join('');
-  document.getElementById('size-content').innerHTML=`
-    <div class="section-title">${activeSize}</div>
-    <div style="overflow-x:auto">
-    <table class="size-table">
-      <thead><tr>${data.headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead>
-      <tbody>${rows}</tbody>
-    </table></div>`;
+  const rows=data.rows.map(r=>`<tr>${r.map((c,i)=>`${i===0?`<td>${c}</td>`:`<td>${c}</td>`}`).join('')}</tr>`).join('');
+  document.getElementById('size-content').innerHTML=`<div style="overflow-x:auto"><table class="size-table"><thead><tr>${data.headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 
-// 說明書
+// ── 說明書 ──
 function searchManual(){
   const kw=document.getElementById('manual-input').value.trim().toLowerCase();
-  const cnt=document.getElementById('manual-count');
-  const res=document.getElementById('manual-results');
+  const cnt=document.getElementById('manual-count'),res=document.getElementById('manual-results');
   if(!kw){res.innerHTML='';cnt.textContent='';return;}
-  const matched=MANUALS.filter(m=>
-    m.name.toLowerCase().includes(kw)||
-    m.bc.includes(kw)||
-    m.cat.toLowerCase().includes(kw)
-  );
+  const matched=MANUALS.filter(m=>m.name.toLowerCase().includes(kw)||m.bc.includes(kw)||m.cat.toLowerCase().includes(kw));
   cnt.textContent=`找到 ${matched.length} 筆`;
-  res.innerHTML=matched.slice(0,30).map(m=>`
-    <div class="manual-card">
-      <div class="manual-info">
-        <div class="manual-cat">${m.cat}</div>
-        <div class="manual-name">${m.name}</div>
-        <div class="manual-bc">條碼：${m.bc}</div>
-      </div>
-      <a class="pdf-btn" href="${m.url}" target="_blank">查看PDF</a>
-    </div>`).join('')||'<div class="empty">找不到相關說明書</div>';
+  res.innerHTML=matched.length?matched.slice(0,30).map(m=>`<div class="manual-card"><div class="manual-info"><div class="manual-cat">${m.cat}</div><div class="manual-name">${m.name}</div><div class="manual-bc">條碼：${m.bc}</div></div><a class="pdf-btn" href="${m.url}" target="_blank">查看PDF</a></div>`).join(''):'<div class="empty">找不到相關說明書</div>';
 }
 
-// 分頁切換
-function showTab(id){
+// ── 洗滌標示 ──
+function initLaundry(){
+  const el=document.getElementById('laundry-content');
+  el.innerHTML=LAUNDRY.map(g=>`
+    <div class="laundry-group">
+      <div class="group-title">${g.group}</div>
+      <div class="laundry-grid">${g.items.map(item=>`
+        <div class="laundry-item">
+          ${item.svg}
+          <div class="laundry-label">${item.label}</div>
+        </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+// ── DC風扇維修 ──
+const REGIONS=['全部','北部','中部','南部','東部','離島'];
+let activeRegion='';
+function initDC(){
+  const el=document.getElementById('region-tabs');
+  REGIONS.forEach(r=>{
+    const d=document.createElement('div');
+    d.className='region-tab'+(r==='全部'?' active':'');d.textContent=r;
+    d.onclick=()=>{activeRegion=r==='全部'?'':r;el.querySelectorAll('.region-tab').forEach(x=>x.classList.remove('active'));d.classList.add('active');searchDC();};
+    el.appendChild(d);
+  });
+  renderDC(DC_CENTERS);
+}
+function searchDC(){
+  const kw=document.getElementById('dc-input').value.trim().toLowerCase();
+  let list=activeRegion?DC_CENTERS.filter(c=>c.region===activeRegion):DC_CENTERS;
+  if(kw) list=list.filter(c=>c.name.toLowerCase().includes(kw)||c.addr.includes(kw)||c.region.includes(kw));
+  renderDC(list);
+}
+function renderDC(list){
+  const byRegion={};
+  list.forEach(c=>{if(!byRegion[c.region])byRegion[c.region]=[];byRegion[c.region].push(c);});
+  const regionOrder=['北部','中部','南部','東部','離島'];
+  let html='';
+  regionOrder.forEach(r=>{
+    if(!byRegion[r]) return;
+    html+=`<div class="section-label">📍 ${r}（${byRegion[r].length}個據點）</div>`;
+    html+=byRegion[r].map(c=>`<div class="dc-card"><div class="dc-icon">🔧</div><div class="dc-info"><div class="dc-name">${c.name}</div><div class="dc-addr">${c.addr}</div><div class="dc-tel">📞 ${c.tel}</div></div></div>`).join('');
+  });
+  document.getElementById('dc-results').innerHTML=html||'<div class="empty">找不到符合的據點</div>';
+}
+
+// ── 分頁切換 ──
+function showTab(id,el){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('tab-'+id).classList.add('active');
-  event.target.classList.add('active');
+  el.classList.add('active');
+}
+
+
+function formatContent(raw) {
+  if (!raw) return '';
+  // 偵測費用表格格式（含「：」和「元」的行）
+  const lines = raw.split(/\n/);
+  let html = '';
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i].trim();
+    if (!line) { i++; continue; }
+
+    // 圓圈數字 ①②③④⑤⑥⑦⑧⑨⑩
+    if (/^[①②③④⑤⑥⑦⑧⑨⑩]/.test(line)) {
+      const num = line[0];
+      const numMap = {'①':'1','②':'2','③':'3','④':'4','⑤':'5','⑥':'6','⑦':'7','⑧':'8','⑨':'9','⑩':'10'};
+      const rest = line.slice(1).replace(/^[：:]/, '').trim();
+      html += `<div class="content-row"><span class="content-num">${numMap[num]}</span><span>${escHtml(rest)}</span></div>`;
+      i++; continue;
+    }
+
+    // (1)(2)(3) 括號數字
+    if (/^\(\d+\)/.test(line)) {
+      const match = line.match(/^\((\d+)\)\s*(.*)/);
+      html += `<div class="content-row" style="padding-left:8px"><span class="sub-num">${match[1]}</span><span>${escHtml(match[2])}</span></div>`;
+      i++; continue;
+    }
+
+    // ● 或 • 項目符號
+    if (/^[●•◆▶]/.test(line)) {
+      const rest = line.slice(1).trim();
+      html += `<div class="content-row"><span style="color:#B81C22;margin-right:6px;flex-shrink:0">●</span><span>${escHtml(rest)}</span></div>`;
+      i++; continue;
+    }
+
+    // 費用對照行（格式：「未滿XXXX元：XXX元」或含「/」的費用）
+    if (/[元圓]\s*[：:\/]/.test(line) && /\d/.test(line)) {
+      // 收集連續的費用行
+      const feeLines = [];
+      while (i < lines.length) {
+        const fl = lines[i].trim();
+        if (!fl) break;
+        if (/[元圓]\s*[：:\/]/.test(fl) && /\d/.test(fl) || /免運|免組裝|免收/.test(fl)) {
+          feeLines.push(fl); i++;
+        } else break;
+      }
+      if (feeLines.length > 1) {
+        html += '<table class="fee-table">';
+        feeLines.forEach((fl, idx) => {
+          const parts = fl.split(/[：:]/);
+          if (parts.length >= 2) {
+            html += `<tr><td>${escHtml(parts[0].trim())}</td><td>${escHtml(parts.slice(1).join('：').trim())}</td></tr>`;
+          } else {
+            html += `<tr><td colspan="2">${escHtml(fl)}</td></tr>`;
+          }
+        });
+        html += '</table>';
+      } else {
+        html += `<div class="content-block">${escHtml(feeLines[0])}</div>`;
+      }
+      continue;
+    }
+
+    // 一般文字
+    html += `<div class="content-block">${escHtml(line)}</div>`;
+    i++;
+  }
+  return html;
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
 // 初始化
 initQAChips();
 initCityChips();
 initSizeTabs();
-document.getElementById('qa-input').addEventListener('keydown',e=>{if(e.key==='Enter')searchQA()});
-document.getElementById('store-input').addEventListener('keydown',e=>{if(e.key==='Enter')searchStore()});
-document.getElementById('manual-input').addEventListener('keydown',e=>{if(e.key==='Enter')searchManual()});
+initLaundry();
+initDC();
+['qa','store','manual','dc'].forEach(id=>{
+  const el=document.getElementById(id+'-input');
+  if(el) el.addEventListener('keydown',e=>{if(e.key==='Enter') window[`search${id.charAt(0).toUpperCase()+id.slice(1)}`]();});
+});
 </script>
 </body>
 </html>
