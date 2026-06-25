@@ -2,144 +2,245 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>MUJI 無印良品｜客服查詢小幫手</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:"Microsoft JhengHei",sans-serif;background:#f8f8f8;color:#333;font-size:14px}
-header{background:#B81C22;color:#fff;padding:14px 20px;display:flex;align-items:center;gap:10px}
-.logo{font-size:20px;font-weight:900;letter-spacing:2px}
-.header-info h1{font-size:16px;font-weight:bold}
-.header-info small{font-size:11px;opacity:.75}
+body{font-family:"Microsoft JhengHei",sans-serif;background:#f7f7f7;color:#333;font-size:14px}
+header{background:#B81C22;color:#fff;padding:13px 20px;display:flex;align-items:center;gap:10px}
+.logo{font-size:22px;font-weight:900;letter-spacing:2px}
+.hinfo h1{font-size:15px;font-weight:bold}
+.hinfo small{font-size:11px;opacity:.75}
 .badge{background:rgba(255,255,255,.2);border-radius:10px;padding:2px 10px;font-size:11px;margin-left:auto}
-.tabs{display:flex;background:#fff;border-bottom:2px solid #e0e0e0;overflow-x:auto;position:sticky;top:0;z-index:10;box-shadow:0 1px 4px rgba(0,0,0,.08)}
-.tab{padding:11px 16px;cursor:pointer;white-space:nowrap;font-size:13px;border-bottom:3px solid transparent;margin-bottom:-2px;color:#666;transition:.15s;display:flex;align-items:center;gap:5px}
+.tabs{display:flex;background:#fff;border-bottom:2px solid #e8e8e8;overflow-x:auto;position:sticky;top:0;z-index:10;box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.tab{padding:11px 15px;cursor:pointer;white-space:nowrap;font-size:12px;border-bottom:3px solid transparent;margin-bottom:-2px;color:#666;transition:.15s}
 .tab.active{border-bottom-color:#B81C22;color:#B81C22;font-weight:bold}
-.tab:hover:not(.active){background:#fef8f8;color:#B81C22}
-.panel{display:none;padding:14px 16px;max-width:900px;margin:0 auto}
+.tab:hover:not(.active){background:#fef5f5;color:#B81C22}
+.panel{display:none;padding:14px 16px;max-width:860px;margin:0 auto}
 .panel.active{display:block}
-.search-row{display:flex;gap:8px;margin-bottom:10px}
+/* 搜尋 */
+.srow{display:flex;gap:8px;margin-bottom:10px}
 input[type=text]{flex:1;padding:9px 14px;border:1.5px solid #ddd;border-radius:8px;font-size:14px;font-family:inherit;transition:.15s}
 input[type=text]:focus{outline:none;border-color:#B81C22;box-shadow:0 0 0 3px rgba(184,28,34,.1)}
-.btn{padding:9px 16px;background:#B81C22;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-family:inherit}
+.btn{padding:9px 16px;background:#B81C22;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-family:inherit;flex-shrink:0}
 .btn:hover{background:#9a1519}
+/* chips */
 .chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
-.chip{padding:4px 12px;background:#fff;border:1.5px solid #e0e0e0;border-radius:16px;cursor:pointer;font-size:12px;transition:.15s;color:#555}
+.chip{padding:4px 12px;background:#fff;border:1.5px solid #e0e0e0;border-radius:16px;cursor:pointer;font-size:12px;color:#555;transition:.15s}
 .chip:hover,.chip.active{background:#B81C22;color:#fff;border-color:#B81C22}
-.result-count{font-size:12px;color:#999;margin-bottom:8px}
-.card{background:#fff;border-radius:10px;padding:13px 15px;margin-bottom:9px;border-left:4px solid #B81C22;box-shadow:0 1px 3px rgba(0,0,0,.06)}
-.card-title{font-weight:bold;font-size:14px;margin-bottom:5px}
-.card-content{font-size:13px;color:#555;line-height:1.75}
-.card-cat{font-size:11px;color:#B81C22;margin-top:5px}
-.store-card{background:#fff;border-radius:10px;padding:13px 15px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
-.store-name{font-weight:bold;font-size:14px}
-.store-addr{font-size:12px;color:#666;margin-top:3px}
-.store-tel{font-size:12px;color:#B81C22;margin-top:2px;font-weight:bold}
-.store-svcs{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
-.svc{background:#fef2f2;color:#B81C22;border:1px solid #fcd0d0;border-radius:4px;padding:2px 7px;font-size:11px}
-.size-tabs{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
-.size-tab{padding:5px 13px;background:#fff;border:1.5px solid #ddd;border-radius:16px;cursor:pointer;font-size:12px;color:#555;transition:.15s}
-.size-tab.active{background:#B81C22;color:#fff;border-color:#B81C22}
-.size-table{width:100%;border-collapse:collapse;font-size:12px;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06)}
-.size-table th{background:#B81C22;color:#fff;padding:8px;text-align:center;font-weight:normal}
-.size-table td{padding:7px;text-align:center;border-bottom:1px solid #f2f2f2}
-.size-table tr:last-child td{border-bottom:none}
-.size-table tr:nth-child(even) td{background:#fdf8f8}
-.size-table td:first-child{background:#f9f9f9;font-weight:bold;color:#555;text-align:left;padding-left:12px}
-.manual-card{background:#fff;border-radius:8px;padding:11px 14px;margin-bottom:7px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
-.manual-info{flex:1;min-width:0}
-.manual-cat{font-size:11px;color:#B81C22}
-.manual-name{font-size:13px;font-weight:bold;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.manual-bc{font-size:11px;color:#aaa;margin-top:1px}
-.pdf-btn{padding:7px 13px;background:#B81C22;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-family:inherit;text-decoration:none;white-space:nowrap;flex-shrink:0}
-.pdf-btn:hover{background:#9a1519}
+.rcount{font-size:12px;color:#999;margin-bottom:8px}
+/* 卡片 */
+.card{background:#fff;border-radius:10px;padding:13px 15px;margin-bottom:8px;border-left:4px solid #B81C22;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.card-title{font-weight:bold;font-size:14px;margin-bottom:6px}
+.card-content{font-size:13px;color:#444;line-height:1.75}
+.card-cat{font-size:11px;color:#B81C22;margin-top:6px}
+/* 格式化元素 */
+.cr{display:flex;align-items:flex-start;gap:5px;margin:3px 0;line-height:1.75}
+.cn{display:inline-flex;align-items:center;justify-content:center;background:#B81C22;color:#fff;border-radius:50%;min-width:18px;height:18px;font-size:11px;flex-shrink:0;margin-top:2px}
+.sn{display:inline-block;background:#fde8e8;color:#B81C22;border-radius:3px;padding:1px 5px;font-size:11px;flex-shrink:0;margin-top:3px}
+.cb{margin:3px 0;line-height:1.75}
+.ft{width:100%;border-collapse:collapse;margin:6px 0;font-size:12px;border-radius:6px;overflow:hidden}
+.ft td{padding:6px 10px;border:1px solid #f0e0e0}
+.ft tr:first-child td{background:#fdf0f0;font-weight:bold}
+.ft td:last-child{text-align:right;color:#B81C22;font-weight:bold}
+/* 門市 */
+.sc{background:#fff;border-radius:10px;padding:13px 15px;margin-bottom:7px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.sn2{font-weight:bold;font-size:14px}
+.sa{font-size:12px;color:#666;margin-top:2px}
+.st{font-size:13px;color:#B81C22;font-weight:bold;margin-top:2px}
+.ss{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
+.sv{background:#fef2f2;color:#B81C22;border:1px solid #fcd0d0;border-radius:4px;padding:2px 7px;font-size:11px}
+/* 尺寸 */
+.stabs{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
+.stab{padding:5px 13px;background:#fff;border:1.5px solid #ddd;border-radius:16px;cursor:pointer;font-size:12px;color:#555;transition:.15s}
+.stab.active{background:#B81C22;color:#fff;border-color:#B81C22}
+.stable{width:100%;border-collapse:collapse;font-size:12px;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.stable th{background:#B81C22;color:#fff;padding:8px;text-align:center;font-weight:normal}
+.stable td{padding:7px;text-align:center;border-bottom:1px solid #f2f2f2}
+.stable tr:last-child td{border-bottom:none}
+.stable td:first-child{background:#f9f9f9;font-weight:bold;color:#555;text-align:left;padding-left:12px}
+.stable tr:nth-child(even) td{background:#fdf8f8}
+.stable tr:nth-child(even) td:first-child{background:#f4f4f4}
+.measure-box{background:#fff;border-radius:10px;padding:16px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.measure-title{font-size:13px;font-weight:bold;color:#B81C22;border-left:3px solid #B81C22;padding-left:8px;margin-bottom:12px}
+.measure-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.measure-item{text-align:center}
+.measure-label{font-size:13px;font-weight:bold;color:#555;margin-bottom:8px}
+.measure-desc{font-size:11px;color:#777;line-height:1.7;text-align:left;margin-top:8px}
+/* 說明書 */
+.mc{background:#fff;border-radius:8px;padding:11px 14px;margin-bottom:7px;display:flex;align-items:center;gap:10px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.mi{flex:1;min-width:0}
+.mcat{font-size:11px;color:#B81C22}
+.mname{font-size:13px;font-weight:bold;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mbc{font-size:11px;color:#aaa;margin-top:1px}
+.pbtn{padding:7px 13px;background:#B81C22;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-family:inherit;text-decoration:none;white-space:nowrap;flex-shrink:0}
+.pbtn:hover{background:#9a1519}
+/* 洗滌 */
+.lg{margin-bottom:18px}
+.gt{font-size:13px;font-weight:bold;color:#B81C22;border-left:3px solid #B81C22;padding-left:8px;margin-bottom:10px}
+.lgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+.li{background:#fff;border-radius:10px;padding:12px 8px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.07);display:flex;flex-direction:column;align-items:center;gap:7px}
+.ll{font-size:11px;color:#555;line-height:1.5}
+/* DC風扇 */
+.rtabs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
+.rtab{padding:5px 13px;background:#fff;border:1.5px solid #ddd;border-radius:16px;cursor:pointer;font-size:12px;color:#555;transition:.15s}
+.rtab.active{background:#B81C22;color:#fff;border-color:#B81C22}
+.dc{background:#fff;border-radius:10px;padding:12px 14px;margin-bottom:7px;display:flex;gap:10px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.dcn{font-weight:bold;font-size:14px}
+.dca{font-size:12px;color:#666;margin-top:2px}
+.dct{font-size:13px;color:#B81C22;font-weight:bold;margin-top:3px}
+/* 大型家具 */
+.furn-img{width:100%;max-width:600px;display:block;margin:0 auto 12px;border-radius:8px;border:1px solid #eee}
+.furn-section{background:#fff;border-radius:10px;padding:14px 16px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.furn-title{font-size:14px;font-weight:bold;color:#B81C22;margin-bottom:10px;border-left:3px solid #B81C22;padding-left:8px}
+.ftable{width:100%;border-collapse:collapse;font-size:13px}
+.ftable th{background:#B81C22;color:#fff;padding:8px 12px;text-align:center;font-weight:normal}
+.ftable td{padding:8px 12px;border:1px solid #eee;text-align:center}
+.ftable tr:nth-child(even) td{background:#fdf8f8}
+.fee-highlight{color:#B81C22;font-weight:bold}
+.img-placeholder{background:#f5f5f5;border:2px dashed #ddd;border-radius:8px;padding:20px;text-align:center;color:#aaa;font-size:12px;margin-bottom:10px}
+/* 通用 */
 .empty{text-align:center;color:#ccc;padding:40px;font-size:14px}
 .note{font-size:11px;color:#aaa;margin-top:10px;line-height:1.7;padding:10px;background:#fff;border-radius:8px}
-/* 洗滌標示 */
-.laundry-group{margin-bottom:20px}
-.group-title{font-size:13px;font-weight:bold;color:#B81C22;border-left:3px solid #B81C22;padding-left:8px;margin-bottom:10px}
-.laundry-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
-.laundry-item{background:#fff;border-radius:10px;padding:12px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.07);display:flex;flex-direction:column;align-items:center;gap:8px}
-.laundry-item svg{display:block}
-.laundry-label{font-size:11px;color:#555;line-height:1.5}
-/* DC風扇 */
-.region-tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
-.region-tab{padding:5px 14px;background:#fff;border:1.5px solid #ddd;border-radius:16px;cursor:pointer;font-size:12px;color:#555;transition:.15s}
-.region-tab.active{background:#B81C22;color:#fff;border-color:#B81C22}
-.dc-card{background:#fff;border-radius:10px;padding:13px 15px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,.06);display:flex;align-items:flex-start;gap:12px}
-.dc-icon{font-size:22px;flex-shrink:0;margin-top:2px}
-.dc-info{flex:1}
-.dc-name{font-weight:bold;font-size:14px}
-.dc-addr{font-size:12px;color:#666;margin-top:2px}
-.dc-tel{font-size:13px;color:#B81C22;font-weight:bold;margin-top:3px}
-.dc-note{font-size:11px;color:#aaa;margin-top:10px;text-align:center}
-.section-label{font-size:12px;color:#999;margin:12px 0 8px;font-weight:bold}
-
-.fee-table{width:100%;border-collapse:collapse;margin:6px 0;font-size:12px}
-.fee-table td{padding:5px 10px;border:1px solid #f0e0e0}
-.fee-table tr:first-child td{background:#fdf0f0;font-weight:bold}
-.fee-table td:last-child{text-align:right;color:#B81C22;font-weight:bold}
-.content-list{list-style:none;padding:0;margin:4px 0}
-.content-list li{padding:3px 0 3px 16px;position:relative;line-height:1.6}
-.content-list li::before{content:"•";position:absolute;left:4px;color:#B81C22}
-.content-block{margin:4px 0}
-.content-num{display:inline-block;background:#B81C22;color:#fff;border-radius:50%;width:18px;height:18px;text-align:center;line-height:18px;font-size:11px;margin-right:5px;flex-shrink:0;vertical-align:middle}
-.content-row{display:flex;align-items:flex-start;gap:4px;margin:3px 0;line-height:1.6}
-.sub-num{display:inline-block;background:#f0e0e0;color:#B81C22;border-radius:3px;padding:0 5px;font-size:11px;margin-right:4px;white-space:nowrap}
+.slabel{font-size:12px;color:#888;font-weight:bold;margin:12px 0 6px;padding-left:2px}
+.dcnote{font-size:11px;color:#aaa;text-align:center;margin:8px 0}
 </style>
 </head>
 <body>
-
 <header>
   <div class="logo">MUJI</div>
-  <div class="header-info">
+  <div class="hinfo">
     <h1>客服查詢小幫手</h1>
-    <small>知識庫 292筆 &times; 門市服務 &times; 尺寸查詢 &times; 說明書 351筆</small>
+    <small>知識庫 293筆 &times; 門市 &times; 尺寸 &times; 說明書 351筆</small>
   </div>
   <span class="badge">2026.06</span>
 </header>
 
 <div class="tabs">
-  <div class="tab active" onclick="showTab('qa',this)">📚 知識庫查詢</div>
+  <div class="tab active" onclick="showTab('qa',this)">📚 知識庫</div>
   <div class="tab" onclick="showTab('store',this)">🏪 門市服務</div>
   <div class="tab" onclick="showTab('size',this)">📏 尺寸查詢</div>
-  <div class="tab" onclick="showTab('manual',this)">📄 商品說明書</div>
+  <div class="tab" onclick="showTab('manual',this)">📄 說明書</div>
   <div class="tab" onclick="showTab('laundry',this)">🧺 洗滌標示</div>
   <div class="tab" onclick="showTab('dc',this)">🔧 DC風扇維修</div>
+  <div class="tab" onclick="showTab('furniture',this)">🛋️ 大型家具</div>
 </div>
 
 <!-- 知識庫 -->
 <div id="tab-qa" class="panel active">
-  <div class="search-row">
-    <input id="qa-input" type="text" placeholder="輸入關鍵字…例如：退換貨、點數、羊毛洗滌、DC風扇" oninput="searchQA()">
-  </div>
+  <div class="srow"><input id="qa-input" type="text" placeholder="輸入關鍵字…例如：退換貨、點數、羊毛洗滌、DC風扇維修"></div>
   <div class="chips" id="qa-chips"></div>
-  <div class="result-count" id="qa-count"></div>
+  <div class="rcount" id="qa-count"></div>
   <div id="qa-results"></div>
 </div>
 
 <!-- 門市 -->
 <div id="tab-store" class="panel">
-  <div class="search-row">
-    <input id="store-input" type="text" placeholder="輸入門市名稱、縣市或服務…例如：刺繡、高雄、夢時代" oninput="searchStore()">
-  </div>
+  <div class="srow"><input id="store-input" type="text" placeholder="輸入門市名稱、縣市或服務…例如：刺繡、高雄、夢時代" oninput="searchStore()"></div>
   <div class="chips" id="city-chips"></div>
-  <div class="result-count" id="store-count"></div>
+  <div class="rcount" id="store-count"></div>
   <div id="store-results"></div>
 </div>
 
 <!-- 尺寸 -->
 <div id="tab-size" class="panel">
-  <div class="size-tabs" id="size-tabs"></div>
+  <div class="measure-box">
+    <div class="measure-title">📐 尺寸測量方式</div>
+    <div class="measure-grid">
+      <div class="measure-item">
+        <div class="measure-label">女裝</div>
+        <svg viewBox="0 0 280 320" width="200" height="230" style="display:block;margin:0 auto">
+  <!-- 人形 -->
+  <circle cx="140" cy="40" r="22" fill="none" stroke="#333" stroke-width="2"/>
+  <!-- 身體 -->
+  <path d="M108 62 Q100 90 96 130 Q94 160 98 200 L182 200 Q186 160 184 130 Q180 90 172 62 Q156 72 140 72 Q124 72 108 62Z" fill="none" stroke="#333" stroke-width="2"/>
+  <!-- 腿 -->
+  <line x1="108" y1="200" x2="104" y2="280" stroke="#333" stroke-width="2"/>
+  <line x1="172" y1="200" x2="176" y2="280" stroke="#333" stroke-width="2"/>
+  <!-- 手臂 -->
+  <path d="M108 80 Q88 110 84 150" fill="none" stroke="#333" stroke-width="2"/>
+  <path d="M172 80 Q192 110 196 150" fill="none" stroke="#333" stroke-width="2"/>
+  <!-- 測量線 A胸圍 -->
+  <line x1="94" y1="95" x2="186" y2="95" stroke="#B81C22" stroke-width="1" stroke-dasharray="3,2"/>
+  <line x1="86" y1="95" x2="92" y2="95" stroke="#B81C22" stroke-width="1.5"/>
+  <rect x="56" y="89" width="16" height="13" rx="2" fill="#B81C22"/>
+  <text x="64" y="99" text-anchor="middle" font-size="10" font-weight="bold" fill="white">A</text>
+  <!-- 測量線 B腰圍 -->
+  <line x1="94" y1="128" x2="186" y2="128" stroke="#B81C22" stroke-width="1" stroke-dasharray="3,2"/>
+  <line x1="86" y1="128" x2="92" y2="128" stroke="#B81C22" stroke-width="1.5"/>
+  <rect x="56" y="122" width="16" height="13" rx="2" fill="#B81C22"/>
+  <text x="64" y="132" text-anchor="middle" font-size="10" font-weight="bold" fill="white">B</text>
+  <!-- 測量線 C臀圍 -->
+  <line x1="96" y1="162" x2="184" y2="162" stroke="#B81C22" stroke-width="1" stroke-dasharray="3,2"/>
+  <line x1="88" y1="162" x2="94" y2="162" stroke="#B81C22" stroke-width="1.5"/>
+  <rect x="58" y="156" width="16" height="13" rx="2" fill="#B81C22"/>
+  <text x="66" y="166" text-anchor="middle" font-size="10" font-weight="bold" fill="white">C</text>
+  <!-- 身長線 E -->
+  <line x1="34" y1="18" x2="34" y2="280" stroke="#555" stroke-width="1.5"/>
+  <line x1="29" y1="18" x2="39" y2="18" stroke="#555" stroke-width="1.5"/>
+  <line x1="29" y1="280" x2="39" y2="280" stroke="#555" stroke-width="1.5"/>
+  <text x="22" y="155" text-anchor="middle" font-size="11" font-weight="bold" fill="#555">E</text>
+  <!-- 說明文字 -->
+  <text x="210" y="99" font-size="11" fill="#333" font-weight="bold">A 胸圍</text>
+  <text x="210" y="132" font-size="11" fill="#333" font-weight="bold">B 腰圍</text>
+  <text x="210" y="166" font-size="11" fill="#333" font-weight="bold">C 臀圍</text>
+  <text x="210" y="290" font-size="11" fill="#333" font-weight="bold">E 身長</text>
+</svg>
+        <div class="measure-desc">
+          <b>A 胸圍</b>：由腋下正下方往肩胛骨方向水平上移，測量胸部最高處<br>
+          <b>B 腰圍</b>：測量腰際最凹陷處<br>
+          <b>C 臀圍</b>：垂直站立時，臀部最廣處<br>
+          <b>E 身長</b>：從頭的頂點到鞋子腳後跟
+        </div>
+      </div>
+      <div class="measure-item">
+        <div class="measure-label">男裝</div>
+        <svg viewBox="0 0 280 320" width="200" height="230" style="display:block;margin:0 auto">
+  <circle cx="140" cy="40" r="22" fill="none" stroke="#333" stroke-width="2"/>
+  <path d="M110 62 Q102 90 98 130 Q96 160 100 200 L180 200 Q184 160 182 130 Q178 90 170 62 Q156 70 140 70 Q124 70 110 62Z" fill="none" stroke="#333" stroke-width="2"/>
+  <line x1="100" y1="200" x2="96" y2="280" stroke="#333" stroke-width="2"/>
+  <line x1="180" y1="200" x2="184" y2="280" stroke="#333" stroke-width="2"/>
+  <path d="M110 78 Q90 108 86 148" fill="none" stroke="#333" stroke-width="2"/>
+  <path d="M170 78 Q190 108 194 148" fill="none" stroke="#333" stroke-width="2"/>
+  <!-- A胸圍 -->
+  <line x1="96" y1="92" x2="184" y2="92" stroke="#B81C22" stroke-width="1" stroke-dasharray="3,2"/>
+  <rect x="56" y="86" width="16" height="13" rx="2" fill="#B81C22"/>
+  <text x="64" y="96" text-anchor="middle" font-size="10" font-weight="bold" fill="white">A</text>
+  <!-- B腰圍 -->
+  <line x1="96" y1="128" x2="184" y2="128" stroke="#B81C22" stroke-width="1" stroke-dasharray="3,2"/>
+  <rect x="56" y="122" width="16" height="13" rx="2" fill="#B81C22"/>
+  <text x="64" y="132" text-anchor="middle" font-size="10" font-weight="bold" fill="white">B</text>
+  <!-- C臀圍 -->
+  <line x1="98" y1="162" x2="182" y2="162" stroke="#B81C22" stroke-width="1" stroke-dasharray="3,2"/>
+  <rect x="58" y="156" width="16" height="13" rx="2" fill="#B81C22"/>
+  <text x="66" y="166" text-anchor="middle" font-size="10" font-weight="bold" fill="white">C</text>
+  <!-- 身長 E -->
+  <line x1="34" y1="18" x2="34" y2="280" stroke="#555" stroke-width="1.5"/>
+  <line x1="29" y1="18" x2="39" y2="18" stroke="#555" stroke-width="1.5"/>
+  <line x1="29" y1="280" x2="39" y2="280" stroke="#555" stroke-width="1.5"/>
+  <text x="22" y="155" text-anchor="middle" font-size="11" font-weight="bold" fill="#555">E</text>
+  <text x="210" y="96" font-size="11" fill="#333" font-weight="bold">A 胸圍</text>
+  <text x="210" y="132" font-size="11" fill="#333" font-weight="bold">B 腰圍</text>
+  <text x="210" y="166" font-size="11" fill="#333" font-weight="bold">C 臀圍</text>
+  <text x="210" y="290" font-size="11" fill="#333" font-weight="bold">E 身長</text>
+</svg>
+        <div class="measure-desc">
+          <b>A 胸圍</b>：由腋下正下方往肩胛骨方向水平上移測量<br>
+          <b>B 腰圍</b>：測量腰際最凹陷處<br>
+          <b>C 臀圍</b>：垂直站立時，臀部最廣處<br>
+          <b>E 身長</b>：從頭的頂點到鞋子腳後跟
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="stabs" id="size-tabs"></div>
   <div id="size-content"></div>
 </div>
 
 <!-- 說明書 -->
 <div id="tab-manual" class="panel">
-  <div class="search-row">
-    <input id="manual-input" type="text" placeholder="輸入商品名稱或條碼…例如：風扇、時鐘、咖啡機" oninput="searchManual()">
-  </div>
-  <div class="result-count" id="manual-count"></div>
+  <div class="srow"><input id="manual-input" type="text" placeholder="輸入商品名稱或條碼…例如：風扇、時鐘、咖啡機" oninput="searchManual()"></div>
+  <div class="rcount" id="manual-count"></div>
   <div id="manual-results"></div>
   <p class="note">※ 點擊「查看PDF」可開啟說明書，部分說明書需要網路連線。<br>※ 如無法開啟，可將條碼最後8碼填入：https://www.muji.com/tw/instruction/pdf/[8碼].pdf</p>
 </div>
@@ -149,14 +250,102 @@ input[type=text]:focus{outline:none;border-color:#B81C22;box-shadow:0 0 0 3px rg
   <div id="laundry-content"></div>
 </div>
 
-<!-- DC風扇維修 -->
+<!-- DC風扇 -->
 <div id="tab-dc" class="panel">
-  <div class="search-row">
-    <input id="dc-input" type="text" placeholder="輸入縣市或服務中心名稱…例如：高雄、台中" oninput="searchDC()">
+  <div class="srow"><input id="dc-input" type="text" placeholder="輸入縣市或服務中心名稱…例如：高雄、台中" oninput="searchDC()"></div>
+  <div class="rtabs" id="region-tabs"></div>
+  <div class="dcnote">🕐 服務時間：週一至週五 09:00–18:00</div>
+  <div style="margin-top:8px" id="dc-results"></div>
+</div>
+
+<!-- 大型家具 -->
+<div id="tab-furniture" class="panel">
+
+  <div class="furn-section">
+    <div class="furn-title">🏠 購買大型家具前的確認表</div>
+    <img src="images/furniture_elevator.png" class="furn-img" alt="電梯樓梯搬運確認" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+    <div class="img-placeholder" style="display:none">📷 圖片：購買大型家具前確認表（電梯/樓梯）<br>請上傳 images/furniture_elevator.png</div>
+    <p style="font-size:12px;color:#888;margin-top:6px">※ 若住家位於2樓以上，請確認電梯門高度(A)及電梯深度(B)，或樓梯間尺寸(C)(D)</p>
   </div>
-  <div class="region-tabs" id="region-tabs"></div>
-  <div class="dc-note">🕐 服務時間：週一至週五 09:00–18:00</div>
-  <div style="margin-top:10px" id="dc-results"></div>
+
+  <div class="furn-section">
+    <div class="furn-title">🚪 搬入路徑確認</div>
+    <img src="images/furniture_path.png" class="furn-img" alt="搬入路徑確認" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+    <div class="img-placeholder" style="display:none">📷 圖片：搬入路徑確認圖（通道/玄關/走廊）<br>請上傳 images/furniture_path.png</div>
+  </div>
+
+  <div class="furn-section">
+    <div class="furn-title">📐 走道寬度需求對照表</div>
+    <div style="overflow-x:auto">
+    <table class="ftable">
+      <thead>
+        <tr><th rowspan="2">門高</th><th colspan="2">附床板床墊</th><th rowspan="2">沙發</th></tr>
+        <tr><th>單人</th><th>單人加大・雙人</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>門高超過205cm</td><td class="fee-highlight">①②③各150cm以上</td><td class="fee-highlight">①②③各160cm以上</td><td class="fee-highlight">①②③各110cm以上</td></tr>
+        <tr><td>門高未達205cm</td><td colspan="2" class="fee-highlight">①②③各210cm以上</td><td>—</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p style="font-size:11px;color:#777;margin-top:8px;line-height:1.8">
+      ① 玄關前的通道寬(E)和玄關大門的寬(F)的合計<br>
+      ② 走廊的寬(G)和(H)的合計<br>
+      ③ 走廊的寬(H)和房間門的寬(I)的合計
+    </p>
+  </div>
+
+  <div class="furn-section">
+    <div class="furn-title">🗺️ 家具配送區域說明</div>
+    <img src="images/furniture_map.png" class="furn-img" alt="家具配送區域地圖" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+    <div class="img-placeholder" style="display:none">📷 圖片：家具配送區域地圖<br>請上傳 images/furniture_map.png</div>
+    <div style="font-size:12px;color:#555;margin-top:8px;line-height:1.8;background:#fdf8f8;padding:10px;border-radius:6px">
+      <b>限定宅配區域（需另行確認）：</b><br>
+      新北市(平溪區、貢寮區、烏來區、坪林區、雙溪區)・桃園市(復興鄉)・宜蘭縣(南澳鄉、大同鄉)・新竹縣(尖石鄉、五峰鄉、橫山鄉)・苗栗縣(南庄鄉、泰安鄉)・台中市(和平區)・南投縣(仁愛鄉、信義鄉)・花蓮縣(玉里鎮、豐濱鄉、富里鄉、秀林鄉、萬榮鄉、卓溪鄉)・嘉義縣(阿里山鄉、大埔鄉)・台南市(南化區、楠西區)・高雄區(桃源區、茂林區、那瑪夏區、甲仙區、六龜區、杉林區、內門區)・台東縣(長濱鄉、大武鄉、海端鄉、延平鄉、金峰鄉、達仁鄉)・屏東縣(恆春鎮、枋山鄉、車城鄉、滿州鄉、霧台鄉、泰武鄉、瑪家鄉、來義鄉、春日鄉、獅子鄉、牡丹鄉、三地門鄉)<br>
+      ※ 離島地區不提供配送服務
+    </div>
+  </div>
+
+  <div class="furn-section">
+    <div class="furn-title">💰 大型家具運費計算</div>
+    <div style="background:#fdf0f0;border-radius:6px;padding:10px 14px;margin-bottom:10px;font-size:13px;color:#B81C22;font-weight:bold">
+      於無印良品官網購物，大型家具類商品可享免組裝費、免樓層搬運費等服務，單筆訂單滿30,000元，即享配送免運費。
+    </div>
+    <div style="overflow-x:auto">
+    <table class="ftable">
+      <thead><tr><th>商品合計費用</th><th>運費費用</th></tr></thead>
+      <tbody>
+        <tr><td>未滿5,000元</td><td class="fee-highlight">500元</td></tr>
+        <tr><td>5,000元(含)以上～未滿10,000元</td><td class="fee-highlight">800元</td></tr>
+        <tr><td>10,000元(含)以上～未滿20,000元</td><td class="fee-highlight">1,000元</td></tr>
+        <tr><td>20,000元(含)以上～未滿30,000元</td><td class="fee-highlight">1,500元</td></tr>
+        <tr><td>30,000元(含)以上</td><td class="fee-highlight">免運費</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <div class="furn-section">
+    <div class="furn-title">📦 大型包裝商品尺寸參考</div>
+    <div style="overflow-x:auto">
+    <table class="ftable">
+      <thead><tr><th>大型包裝商品（舉例）</th><th>包裝大小</th></tr></thead>
+      <tbody>
+        <tr><td>防震舒眠床墊/雙人加大</td><td>寬161×深196×高20cm</td></tr>
+        <tr><td>天然素材床墊/雙人加大</td><td>寬168×深198×高21cm</td></tr>
+        <tr><td>附床板床墊/單人</td><td>寬99×深199×高28cm</td></tr>
+        <tr><td>附床板床墊/單人加大</td><td>寬121×深199×高28cm</td></tr>
+        <tr><td>附床板床墊/雙人</td><td>寬141×深199×高28cm</td></tr>
+        <tr><td>寬把沙發(本體)/2人座</td><td>寬162×深87.5×高55.5cm</td></tr>
+        <tr><td>寬把沙發(本體)/2.5人座</td><td>寬192×深87.5×高55.5cm</td></tr>
+        <tr><td>寬把沙發(本體)/3人座</td><td>寬222×深87.5×高55.5cm</td></tr>
+        <tr><td>橡木組合床台/單人</td><td>寬110×深207×高8cm</td></tr>
+        <tr><td>橡木組合床台/單人加大</td><td>寬130×深207×高8cm</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -870,7 +1059,12 @@ Gogoro 聯名配件
 免費包裝 紙袋
 大 23×41×15cm
 中 26x42x7cm
-小 21×35×7cm`,"cat":`14.其他`},{"t":`服務流程 1.`,"c":`確認採購需求 請利用電話﹑E-mail告知以下事項 
+小 21×35×7cm`,"cat":`14.其他`},{"t":`褲長修改服務`,"c":`實體門市可提供褲長修改服務。各門市所需作業時間不同，請洽詢最鄰近的門市，我們將竭誠為您服務。
+※僅提供基本褲長、平針縫法之修改服務。
+※可提供修改服務之褲款：男女裝丹寧褲、綾織褲。
+※童裝、家居服、短褲、七分褲、特殊材質、特殊版型等，恕不提供修改服務。詳情請洽詢門市服務人員。
+※如非購買當日之修改需求，請您備妥發票、購買憑證及吊牌未拆、未下水洗滌之商品一起帶至實體門市進行修改。
+※於特賣場、網路門市或其他國家無印良品店舖所購買之褲款，恕不提供免費修改服務。`,"cat":`14.其他`},{"t":`服務流程 1.`,"c":`確認採購需求 請利用電話﹑E-mail告知以下事項 
 ．預算金額 ．使用用途 ．採購品項 ．交貨日期 ．需求數量 ．出貨條件（配送地址﹑希望配送日等） 
 告知以上事項後，會根據需求商品數量及可能調貨的庫存進行出貨狀況確認。 配送方式將由台灣無印良品所委託的物流公司進行配送。`,"cat":`16.大宗採購`},{"t":`服務流程 2.`,"c":`根據顧客需求進行提案 進行商品在庫狀況確認後，將再提出適合的商品提案。 *空間家具配置諮詢提案 為打造舒適的室內空間，無印良品可提供大型家具至小物收納或空間裝飾的整體配置諮詢服務。 *大宗商品訂購 開設營業處或店舖，購買備品等需要量需求時歡迎利用。`,"cat":`16.大宗採購`},{"t":`服務流程 3.`,"c":`報價、付款與配送 選定商品後將會進行報價，並決定配送條件及匯款 關於付款-銀行匯款 ＜銀行匯款＞ 匯款手續費須由顧客自行負擔。 
 請匯款至以下指定帳戶，確認款項後將安排出貨。 
@@ -925,132 +1119,124 @@ Gogoro 聯名配件
 透天厝、毛胚屋：須以實際現況進行評估 
 預售屋：無參考數值 
 *無法承接案件：室內實際面積小於15坪 、工程拆包、局部施工、陽台外推或夾層空間。`,"cat":`17.空間改造企劃`},{"t":`個人住宅改造 | B2C`,"c":`https://renovation.muji.tw/residential`,"cat":`17.空間改造企劃`},{"t":`個人住宅改造 | B2C需求表`,"c":`適用對象 企業辦公室 商業空間（旅宿、品牌據點） 公共設施、展示空間 大型案場企劃、整體規劃`,"cat":`17.空間改造企劃`},{"t":`企業・法人空間規劃 | B2B`,"c":`請填寫B2B需求表單 https://renovation.muji.tw/commercial`,"cat":`17.空間改造企劃`},{"t":`衣服標籤上的「盆形符號（水洗標示）」代表什麼意思？`,"c":`盆形符號代表「水洗」方式，說明如下：
-・盆形+X（叉叉）= 不能水洗
-・盆形+手的圖示 = 以手洗滌，水溫最高不超過40度
-・盆形內數字30 = 可手洗或機洗，最高水溫30度，標準洗程序
-・盆形內數字40 = 可手洗或機洗，最高水溫40度，溫和洗程序
-・盆形內數字40+底部一條線 = 可手洗或機洗，最高水溫40度，極輕柔洗程序`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`衣服標籤上的「三角形符號（漂白標示）」代表什麼意思？`,"c":`三角形符號代表「漂白」方式，說明如下：
-・空白三角形 = 可使用任何漂白劑
-・三角形內有斜線 = 只可使用氧化物漂白劑
-・三角形+X（叉叉）= 不可漂白`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`衣服標籤上的「圓形符號（乾洗/專業洗標示）」代表什麼意思？`,"c":`圓形符號代表「紡織品專業維護」，說明如下：
+1. 盆形+X = 不能水洗
+2. 盆形+手的圖示 = 以手洗滌，水溫最高不超過40度
+3. 盆形內數字30 = 可手洗或機洗，最高水溫30度，標準洗程序
+4. 盆形內數字40 = 可手洗或機洗，最高水溫40度，溫和洗程序
+5. 盆形內數字40+底部一條線 = 可手洗或機洗，最高水溫40度，極輕柔洗程序`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`衣服標籤上的「三角形符號（漂白標示）」代表什麼意思？`,"c":`三角形符號代表「漂白」方式，說明如下：
+1. 空白三角形 = 可使用任何漂白劑
+2. 三角形內有斜線 = 只可使用氧化物漂白劑
+3. 三角形+X = 不可漂白`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`衣服標籤上的「圓形符號（乾洗/專業洗標示）」代表什麼意思？`,"c":`圓形符號代表「紡織品專業維護」，說明如下：
 【乾洗】
-・圓形內P = 可乾洗，請使用四氯乙烯或石油系溶劑，標準乾洗程序
-・圓形內P+底線 = 可乾洗，請使用四氯乙烯或石油系溶劑，溫和乾洗程序
-・圓形內F = 可乾洗，請使用石油系溶劑
-・圓形+X = 不可專業乾洗
+1. 圓形內P = 可乾洗，請使用四氯乙烯或石油系溶劑，標準乾洗程序
+2. 圓形內P+底線 = 可乾洗，溫和乾洗程序
+3. 圓形內F = 可乾洗，請使用石油系溶劑
+4. 圓形+X = 不可專業乾洗
 【專業濕洗】
-・圓形內W = 專業濕洗，標準程序
-・圓形內W+一條底線 = 專業濕洗，溫和程序
-・圓形內W+兩條底線 = 專業濕洗，極輕柔程序
-・圓形內W+X = 不可專業濕洗`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`衣服標籤上的「正方形符號（自然乾燥標示）」代表什麼意思？`,"c":`正方形符號代表「自然乾燥」方式，說明如下：
-・正方形內一條直線 = 懸掛晾乾
-・正方形內兩條直線 = 懸掛滴乾
-・正方形內一條橫線 = 平攤晾乾
-・正方形內兩條橫線 = 平攤滴乾
-・正方形內斜線+一條直線 = 在陰涼處懸掛晾乾
-・正方形內斜線+兩條直線 = 在陰涼處懸掛滴乾
-・正方形內斜線+一條橫線 = 在陰涼處平攤晾乾
-・正方形內斜線+兩條橫線 = 在陰涼處平攤滴乾`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`衣服標籤上的「烘乾機符號（翻滾烘乾標示）」代表什麼意思？`,"c":`烘乾機圖示（正方形內含圓形）代表「翻滾烘乾」方式，說明如下：
-・圓圈內一個點 = 可翻滾烘乾，使用一般溫度，最高排風溫度80度
-・圓圈內兩個點 = 可翻滾烘乾，使用較低溫度，最高排風溫度60度
-・烘乾機圖示+X = 不可翻滾烘乾`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`衣服標籤上的「熨斗符號（熨燙標示）」代表什麼意思？`,"c":`熨斗符號代表「熨燙及壓燙」溫度，說明如下：
-・熨斗內三個點 = 熨燙溫度最高200度
-・熨斗內兩個點 = 熨燙溫度最高150度
-・熨斗內一個點 = 熨燙溫度最高110度（蒸氣燙可能導致不可回復的損傷）
-・熨斗+X = 不可熨燙及壓燙`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`MUJI有機棉商品有什麼特色？洗了會縮水嗎？`,"c":`有機棉（オーガニックコットン）特色：
+5. 圓形內W = 專業濕洗，標準程序
+6. 圓形內W+底線 = 專業濕洗，溫和程序
+7. 圓形內W+X = 不可專業濕洗`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`衣服標籤上的「正方形符號（自然乾燥標示）」代表什麼意思？`,"c":`正方形符號代表「自然乾燥」方式，說明如下：
+1. 正方形內一條直線 = 懸掛晾乾
+2. 正方形內兩條直線 = 懸掛滴乾
+3. 正方形內一條橫線 = 平攤晾乾
+4. 正方形內兩條橫線 = 平攤滴乾
+5. 正方形內斜線+直線 = 在陰涼處懸掛晾乾
+6. 正方形內斜線+橫線 = 在陰涼處平攤晾乾`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`衣服標籤上的「烘乾機符號（翻滾烘乾標示）」代表什麼意思？`,"c":`烘乾機圖示代表「翻滾烘乾」方式，說明如下：
+1. 圓圈內一個點 = 可翻滾烘乾，使用一般溫度，最高排風溫度80度
+2. 圓圈內兩個點 = 可翻滾烘乾，使用較低溫度，最高排風溫度60度
+3. 烘乾機圖示+X = 不可翻滾烘乾`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`衣服標籤上的「熨斗符號（熨燙標示）」代表什麼意思？`,"c":`熨斗符號代表「熨燙及壓燙」溫度，說明如下：
+1. 熨斗內三個點 = 熨燙溫度最高200度
+2. 熨斗內兩個點 = 熨燙溫度最高150度
+3. 熨斗內一個點 = 熨燙溫度最高110度（蒸氣燙可能導致不可回復的損傷）
+4. 熨斗+X = 不可熨燙及壓燙`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`MUJI有機棉商品有什麼特色？洗了會縮水嗎？`,"c":`有機棉特色：
 【優點】吸水性、吸濕性、觸感佳；對生產者及環境友善、溫和
-【缺點/注意】水洗後容易縮小、容易起皺
-有機棉意指使用三年以上未使用農藥的田地，順應自然循環所栽種而成的棉花。`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`MUJI麻質商品有什麼特色？`,"c":`麻（麻）特色：
-【優點】透氣性佳、易導熱及散熱（體溫易散）、吸水性/吸濕性/排汗性佳、堅韌密度高不黏肌膚
-【缺點/注意】易起皺、接縫處易鬆脫、纖維較硬具刺痛感、於濕潤狀態下摩擦易起毛`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`MUJI絲質商品有什麼特色？`,"c":`絲（シルク）特色：
+【缺點/注意】水洗後容易縮小、容易起皺`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`MUJI麻質商品有什麼特色？`,"c":`麻質特色：
+【優點】透氣性佳、易導熱及散熱、吸水性/吸濕性/排汗性佳、堅韌密度高不黏肌膚
+【缺點/注意】易起皺、接縫處易鬆脫、纖維較硬具刺痛感、於濕潤狀態下摩擦易起毛`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`MUJI絲質商品有什麼特色？`,"c":`絲質特色：
 【優點】具美麗光澤、吸濕性及排汗性優越、輕盈保暖
-【缺點/注意】忌紫外線易褪色、於濕潤狀態下摩擦易起毛`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`MUJI羊毛商品有什麼特色？`,"c":`羊毛（ウール）特色：
+【缺點/注意】忌紫外線易褪色、於濕潤狀態下摩擦易起毛`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`MUJI羊毛商品有什麼特色？`,"c":`羊毛特色：
 【優點】輕盈、保暖、具吸濕性、不易皺、不易變形、不易燃
-【缺點/注意】水洗易縮、忌鹼、易遭蟲害及發霉；淡色品會因日光及螢光燈變黃`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`MUJI喀什米爾商品有什麼特色？`,"c":`喀什米爾（カシミヤ）特色：
+【缺點/注意】水洗易縮、忌鹼、易遭蟲害及發霉；淡色品會因日光及螢光燈變黃`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`MUJI喀什米爾商品有什麼特色？`,"c":`喀什米爾特色：
 【優點】輕柔、觸感柔軟有彈性、滑順聚光澤、具吸濕性
-【缺點/注意】易起毛球、忌摩擦`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`MUJI聚酯纖維商品有什麼特色？`,"c":`聚酯纖維（ポリエステル）特色：
+【缺點/注意】易起毛球、忌摩擦`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`MUJI聚酯纖維商品有什麼特色？`,"c":`聚酯纖維特色：
 【優點】洗滌後不易變形、易乾、水洗不易縮
-【缺點/注意】易產生靜電、吸水性及吸濕性較低`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`MUJI壓克力纖維商品有什麼特色？`,"c":`壓克力纖維（アクリル）特色：
+【缺點/注意】易產生靜電、吸水性及吸濕性較低`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`MUJI壓克力纖維商品有什麼特色？`,"c":`壓克力纖維特色：
 【優點】輕盈、保暖、膨鬆
-【缺點/注意】易起毛球、易產生靜電`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`MUJI PU材質商品有什麼特色？`,"c":`PU（ポリウレタン）特色：
+【缺點/注意】易起毛球、易產生靜電`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`MUJI PU材質商品有什麼特色？`,"c":`PU特色：
 【優點】富伸縮性、輕盈
-【缺點/注意】經氯漂白會變色變質、忌日光直射（會變質變色）`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`MUJI嫘縈商品有什麼特色？`,"c":`嫘縈（レーヨン）特色：
+【缺點/注意】經氯漂白會變色變質、忌日光直射`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`MUJI嫘縈商品有什麼特色？`,"c":`嫘縈特色：
 【優點】具吸收性、特殊光澤、具垂墜性
 【缺點/注意】水洗易縮、忌摩擦、易起皺、浸水濕潤後堅韌度降低`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`MUJI棉質衣物要怎麼洗滌保養？`,"c":`棉質衣物洗滌注意事項：
-・請避免使用添加螢光增白劑的洗潔劑；耐鹼不耐酸，宜使用鹼性洗潔劑
-・汗水為酸性，建議穿著後立刻洗滌，避免黃化
-・深色衣物應與淺色分開洗；花色衣物勿長時間浸泡，避免染色
-・避免洗衣機強速洗滌、高速脫水或用力扭絞，以免變形
-・洗滌後請儘速調整肩線、衣領、側線、袖下線、下擺等部位形狀，於陰涼處陰乾
-・避免烘乾
-・收納時請放置防蟲劑，並置於通風良好處`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`MUJI絲質衣物要怎麼洗滌保養？`,"c":`絲質衣物洗滌注意事項：
-・因潮濕狀態下摩擦易起毛，水洗時請勿強力摩擦
-・避免使用氯系漂白劑
-・紫外線照射易褪色，請避免置於窗邊及螢光燈下`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`MUJI羊毛衣物要怎麼洗滌保養？`,"c":`羊毛衣物洗滌注意事項：
-・長時間穿著易變形、起毛球，建議穿一整天後間隔數日再穿
-・穿後用軟毛刷去除塵埃，整理毛順後於通風處陰乾；盡量平放晾乾，避免吊掛變形
-・若起皺，請墊布後以蒸氣熨斗燙平
-・可機洗者請選用「手洗(羊毛)」功能；手洗方式如下：
-  1. 水溫不超過40度，洗前將衣物翻面稍微折疊，髒污處靠外
-  2. 使用中性洗劑（建議羊毛專用），確認洗劑已充分溶解於水中
-  3. 短時間浸泡（3分鐘內）後輕壓洗滌，全程不超過5分鐘，不可摩擦搓洗或扭轉擰乾
-  4. 清洗後平整衣物形狀後平放晾乾
-・有髒污請立刻清洗；過季收納前先清洗，並放置防蟲劑於通風良好處`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`MUJI聚酯纖維衣物要怎麼洗滌保養？`,"c":`聚酯纖維衣物洗滌注意事項：
-・適用各種洗劑，容易清洗，洗後不易變形且易乾
-・水洗不易縮水
-・忌熱度，請以低溫熨燙`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`MUJI壓克力纖維衣物要怎麼洗滌保養？`,"c":`壓克力纖維衣物洗滌注意事項：
-・適用各種洗劑
-・忌熱度，請以低溫熨燙
-・粗針織衫等吊掛晾乾後可能因重量延展變形，建議平放陰乾`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`MUJI彈性纖維衣物要怎麼洗滌保養？`,"c":`彈性纖維衣物洗滌注意事項：
-・請以低溫熨燙，切勿使用蒸氣熨斗
-・請勿使用氯系漂白劑，會使布料變色、變質
-・請勿使用烘乾機，採陰乾方式晾乾`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`MUJI嫘縈衣物要怎麼洗滌保養？`,"c":`嫘縈衣物洗滌注意事項：
-・水洗時纖維強度會變弱，請勿用力摩擦扭絞，避免衣物破損
-・應採用中性洗劑清洗
-・起皺時請以中溫（140度～160度）或蒸氣熨燙`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`MUJI麻質衣物要怎麼洗滌保養？`,"c":`麻質衣物洗滌注意事項：
-・請避免使用添加螢光增白劑的洗潔劑；耐鹼不耐酸，宜使用弱鹼性洗潔劑
-・因較易起毛球，請避免不當搓揉、摩擦
-・機洗時建議放入2層洗衣袋，以高水位洗滌，減少摩擦；使用柔軟精可稍改善纖維硬刺感
-・洗後儘速調整肩線、衣領、側線、袖下線、下擺等形狀，於陰涼處平曬陰乾
-・起皺時請噴濕後以高溫熨斗或蒸氣熨斗墊布燙平
-・長時間日曬會褪色，避免洗後直接於日光下曝曬
-・洗後折疊整齊平放收納於通風性佳、濕度低的衣櫃`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`MUJI DC馬達風扇壞了要去哪裡維修？全台維修據點清單`,"c":`DC馬達風扇如需維修，請聯繫以下全台服務中心（上班時間：09:00–18:00）：
+● 請避免使用添加螢光增白劑的洗潔劑；耐鹼不耐酸，宜使用鹼性洗潔劑
+● 汗水為酸性，建議穿著後立刻洗滌，避免黃化
+● 深色衣物應與淺色分開洗；花色衣物勿長時間浸泡，避免染色
+● 避免洗衣機強速洗滌、高速脫水或用力扭絞，以免變形
+● 洗滌後請儘速調整肩線、衣領、側線、袖下線、下擺等部位形狀，於陰涼處陰乾
+● 避免烘乾
+● 收納時請放置防蟲劑，並置於通風良好處`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`MUJI絲質衣物要怎麼洗滌保養？`,"c":`絲質衣物洗滌注意事項：
+● 因潮濕狀態下摩擦易起毛，水洗時請勿強力摩擦
+● 避免使用氯系漂白劑
+● 紫外線照射易褪色，請避免置於窗邊及螢光燈下`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`MUJI羊毛衣物要怎麼洗滌保養？`,"c":`羊毛衣物洗滌注意事項：
+● 長時間穿著易變形、起毛球，建議穿一整天後間隔數日再穿
+● 穿後用軟毛刷去除塵埃，整理毛順後於通風處陰乾；盡量平放晾乾，避免吊掛變形
+● 若起皺，請墊布後以蒸氣熨斗燙平
+● 可機洗者請選用「手洗(羊毛)」功能
+● 手洗方式：水溫不超過40度，短時間浸泡後輕壓洗滌，全程不超過5分鐘，不可摩擦搓洗
+● 有髒污請立刻清洗；過季收納前先清洗，並放置防蟲劑`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`MUJI聚酯纖維衣物要怎麼洗滌保養？`,"c":`聚酯纖維衣物洗滌注意事項：
+● 適用各種洗劑，容易清洗，洗後不易變形且易乾
+● 水洗不易縮水
+● 忌熱度，請以低溫熨燙`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`MUJI壓克力纖維衣物要怎麼洗滌保養？`,"c":`壓克力纖維衣物洗滌注意事項：
+● 適用各種洗劑
+● 忌熱度，請以低溫熨燙
+● 粗針織衫等吊掛晾乾後可能因重量延展變形，建議平放陰乾`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`MUJI彈性纖維衣物要怎麼洗滌保養？`,"c":`彈性纖維衣物洗滌注意事項：
+● 請以低溫熨燙，切勿使用蒸氣熨斗
+● 請勿使用氯系漂白劑，會使布料變色、變質
+● 請勿使用烘乾機，採陰乾方式晾乾`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`MUJI嫘縈衣物要怎麼洗滌保養？`,"c":`嫘縈衣物洗滌注意事項：
+● 水洗時纖維強度會變弱，請勿用力摩擦扭絞，避免衣物破損
+● 應採用中性洗劑清洗
+● 起皺時請以中溫（140度～160度）或蒸氣熨燙`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`MUJI麻質衣物要怎麼洗滌保養？`,"c":`麻質衣物洗滌注意事項：
+● 請避免使用添加螢光增白劑的洗潔劑；宜使用弱鹼性洗潔劑
+● 因較易起毛球，請避免不當搓揉、摩擦
+● 機洗時建議放入2層洗衣袋，以高水位洗滌，減少摩擦
+● 洗後儘速調整形狀，於陰涼處平曬陰乾
+● 起皺時請噴濕後以高溫熨斗或蒸氣熨斗墊布燙平
+● 長時間日曬會褪色，避免洗後直接於日光下曝曬`,"cat":`13_衣著尺寸與洗滌保養`},{"t":`MUJI DC馬達風扇壞了要去哪裡維修？全台維修據點清單`,"c":`DC馬達風扇如需維修，請聯繫以下全台服務中心（服務時間：週一至週五 09:00–18:00）：
 
 【北部】
-・南區服務中心｜02-29385477｜116台北市文山區木新路二段268號
-・北區服務中心｜02-87706787｜105台北市松山區民族東路708號
-・板雙服務中心｜02-22680033｜236新北市土城區中華路二段239號
-・三新服務中心｜02-85225438｜242新北市新莊區化成路417號
-・基隆服務中心｜02-24515811｜206基隆市七堵區福一街143號
-・宜蘭服務中心｜03-9333623｜260宜蘭市嵐峰路1段16號
-・桃園服務中心｜03-3441640｜338桃園縣蘆竹鄉龍安街2段310號
-・中壢服務中心｜03-4581865｜320桃園縣中壢市惠州街120號
-・新竹服務中心｜03-5588736｜302新竹縣竹北市光明三路135號
+● 南區服務中心｜02-29385477｜116台北市文山區木新路二段268號
+● 北區服務中心｜02-87706787｜105台北市松山區民族東路708號
+● 板雙服務中心｜02-22680033｜236新北市土城區中華路二段239號
+● 三新服務中心｜02-85225438｜242新北市新莊區化成路417號
+● 基隆服務中心｜02-24515811｜206基隆市七堵區福一街143號
+● 宜蘭服務中心｜03-9333623｜260宜蘭市嵐峰路1段16號
+● 桃園服務中心｜03-3441640｜338桃園縣蘆竹鄉龍安街2段310號
+● 中壢服務中心｜03-4581865｜320桃園縣中壢市惠州街120號
+● 新竹服務中心｜03-5588736｜302新竹縣竹北市光明三路135號
 
 【中部】
-・苗栗服務中心｜037-636686｜351苗栗縣頭份鎮民族路536號
-・台中服務中心｜04-23130476｜407台中市青海路一段188號
-・潭子服務中心｜04-23918298｜406台中市太平區育賢路117號
-・清水服務中心｜04-26233422｜436台中市清水區五權東路130號
-・彰化服務中心｜04-7125299｜500彰化市埔西街98號
-・草屯服務中心｜049-2304451｜542南投縣草屯鎮成功路一段52號
-・斗南服務中心｜05-5974063｜630雲林縣斗南鎮黎明二街24號
-・嘉義服務中心｜05-2360048｜600嘉義市博愛路二段567號
+● 苗栗服務中心｜037-636686｜351苗栗縣頭份鎮民族路536號
+● 台中服務中心｜04-23130476｜407台中市青海路一段188號
+● 潭子服務中心｜04-23918298｜406台中市太平區育賢路117號
+● 清水服務中心｜04-26233422｜436台中市清水區五權東路130號
+● 彰化服務中心｜04-7125299｜500彰化市埔西街98號
+● 草屯服務中心｜049-2304451｜542南投縣草屯鎮成功路一段52號
+● 斗南服務中心｜05-5974063｜630雲林縣斗南鎮黎明二街24號
+● 嘉義服務中心｜05-2360048｜600嘉義市博愛路二段567號
 
 【南部】
-・新營服務中心｜06-6359492｜730台南市新營區大德街22號
-・台南服務中心｜06-2649174｜702台南市大成路二段62號
-・高雄服務中心｜07-3823686｜807高雄市三民區灣興街84號
-・岡山服務中心｜07-6226055｜820高雄市岡山區岡山北路267號
-・屏東服務中心｜08-7539840｜900屏東市建南路150號
+● 新營服務中心｜06-6359492｜730台南市新營區大德街22號
+● 台南服務中心｜06-2649174｜702台南市大成路二段62號
+● 高雄服務中心｜07-3823686｜807高雄市三民區灣興街84號
+● 岡山服務中心｜07-6226055｜820高雄市岡山區岡山北路267號
+● 屏東服務中心｜08-7539840｜900屏東市建南路150號
 
 【東部】
-・花蓮服務中心｜03-8540168｜970花蓮縣吉安鄉稻興一街7號
-・台東服務中心｜089-324956｜950台東市豐榮路191號1樓
+● 花蓮服務中心｜03-8540168｜970花蓮縣吉安鄉稻興一街7號
+● 台東服務中心｜089-324956｜950台東市豐榮路191號1樓
 
 【離島】
-・金門服務中心｜082-320395｜893金門縣金城鎮金城新莊7巷6號
-・澎湖服務中心｜06-9219462｜880馬公市西文里63-28號`,"cat":`08.維修保固`}];
+● 金門服務中心｜082-320395｜893金門縣金城鎮金城新莊7巷6號
+● 澎湖服務中心｜06-9219462｜880馬公市西文里63-28號`,"cat":`08.維修保固`}];
 const MANUALS=[{"cat":`標籤工具`,"name":`空氣循環風扇/擺頭型/大`,"bc":`4550583727338`,"url":`https://www.muji.com/tw/instruction/pdf/83727338.pdf`},{"cat":`標籤工具`,"name":`標籤工具/LED燈`,"bc":`4547315236930`,"url":`https://www.muji.com/tw/instruction/pdf/15236930.pdf`},{"cat":`標籤工具`,"name":`標籤工具/計步器`,"bc":`4547315236916`,"url":`https://www.muji.com/tw/instruction/pdf/15236916.pdf`},{"cat":`標籤工具`,"name":`標籤工具/溫濕度計`,"bc":`4547315816187`,"url":`https://www.muji.com/tw/instruction/pdf/15816187.pdf`},{"cat":`標籤工具`,"name":`標籤工具/鬧鐘`,"bc":`4547315236893`,"url":`https://www.muji.com/tw/instruction/pdf/15236893.pdf`},{"cat":`標籤工具`,"name":`標籤工具/攜帶掛勺`,"bc":`4550182223590`,"url":`https://www.muji.com/tw/instruction/pdf/82223590.pdf`},{"cat":`時鐘`,"name":`車站時鐘`,"bc":`4550182928501`,"url":`https://www.muji.com/tw/instruction/pdf/82928501.pdf`},{"cat":`時鐘`,"name":`指針式壁鐘/小/白.黑`,"bc":`4550344275702`,"url":`https://www.muji.com/tw/instruction/pdf/44275702.pdf`},{"cat":`時鐘`,"name":`指針式壁鐘/小/白.黑`,"bc":`4550344275719`,"url":`https://www.muji.com/tw/instruction/pdf/44275719.pdf`},{"cat":`時鐘`,"name":`指針式壁鐘/大/白.黑`,"bc":`4550344275689`,"url":`https://www.muji.com/tw/instruction/pdf/44275689.pdf`},{"cat":`時鐘`,"name":`指針式壁鐘/大/白.黑`,"bc":`4550344275696`,"url":`https://www.muji.com/tw/instruction/pdf/44275696.pdf`},{"cat":`時鐘`,"name":`山毛櫸指針式壁鐘/大/原色`,"bc":`4550344275726`,"url":`https://www.muji.com/tw/instruction/pdf/44275726.pdf`},{"cat":`時鐘`,"name":`山毛櫸指針式壁鐘/大/原色`,"bc":`4549337330030`,"url":`https://www.muji.com/tw/instruction/pdf/37330030.pdf`},{"cat":`時鐘`,"name":`山毛櫸指針式壁鐘/大/深棕`,"bc":`4549337330047`,"url":`https://www.muji.com/tw/instruction/pdf/37330047.pdf`},{"cat":`時鐘`,"name":`山毛櫸指針式壁鐘/大/深棕`,"bc":`4550344275733`,"url":`https://www.muji.com/tw/instruction/pdf/44275733.pdf`},{"cat":`時鐘`,"name":`腕錶/公園時鐘/黑色/寬`,"bc":`4549738967484`,"url":`https://www.muji.com/tw/instruction/pdf/38967484.pdf`},{"cat":`時鐘`,"name":`指針式鬧鐘`,"bc":`4550182114300`,"url":`https://www.muji.com/tw/instruction/pdf/82114300.pdf`},{"cat":`時鐘`,"name":`腕錶/公園時鐘/原色/寬`,"bc":`4549738967491`,"url":`https://www.muji.com/tw/instruction/pdf/38967491.pdf`},{"cat":`時鐘`,"name":`腕錶/公園時鐘/黑色/細`,"bc":`4549738967507`,"url":`https://www.muji.com/tw/instruction/pdf/38967507.pdf`},{"cat":`時鐘`,"name":`腕錶/公園時鐘/原色/細`,"bc":`4549738967514`,"url":`https://www.muji.com/tw/instruction/pdf/38967514.pdf`},{"cat":`時鐘`,"name":`腕錶/太陽能/黑色`,"bc":`4549738967408`,"url":`https://www.muji.com/tw/instruction/pdf/38967408.pdf`},{"cat":`時鐘`,"name":`腕錶/太陽能/灰色`,"bc":`4549738967422`,"url":`https://www.muji.com/tw/instruction/pdf/38967422.pdf`},{"cat":`時鐘`,"name":`腕錶/太陽能/白色`,"bc":`4549738967446`,"url":`https://www.muji.com/tw/instruction/pdf/38967446.pdf`},{"cat":`時鐘`,"name":`腕錶/時鐘/黑色`,"bc":`4549738967521`,"url":`https://www.muji.com/tw/instruction/pdf/38967521.pdf`},{"cat":`時鐘`,"name":`腕錶/時鐘/銀色`,"bc":`4549738967538`,"url":`https://www.muji.com/tw/instruction/pdf/38967538.pdf`},{"cat":`時鐘`,"name":`車站時鐘/迷你/附立架/白`,"bc":`4549738397878`,"url":`https://www.muji.com/tw/instruction/pdf/38397878.pdf`},{"cat":`時鐘`,"name":`浴室電子鐘`,"bc":`4934761152516`,"url":`https://www.muji.com/tw/instruction/pdf/61152516.pdf`},{"cat":`時鐘`,"name":`指針式鬧鐘/白`,"bc":`4549337494503`,"url":`https://www.muji.com/tw/instruction/pdf/37494503.pdf`},{"cat":`時鐘`,"name":`數位時鐘／中&小／附萬鐘功能`,"bc":`4547315831999`,"url":`https://www.muji.com/tw/instruction/pdf/15831999.pdf`},{"cat":`時鐘`,"name":`數位時鐘／中&小／附萬鐘功能`,"bc":`4547315832002`,"url":`https://www.muji.com/tw/instruction/pdf/15832002.pdf`},{"cat":`時鐘`,"name":`數位時鐘／中&小／附萬鐘功能`,"bc":`4547315832019`,"url":`https://www.muji.com/tw/instruction/pdf/15832019.pdf`},{"cat":`時鐘`,"name":`數位時鐘／中&小／附萬鐘功能`,"bc":`4547315832026`,"url":`https://www.muji.com/tw/instruction/pdf/15832026.pdf`},{"cat":`時鐘`,"name":`數位時鐘/附可調整式大音量鬧鈴/白色`,"bc":`4547315832637`,"url":`https://www.muji.com/tw/instruction/pdf/15832637.pdf`},{"cat":`時鐘`,"name":`數位溫濕度計/白色.黑色`,"bc":`4547315832392`,"url":`https://www.muji.com/tw/instruction/pdf/15832392.pdf`},{"cat":`時鐘`,"name":`數位溫濕度計/白色.黑色`,"bc":`4547315832408`,"url":`https://www.muji.com/tw/instruction/pdf/15832408.pdf`},{"cat":`時鐘`,"name":`數位時鐘/大/白`,"bc":`4547315831975`,"url":`https://www.muji.com/tw/instruction/pdf/15831975.pdf`},{"cat":`時鐘`,"name":`數位時鐘/大/黑`,"bc":`4547315831982`,"url":`https://www.muji.com/tw/instruction/pdf/15831982.pdf`},{"cat":`時鐘`,"name":`咕咕鐘/白.棕.薄紅`,"bc":`4547315832491`,"url":`https://www.muji.com/tw/instruction/pdf/15832491.pdf`},{"cat":`時鐘`,"name":`咕咕鐘/白.棕.薄紅`,"bc":`4549337035836`,"url":`https://www.muji.com/tw/instruction/pdf/37035836.pdf`},{"cat":`時鐘`,"name":`咕咕鐘/白.棕.薄紅`,"bc":`4549337330009`,"url":`https://www.muji.com/tw/instruction/pdf/37330009.pdf`},{"cat":`時鐘`,"name":`咕咕鐘/綠`,"bc":`4548076742364`,"url":`https://www.muji.com/tw/instruction/pdf/76742364.pdf`},{"cat":`時鐘`,"name":`公園時鐘/迷你/白`,"bc":`4547315832460`,"url":`https://www.muji.com/tw/instruction/pdf/15832460.pdf`},{"cat":`時鐘`,"name":`公園時鐘/迷你/白`,"bc":`4550344275740`,"url":`https://www.muji.com/tw/instruction/pdf/44275740.pdf`},{"cat":`時鐘`,"name":`公園時鐘/迷你/黑`,"bc":`4550344275757`,"url":`https://www.muji.com/tw/instruction/pdf/44275757.pdf`},{"cat":`時鐘`,"name":`公園時鐘/迷你/棕`,"bc":`4547315832453`,"url":`https://www.muji.com/tw/instruction/pdf/15832453.pdf`},{"cat":`時鐘`,"name":`胡桃木鬧鐘/深棕`,"bc":`4548718627455`,"url":`https://www.muji.com/tw/instruction/pdf/18627455.pdf`},{"cat":`時鐘`,"name":`車站鬧鐘/象牙白`,"bc":`4547315553990`,"url":`https://www.muji.com/tw/instruction/pdf/15553990.pdf`},{"cat":`時鐘`,"name":`山毛櫸鬧鐘`,"bc":`4547315832682`,"url":`https://www.muji.com/tw/instruction/pdf/15832682.pdf`},{"cat":`時鐘`,"name":`山毛櫸溫濕度計`,"bc":`4547315832699`,"url":`https://www.muji.com/tw/instruction/pdf/15832699.pdf`},{"cat":`時鐘`,"name":`指針式壁鐘/小/白`,"bc":`4547315915217`,"url":`https://www.muji.com/tw/instruction/pdf/15915217.pdf`},{"cat":`時鐘`,"name":`指針式壁鐘/小/黑`,"bc":`4547315915224`,"url":`https://www.muji.com/tw/instruction/pdf/15915224.pdf`},{"cat":`時鐘`,"name":`指針式壁鐘/小/銀`,"bc":`4547315915231`,"url":`https://www.muji.com/tw/instruction/pdf/15915231.pdf`},{"cat":`時鐘`,"name":`指針式壁鐘/大/白`,"bc":`4547315915163`,"url":`https://www.muji.com/tw/instruction/pdf/15915163.pdf`},{"cat":`時鐘`,"name":`指針式壁鐘/大/黑`,"bc":`4547315915170`,"url":`https://www.muji.com/tw/instruction/pdf/15915170.pdf`},{"cat":`時鐘`,"name":`指針式壁鐘/大/銀`,"bc":`4547315915187`,"url":`https://www.muji.com/tw/instruction/pdf/15915187.pdf`},{"cat":`時鐘`,"name":`橡膠壁鐘`,"bc":`4934761833439`,"url":`https://www.muji.com/tw/instruction/pdf/61833439.pdf`},{"cat":`時鐘`,"name":`指針式浴室鐘`,"bc":`4550182114317`,"url":`https://www.muji.com/tw/instruction/pdf/82114317.pdf`},{"cat":`家電`,"name":`DC馬達風扇`,"bc":`4550182122763`,"url":`https://www.muji.com/tw/instruction/pdf/82122763.pdf`},{"cat":`家電`,"name":`行動無水香氛機`,"bc":`4550002494063`,"url":`https://www.muji.com/tw/instruction/pdf/02494063.pdf`},{"cat":`家電`,"name":`空氣循環風扇/小/白`,"bc":`4550002435769`,"url":`https://www.muji.com/tw/instruction/pdf/02435769.pdf`},{"cat":`家電`,"name":`空氣循環風扇/小/黑`,"bc":`4550002435820`,"url":`https://www.muji.com/tw/instruction/pdf/02435820.pdf`},{"cat":`家電`,"name":`USB桌上型風扇.擺頭型/低噪音`,"bc":`4550002432058`,"url":`https://www.muji.com/tw/instruction/pdf/02432058.pdf`},{"cat":`家電`,"name":`USB桌上型風扇/低噪音/白`,"bc":`4549738967347`,"url":`https://www.muji.com/tw/instruction/pdf/38967347.pdf`},{"cat":`家電`,"name":`USB桌上型風扇/低噪音/藍`,"bc":`4549738634782`,"url":`https://www.muji.com/tw/instruction/pdf/38634782.pdf`},{"cat":`家電`,"name":`LED手電筒/小`,"bc":`4549738940814`,"url":`https://www.muji.com/tw/instruction/pdf/38940814.pdf`},{"cat":`家電`,"name":`家用電動食品混合器(攪拌機，附研磨功能)`,"bc":`4549738886020`,"url":`https://www.muji.com/tw/instruction/pdf/38886020.pdf`},{"cat":`家電`,"name":`USB桌上型風扇/低噪音/粉紅`,"bc":`4549738634799`,"url":`https://www.muji.com/tw/instruction/pdf/38634799.pdf`},{"cat":`家電`,"name":`壁鐘.壁掛式CD音響用立架/銀`,"bc":`4549337494541`,"url":`https://www.muji.com/tw/instruction/pdf/37494541.pdf`},{"cat":`家電`,"name":`大容量超音波芬香噴霧器`,"bc":`4549337765511`,"url":`https://www.muji.com/tw/instruction/pdf/37765511.pdf`},{"cat":`家電`,"name":`LED手電筒/大`,"bc":`4549738940807`,"url":`https://www.muji.com/tw/instruction/pdf/38940807.pdf`},{"cat":`家電`,"name":`音波電動牙刷`,"bc":`4549738967330`,"url":`https://www.muji.com/tw/instruction/pdf/38967330.pdf`},{"cat":`家電`,"name":`旅行用吹風機`,"bc":`4549337143517`,"url":`https://www.muji.com/tw/instruction/pdf/37143517.pdf`},{"cat":`家電`,"name":`空氣循環風扇`,"bc":`4549738309840`,"url":`https://www.muji.com/tw/instruction/pdf/38309840.pdf`},{"cat":`家電`,"name":`壁掛式CD音響/白`,"bc":`4548076475620`,"url":`https://www.muji.com/tw/instruction/pdf/76475620.pdf`},{"cat":`家電`,"name":`壁掛式CD音響/黑`,"bc":`4548076475705`,"url":`https://www.muji.com/tw/instruction/pdf/76475705.pdf`},{"cat":`家電`,"name":`超音波芬香噴霧器`,"bc":`4712893519649`,"url":`https://www.muji.com/tw/instruction/pdf/93519649.pdf`},{"cat":`家電`,"name":`體重計`,"bc":`4549738967378`,"url":`https://www.muji.com/tw/instruction/pdf/38967378.pdf`},{"cat":`家電`,"name":`炊飯電子鍋/附飯匙架.3杯`,"bc":`4549337186552`,"url":`https://www.muji.com/tw/instruction/pdf/37186552.pdf`},{"cat":`家電`,"name":`空氣清淨機`,"bc":`4547315987863`,"url":`https://www.muji.com/tw/instruction/pdf/15987863.pdf`},{"cat":`家電`,"name":`USB桌上型風扇.擺頭型/低噪音`,"bc":`4548076292753`,"url":`https://www.muji.com/tw/instruction/pdf/76292753.pdf`},{"cat":`家電`,"name":`USB桌上型風扇/低噪音/白`,"bc":`4934761378640`,"url":`https://www.muji.com/tw/instruction/pdf/61378640.pdf`},{"cat":`家電`,"name":`USB桌上型風扇/低噪音/黑`,"bc":`4547315236602`,"url":`https://www.muji.com/tw/instruction/pdf/15236602.pdf`},{"cat":`家電`,"name":`USB桌上型風扇/低噪音/藍`,"bc":`4547315236619`,"url":`https://www.muji.com/tw/instruction/pdf/15236619.pdf`},{"cat":`家電`,"name":`USB桌上型風扇/低噪音/粉紅`,"bc":`4547315236626`,"url":`https://www.muji.com/tw/instruction/pdf/15236626.pdf`},{"cat":`家電`,"name":`USB桌上型風扇/低噪音/綠`,"bc":`4549337142794`,"url":`https://www.muji.com/tw/instruction/pdf/37142794.pdf`},{"cat":`家電`,"name":`電熱水壺`,"bc":`4547315968657`,"url":`https://www.muji.com/tw/instruction/pdf/15968657.pdf`},{"cat":`家電`,"name":`自動按壓式烤麵包機`,"bc":`4547315968602`,"url":`https://www.muji.com/tw/instruction/pdf/15968602.pdf`},{"cat":`家電`,"name":`攜帶式電動刮鬍刀`,"bc":`4548076749981`,"url":`https://www.muji.com/tw/instruction/pdf/76749981.pdf`},{"cat":`家電`,"name":`電動燙睫毛器`,"bc":`4548076746454`,"url":`https://www.muji.com/tw/instruction/pdf/76746454.pdf`},{"cat":`家電`,"name":`電動修容刀`,"bc":`4548076745785`,"url":`https://www.muji.com/tw/instruction/pdf/76745785.pdf`},{"cat":`家電`,"name":`廚房用計時器/圓形`,"bc":`4548718365760`,"url":`https://www.muji.com/tw/instruction/pdf/18365760.pdf`},{"cat":`家電`,"name":`太陽能廚房用秤`,"bc":`4548718919321`,"url":`https://www.muji.com/tw/instruction/pdf/18919321.pdf`},{"cat":`家電`,"name":`簡約體重計`,"bc":`4547315021468`,"url":`https://www.muji.com/tw/instruction/pdf/15021468.pdf`},{"cat":`家電`,"name":`智慧型手機用充電式電池.6200mAh`,"bc":`4547315820207`,"url":`https://www.muji.com/tw/instruction/pdf/15820207.pdf`},{"cat":`家電`,"name":`智慧型手機用充電式電池.3100mAh`,"bc":`4547315820191`,"url":`https://www.muji.com/tw/instruction/pdf/15820191.pdf`},{"cat":`家電`,"name":`三輪車/象牙白`,"bc":`4549738654803`,"url":`https://www.muji.com/tw/instruction/pdf/38654803.pdf`},{"cat":`家電`,"name":`三輪車/紅色`,"bc":`4549738654810`,"url":`https://www.muji.com/tw/instruction/pdf/38654810.pdf`},{"cat":`家電`,"name":`三輪車/黃色`,"bc":`4549738654827`,"url":`https://www.muji.com/tw/instruction/pdf/38654827.pdf`},{"cat":`燈具`,"name":`LED布置立燈`,"bc":`4934761451718`,"url":`https://www.muji.com/tw/instruction/pdf/61451718.pdf`},{"cat":`燈具`,"name":`LED布置桌燈`,"bc":`4934761451725`,"url":`https://www.muji.com/tw/instruction/pdf/61451725.pdf`},{"cat":`燈具`,"name":`LED手提燈`,"bc":`4934761833668`,"url":`https://www.muji.com/tw/instruction/pdf/61833668.pdf`},{"cat":`燈具`,"name":`LED感應式掛燈`,"bc":`4549337494572`,"url":`https://www.muji.com/tw/instruction/pdf/37494572.pdf`},{"cat":`燈具`,"name":`長臂式檯燈用燈座`,"bc":`4549738326526`,"url":`https://www.muji.com/tw/instruction/pdf/38326526.pdf`},{"cat":`燈具`,"name":`長臂式檯燈用固定夾`,"bc":`4549738326533`,"url":`https://www.muji.com/tw/instruction/pdf/38326533.pdf`},{"cat":`燈具`,"name":`長臂式檯燈用落地燈`,"bc":`4549738326540`,"url":`https://www.muji.com/tw/instruction/pdf/38326540.pdf`},{"cat":`燈具`,"name":`長臂式檯燈/正方形`,"bc":`4549738397977`,"url":`https://www.muji.com/tw/instruction/pdf/38397977.pdf`},{"cat":`燈具`,"name":`長臂式檯燈/長方形`,"bc":`4549738397991`,"url":`https://www.muji.com/tw/instruction/pdf/38397991.pdf`},{"cat":`廚具&餐具`,"name":`攜帶式透明水壺`,"bc":`4550512399971`,"url":`https://www.muji.com/tw/instruction/pdf/12399971.pdf`},{"cat":`廚具&餐具`,"name":`攜帶式透明水壺`,"bc":`4550512399964`,"url":`https://www.muji.com/tw/instruction/pdf/12399964.pdf`},{"cat":`廚具&餐具`,"name":`攜帶式透明水壺`,"bc":`4550512399957`,"url":`https://www.muji.com/tw/instruction/pdf/12399957.pdf`},{"cat":`廚具&餐具`,"name":`卡式爐.迷你用收納盒`,"bc":`4549337494565`,"url":`https://www.muji.com/tw/instruction/pdf/37494565.pdf`},{"cat":`廚具&餐具`,"name":`卡式爐迷你說明書`,"bc":`4549337494558`,"url":`https://www.muji.com/tw/instruction/pdf/37494558.pdf`},{"cat":`廚具&餐具`,"name":`卡式爐說明書`,"bc":`4550002423261`,"url":`https://www.muji.com/tw/instruction/pdf/02423261.pdf`},{"cat":`廚具&餐具`,"name":`無把手不鏽鋼保溫杯/約300ml`,"bc":`4549738395492`,"url":`https://www.muji.com/tw/instruction/pdf/38395492.pdf`},{"cat":`廚具&餐具`,"name":`無把手不鏽鋼保溫杯/約450ml`,"bc":`4549738395485`,"url":`https://www.muji.com/tw/instruction/pdf/38395485.pdf`},{"cat":`廚具&餐具`,"name":`鑄製煎鍋/約直徑22cm`,"bc":`4547315822201`,"url":`https://www.muji.com/tw/instruction/pdf/15822201.pdf`},{"cat":`廚具&餐具`,"name":`鑄製煎鍋/約直徑26cm`,"bc":`4547315822218`,"url":`https://www.muji.com/tw/instruction/pdf/15822218.pdf`},{"cat":`廚具&餐具`,"name":`不鏽鋁合全面三層鍋/14cm`,"bc":`4547315257799`,"url":`https://www.muji.com/tw/instruction/pdf/15257799.pdf`},{"cat":`廚具&餐具`,"name":`不鏽鋁合全面三層單手鍋/附鍋蓋/16cm`,"bc":`4547315257805`,"url":`https://www.muji.com/tw/instruction/pdf/15257805.pdf`},{"cat":`廚具&餐具`,"name":`不鏽鋁合全面三層單手鍋/附鍋蓋/18cm`,"bc":`4547315257812`,"url":`https://www.muji.com/tw/instruction/pdf/15257812.pdf`},{"cat":`廚具&餐具`,"name":`不鏽鋁合全面三層兩手鍋/附鍋蓋/20cm`,"bc":`4547315257829`,"url":`https://www.muji.com/tw/instruction/pdf/15257829.pdf`},{"cat":`廚具&餐具`,"name":`不鏽鋁合全面三層兩手鍋/附鍋蓋/20cm深`,"bc":`4547315257836`,"url":`https://www.muji.com/tw/instruction/pdf/15257836.pdf`},{"cat":`廚具&餐具`,"name":`不鏽鋁合全面三層兩手鍋/附鍋蓋/22cm淺`,"bc":`4547315257843`,"url":`https://www.muji.com/tw/instruction/pdf/15257843.pdf`},{"cat":`廚具&餐具`,"name":`不鏽鋼平底速熱水壺/小/1.1L`,"bc":`4934761830629`,"url":`https://www.muji.com/tw/instruction/pdf/61830629.pdf`},{"cat":`廚具&餐具`,"name":`不鏽鋼平底速熱水壺/大/2.0L`,"bc":`4934761830636`,"url":`https://www.muji.com/tw/instruction/pdf/61830636.pdf`},{"cat":`廚具&餐具`,"name":`壓克力冷水筒/2L`,"bc":`4547315294671`,"url":`https://www.muji.com/tw/instruction/pdf/15294671.pdf`},{"cat":`廚具&餐具`,"name":`壓克力冷水筒/1L`,"bc":`4547315294688`,"url":`https://www.muji.com/tw/instruction/pdf/15294688.pdf`},{"cat":`廚具&餐具`,"name":`密閉式琺瑯保存容器/深型.小`,"bc":`4934761337562`,"url":`https://www.muji.com/tw/instruction/pdf/61337562.pdf`},{"cat":`廚具&餐具`,"name":`密閉式琺瑯保存容器/深型.中`,"bc":`4934761337579`,"url":`https://www.muji.com/tw/instruction/pdf/61337579.pdf`},{"cat":`廚具&餐具`,"name":`密閉式琺瑯保存容器/深型.大`,"bc":`4934761337586`,"url":`https://www.muji.com/tw/instruction/pdf/61337586.pdf`},{"cat":`廚具&餐具`,"name":`密閉式琺瑯保存容器/大`,"bc":`4934761337609`,"url":`https://www.muji.com/tw/instruction/pdf/61337609.pdf`},{"cat":`廚具&餐具`,"name":`密閉式琺瑯保存容器/中`,"bc":`4934761337616`,"url":`https://www.muji.com/tw/instruction/pdf/61337616.pdf`},{"cat":`廚具&餐具`,"name":`耐熱玻璃瓶/大`,"bc":`4945247243857`,"url":`https://www.muji.com/tw/instruction/pdf/47243857.pdf`},{"cat":`廚具&餐具`,"name":`耐熱玻璃瓶/小`,"bc":`4945247243840`,"url":`https://www.muji.com/tw/instruction/pdf/47243840.pdf`},{"cat":`廚具&餐具`,"name":`耐熱玻璃壺/大`,"bc":`4548076388470`,"url":`https://www.muji.com/tw/instruction/pdf/76388470.pdf`},{"cat":`廚具&餐具`,"name":`耐熱玻璃壺/小`,"bc":`4548076388463`,"url":`https://www.muji.com/tw/instruction/pdf/76388463.pdf`},{"cat":`廚具&餐具`,"name":`碳酸玻璃密封罐/225ml`,"bc":`4547315759521`,"url":`https://www.muji.com/tw/instruction/pdf/15759521.pdf`},{"cat":`廚具&餐具`,"name":`碳酸玻璃密封罐/500ml`,"bc":`4547315759538`,"url":`https://www.muji.com/tw/instruction/pdf/15759538.pdf`},{"cat":`廚具&餐具`,"name":`碳酸玻璃密封罐/750ml`,"bc":`4934761838304`,"url":`https://www.muji.com/tw/instruction/pdf/61838304.pdf`},{"cat":`廚具&餐具`,"name":`碳酸玻璃密封罐/1000ml`,"bc":`4934761838311`,"url":`https://www.muji.com/tw/instruction/pdf/61838311.pdf`},{"cat":`廚具&餐具`,"name":`炊飯土鍋/1.5合`,"bc":`4934761052069`,"url":`https://www.muji.com/tw/instruction/pdf/61052069.pdf`},{"cat":`廚具&餐具`,"name":`炊飯土鍋/3合`,"bc":`4934761052076`,"url":`https://www.muji.com/tw/instruction/pdf/61052076.pdf`},{"cat":`廚具&餐具`,"name":`伊賀燒輕量土鍋/白釉/3~5人/8A`,"bc":`4550002526726`,"url":`https://www.muji.com/tw/instruction/pdf/02526726.pdf`},{"cat":`廚具&餐具`,"name":`伊賀燒輕量土鍋/黑釉/3~5人/8A`,"bc":`4550002526740`,"url":`https://www.muji.com/tw/instruction/pdf/02526740.pdf`},{"cat":`廚具&餐具`,"name":`伊賀燒輕量土鍋/白釉/2~3人/8A`,"bc":`4550002526719`,"url":`https://www.muji.com/tw/instruction/pdf/02526719.pdf`},{"cat":`廚具&餐具`,"name":`伊賀燒輕量土鍋/黑釉/2~3人/8A`,"bc":`4550002526733`,"url":`https://www.muji.com/tw/instruction/pdf/02526733.pdf`},{"cat":`廚具&餐具`,"name":`聚丙烯馬克杯/400ml`,"bc":`4550002526801`,"url":`https://www.muji.com/tw/instruction/pdf/02526801.pdf`},{"cat":`廚具&餐具`,"name":`聚丙烯旋蓋圓形便當盒/白色/460ml`,"bc":`4550002181062`,"url":`https://www.muji.com/tw/instruction/pdf/02181062.pdf`},{"cat":`廚具&餐具`,"name":`聚丙烯旋蓋圓形便當盒/白色/290ml`,"bc":`4550002181079`,"url":`https://www.muji.com/tw/instruction/pdf/02181079.pdf`},{"cat":`廚具&餐具`,"name":`聚丙烯旋蓋圓形便當盒/白色/205ml`,"bc":`4550002181086`,"url":`https://www.muji.com/tw/instruction/pdf/02181086.pdf`},{"cat":`廚具&餐具`,"name":`聚丙烯旋蓋圓形便當盒/黑色/460ml`,"bc":`4550002181093`,"url":`https://www.muji.com/tw/instruction/pdf/02181093.pdf`},{"cat":`廚具&餐具`,"name":`聚丙烯旋蓋圓形便當盒/黑色/290ml`,"bc":`4550002181161`,"url":`https://www.muji.com/tw/instruction/pdf/02181161.pdf`},{"cat":`廚具&餐具`,"name":`聚丙烯旋蓋圓形便當盒/黑色/205ml`,"bc":`4550002181178`,"url":`https://www.muji.com/tw/instruction/pdf/02181178.pdf`},{"cat":`廚具&餐具`,"name":`牛皮紙製組合式面紙盒/桌上用`,"bc":`4550002526238`,"url":`https://www.muji.com/tw/instruction/pdf/02526238.pdf`},{"cat":`廚具&餐具`,"name":`牛皮紙製組合式面紙盒`,"bc":`4550002526245`,"url":`https://www.muji.com/tw/instruction/pdf/02526245.pdf`},{"cat":`廚具&餐具`,"name":`萬古燒單人土鍋/白釉`,"bc":`4549738744719`,"url":`https://www.muji.com/tw/instruction/pdf/38744719.pdf`},{"cat":`廚具&餐具`,"name":`萬古燒單人土鍋/黑釉`,"bc":`4549738744726`,"url":`https://www.muji.com/tw/instruction/pdf/38744726.pdf`},{"cat":`廚具&餐具`,"name":`麵粉保存容器/2200ml`,"bc":`4550002526818`,"url":`https://www.muji.com/tw/instruction/pdf/02526818.pdf`},{"cat":`廚具&餐具`,"name":`麵粉保存容器/1500ml`,"bc":`4550002526825`,"url":`https://www.muji.com/tw/instruction/pdf/02526825.pdf`},{"cat":`廚具&餐具`,"name":`麵粉保存容器/710ml`,"bc":`4550002526832`,"url":`https://www.muji.com/tw/instruction/pdf/02526832.pdf`},{"cat":`廚具&餐具`,"name":`麵粉保存容器/660ml`,"bc":`4550002526849`,"url":`https://www.muji.com/tw/instruction/pdf/02526849.pdf`},{"cat":`廚具&餐具`,"name":`不鏽鋼麵包刀/8A`,"bc":`4550002766436`,"url":`https://www.muji.com/tw/instruction/pdf/02766436.pdf`},{"cat":`廚具&餐具`,"name":`鋼製水平吊衣架`,"bc":`4547315820726`,"url":`https://www.muji.com/tw/instruction/pdf/15820726.pdf`},{"cat":`廚具&餐具`,"name":`不鏽鋼保溫杯/350ml`,"bc":`4549337185319`,"url":`https://www.muji.com/tw/instruction/pdf/37185319.pdf`},{"cat":`廚具&餐具`,"name":`不鏽鋼保溫杯/500ml`,"bc":`4549337185326`,"url":`https://www.muji.com/tw/instruction/pdf/37185326.pdf`},{"cat":`廚具&餐具`,"name":`PP上蓋可選式垃圾桶/小/20L袋用`,"bc":`4549738359791`,"url":`https://www.muji.com/tw/instruction/pdf/38359791.pdf`},{"cat":`廚具&餐具`,"name":`PP上蓋可選式垃圾桶/大/30L袋用`,"bc":`4549738359807`,"url":`https://www.muji.com/tw/instruction/pdf/38359807.pdf`},{"cat":`家具`,"name":`壁掛家具/相框/A4/橡木`,"bc":`4549738988809`,"url":`https://www.muji.com/tw/instruction/pdf/38988809.pdf`},{"cat":`家具`,"name":`壁掛家具/相框/A5/橡木`,"bc":`4549738988816`,"url":`https://www.muji.com/tw/instruction/pdf/38988816.pdf`},{"cat":`家具`,"name":`壁掛家具/相框/明信片/橡木`,"bc":`4549738988823`,"url":`https://www.muji.com/tw/instruction/pdf/38988823.pdf`},{"cat":`家具`,"name":`高椅背和室沙發/本體/1人座/8S`,"bc":`4550002405236`,"url":`https://www.muji.com/tw/instruction/pdf/02405236.pdf`},{"cat":`家具`,"name":`高椅背和室沙發用腳凳本體/8S`,"bc":`4550002405113`,"url":`https://www.muji.com/tw/instruction/pdf/02405113.pdf`},{"cat":`家具`,"name":`橡木凳子/圓腳`,"bc":`4550002065966`,"url":`https://www.muji.com/tw/instruction/pdf/02065966.pdf`},{"cat":`家具`,"name":`橡木長凳/圓腳/8S`,"bc":`4550002065959`,"url":`https://www.muji.com/tw/instruction/pdf/02065959.pdf`},{"cat":`家具`,"name":`橡木組合櫃/寬82.5cm/高型基本組`,"bc":`4549738918066`,"url":`https://www.muji.com/tw/instruction/pdf/38918066.pdf`},{"cat":`家具`,"name":`胡桃木組合櫃/寬82.5cm/高型基本組`,"bc":`4549738918059`,"url":`https://www.muji.com/tw/instruction/pdf/38918059.pdf`},{"cat":`家具`,"name":`LD兩用長凳`,"bc":`4549738734376`,"url":`https://www.muji.com/tw/instruction/pdf/38734376.pdf`},{"cat":`家具`,"name":`LD兩用凳`,"bc":`4549738370017`,"url":`https://www.muji.com/tw/instruction/pdf/38370017.pdf`},{"cat":`家具`,"name":`橡木玄關衣帽架`,"bc":`4547315914739`,"url":`https://www.muji.com/tw/instruction/pdf/15914739.pdf`},{"cat":`家具`,"name":`胡桃木玄關衣帽架`,"bc":`4549337154476`,"url":`https://www.muji.com/tw/instruction/pdf/37154476.pdf`},{"cat":`家具`,"name":`胡桃木組合櫃/書桌組`,"bc":`4549738918035`,"url":`https://www.muji.com/tw/instruction/pdf/38918035.pdf`},{"cat":`家具`,"name":`橡木組合櫃/書桌組`,"bc":`4549738918042`,"url":`https://www.muji.com/tw/instruction/pdf/38918042.pdf`},{"cat":`家具`,"name":`壁掛家具/L型棚板44cm/橡木`,"bc":`4549337287341`,"url":`https://www.muji.com/tw/instruction/pdf/37287341.pdf`},{"cat":`家具`,"name":`壁掛家具/L型棚板88cm/橡木`,"bc":`4549337287358`,"url":`https://www.muji.com/tw/instruction/pdf/37287358.pdf`},{"cat":`家具`,"name":`壁掛家具/L型棚板44cm/胡桃木`,"bc":`4549337287426`,"url":`https://www.muji.com/tw/instruction/pdf/37287426.pdf`},{"cat":`家具`,"name":`壁掛家具/L型棚板88cm/胡桃木`,"bc":`4549337287433`,"url":`https://www.muji.com/tw/instruction/pdf/37287433.pdf`},{"cat":`家具`,"name":`壁掛家具/箱/44cm/橡木`,"bc":`4549337287365`,"url":`https://www.muji.com/tw/instruction/pdf/37287365.pdf`},{"cat":`家具`,"name":`壁掛家具/箱/88cm/橡木`,"bc":`4549337287372`,"url":`https://www.muji.com/tw/instruction/pdf/37287372.pdf`},{"cat":`家具`,"name":`壁掛家具/箱/44cm/胡桃木`,"bc":`4549337287440`,"url":`https://www.muji.com/tw/instruction/pdf/37287440.pdf`},{"cat":`家具`,"name":`壁掛家具/箱/88cm/胡桃木`,"bc":`4549337287457`,"url":`https://www.muji.com/tw/instruction/pdf/37287457.pdf`},{"cat":`家具`,"name":`壁掛家具/長押44cm/橡木`,"bc":`4549337287389`,"url":`https://www.muji.com/tw/instruction/pdf/37287389.pdf`},{"cat":`家具`,"name":`壁掛家具/長押88cm/橡木`,"bc":`4549337287396`,"url":`https://www.muji.com/tw/instruction/pdf/37287396.pdf`},{"cat":`家具`,"name":`壁掛家具/長押44cm/胡桃木`,"bc":`4549337287471`,"url":`https://www.muji.com/tw/instruction/pdf/37287471.pdf`},{"cat":`家具`,"name":`壁掛家具/長押88cm/胡桃木`,"bc":`4549337287488`,"url":`https://www.muji.com/tw/instruction/pdf/37287488.pdf`},{"cat":`家具`,"name":`壁掛家具/掛鉤/橡木`,"bc":`4549337287402`,"url":`https://www.muji.com/tw/instruction/pdf/37287402.pdf`},{"cat":`家具`,"name":`壁掛家具/掛鉤/胡桃木`,"bc":`4549337287419`,"url":`https://www.muji.com/tw/instruction/pdf/37287419.pdf`},{"cat":`家具`,"name":`壁掛家具/轉角架/橡木`,"bc":`4549337462038`,"url":`https://www.muji.com/tw/instruction/pdf/37462038.pdf`},{"cat":`家具`,"name":`壁掛家具/轉角架/胡桃木`,"bc":`4549337462069`,"url":`https://www.muji.com/tw/instruction/pdf/37462069.pdf`},{"cat":`家具`,"name":`壁掛家具/三連掛鉤/橡木`,"bc":`4549337462045`,"url":`https://www.muji.com/tw/instruction/pdf/37462045.pdf`},{"cat":`家具`,"name":`壁掛家具/三連掛鉤/胡桃木`,"bc":`4549337462076`,"url":`https://www.muji.com/tw/instruction/pdf/37462076.pdf`},{"cat":`家具`,"name":`壁掛家具/箱/1格/橡木真`,"bc":`4549337462052`,"url":`https://www.muji.com/tw/instruction/pdf/37462052.pdf`},{"cat":`家具`,"name":`壁掛家具/箱/1格/胡桃木`,"bc":`4549337462083`,"url":`https://www.muji.com/tw/instruction/pdf/37462083.pdf`},{"cat":`家具`,"name":`鋼製沙發凳本體/羽毛獨立筒`,"bc":`4549337408104`,"url":`https://www.muji.com/tw/instruction/pdf/37408104.pdf`},{"cat":`家具`,"name":`鋼製羽毛獨立筒沙發/2.5人`,"bc":`4549337408135`,"url":`https://www.muji.com/tw/instruction/pdf/37408135.pdf`},{"cat":`家具`,"name":`鋼製羽毛獨立筒沙發/2人`,"bc":`4549337413764`,"url":`https://www.muji.com/tw/instruction/pdf/37413764.pdf`},{"cat":`家具`,"name":`鋼製羽絨獨立筒沙發/3人`,"bc":`4549337415454`,"url":`https://www.muji.com/tw/instruction/pdf/37415454.pdf`},{"cat":`家具`,"name":`鋼製羽絨獨立筒沙發/2.5人`,"bc":`4549337415461`,"url":`https://www.muji.com/tw/instruction/pdf/37415461.pdf`},{"cat":`家具`,"name":`鋼製羽絨獨立筒沙發/2人`,"bc":`4549337415447`,"url":`https://www.muji.com/tw/instruction/pdf/37415447.pdf`},{"cat":`家具`,"name":`組合沙發/本體/大/半型扶手(右)`,"bc":`4550002528010`,"url":`https://www.muji.com/tw/instruction/pdf/02528010.pdf`},{"cat":`家具`,"name":`組合沙發/本體/大/半型扶手(左)`,"bc":`4550002528027`,"url":`https://www.muji.com/tw/instruction/pdf/02528027.pdf`},{"cat":`家具`,"name":`組合沙發/本體/大/半型背墊`,"bc":`4550002528034`,"url":`https://www.muji.com/tw/instruction/pdf/02528034.pdf`},{"cat":`家具`,"name":`組合沙發/本體/大/附扶手/9S`,"bc":`4550002527983`,"url":`https://www.muji.com/tw/instruction/pdf/02527983.pdf`},{"cat":`家具`,"name":`組合沙發/本體/大/附扶手`,"bc":`4549738986942`,"url":`https://www.muji.com/tw/instruction/pdf/38986942.pdf`},{"cat":`家具`,"name":`組合沙發/本體/小/附扶手/9S`,"bc":`4550002527952`,"url":`https://www.muji.com/tw/instruction/pdf/02527952.pdf`},{"cat":`家具`,"name":`組合沙發/本體/小/附扶手`,"bc":`4549738666318`,"url":`https://www.muji.com/tw/instruction/pdf/38666318.pdf`},{"cat":`家具`,"name":`組合沙發/本體/大/無扶手/9S`,"bc":`4550002527990`,"url":`https://www.muji.com/tw/instruction/pdf/02527990.pdf`},{"cat":`家具`,"name":`組合沙發/本體/大/無扶手`,"bc":`4549738986959`,"url":`https://www.muji.com/tw/instruction/pdf/38986959.pdf`},{"cat":`家具`,"name":`組合沙發/本體/小/無扶手/9S`,"bc":`4550002527969`,"url":`https://www.muji.com/tw/instruction/pdf/02527969.pdf`},{"cat":`家具`,"name":`組合沙發/本體/小/無扶手`,"bc":`4549738666325`,"url":`https://www.muji.com/tw/instruction/pdf/38666325.pdf`},{"cat":`家具`,"name":`組合沙發/本體/大/沙發凳/9S`,"bc":`4550002528003`,"url":`https://www.muji.com/tw/instruction/pdf/02528003.pdf`},{"cat":`家具`,"name":`組合沙發/本體/大/沙發凳`,"bc":`4549738986966`,"url":`https://www.muji.com/tw/instruction/pdf/38986966.pdf`},{"cat":`家具`,"name":`組合沙發/本體/小/沙發凳/9S`,"bc":`4550002527976`,"url":`https://www.muji.com/tw/instruction/pdf/02527976.pdf`},{"cat":`家具`,"name":`組合沙發/本體/小/沙發凳`,"bc":`4549738666332`,"url":`https://www.muji.com/tw/instruction/pdf/38666332.pdf`},{"cat":`家具`,"name":`沙發本體/2人座/聚氨酯獨立筒/9S`,"bc":`4550182008067`,"url":`https://www.muji.com/tw/instruction/pdf/82008067.pdf`},{"cat":`家具`,"name":`沙發本體/2.5人座/聚氨酯獨立筒/9S`,"bc":`4550182008074`,"url":`https://www.muji.com/tw/instruction/pdf/82008074.pdf`},{"cat":`家具`,"name":`沙發本體/3人座/聚氨酯獨立筒/9S`,"bc":`4550182011432`,"url":`https://www.muji.com/tw/instruction/pdf/82011432.pdf`},{"cat":`家具`,"name":`沙發本體/2人座/羽毛獨立筒/9S`,"bc":`4550182011401`,"url":`https://www.muji.com/tw/instruction/pdf/82011401.pdf`},{"cat":`家具`,"name":`沙發本體/2.5人座/羽毛獨立筒/9S`,"bc":`4550182011418`,"url":`https://www.muji.com/tw/instruction/pdf/82011418.pdf`},{"cat":`家具`,"name":`沙發本體/3人座/羽毛獨立筒/9S`,"bc":`4550182011425`,"url":`https://www.muji.com/tw/instruction/pdf/82011425.pdf`},{"cat":`家具`,"name":`沙發本體/3人座/羽毛獨立筒/躺椅型(右)/9S`,"bc":`4550182011449`,"url":`https://www.muji.com/tw/instruction/pdf/82011449.pdf`},{"cat":`家具`,"name":`沙發本體/3人座/羽毛獨立筒/躺椅型(左)/9S`,"bc":`4550182011456`,"url":`https://www.muji.com/tw/instruction/pdf/82011456.pdf`},{"cat":`家具`,"name":`沙發本體/2.5人座/羽毛獨立筒/高椅背型/9S`,"bc":`4550182011463`,"url":`https://www.muji.com/tw/instruction/pdf/82011463.pdf`},{"cat":`家具`,"name":`沙發凳/羽毛獨立筒/9S`,"bc":`4550182008098`,"url":`https://www.muji.com/tw/instruction/pdf/82008098.pdf`},{"cat":`家具`,"name":`沙發凳/聚氨酯獨立筒/9S`,"bc":`4550182008104`,"url":`https://www.muji.com/tw/instruction/pdf/82008104.pdf`},{"cat":`家具`,"name":`無垢材橢圓餐桌/橡木/寬150CM`,"bc":`4550182009217`,"url":`https://www.muji.com/tw/instruction/pdf/82009217.pdf`},{"cat":`家具`,"name":`無垢材橢圓餐桌/橡木/寬180CM`,"bc":`4550182009224`,"url":`https://www.muji.com/tw/instruction/pdf/82009224.pdf`},{"cat":`家具`,"name":`無垢材橢圓餐桌/胡桃木/寬150CM`,"bc":`4550182049527`,"url":`https://www.muji.com/tw/instruction/pdf/82049527.pdf`},{"cat":`家具`,"name":`無垢材橢圓餐桌/胡桃木/寬180CM`,"bc":`4550182049534`,"url":`https://www.muji.com/tw/instruction/pdf/82049534.pdf`},{"cat":`家具`,"name":`無垢材餐桌/附抽屜/橡木/寬80CM`,"bc":`4550182009316`,"url":`https://www.muji.com/tw/instruction/pdf/82009316.pdf`},{"cat":`家具`,"name":`無垢材餐桌/附抽屜/橡木/寬140CM`,"bc":`4550182009323`,"url":`https://www.muji.com/tw/instruction/pdf/82009323.pdf`},{"cat":`家具`,"name":`無垢材餐桌/附抽屜/橡木/寬180CM`,"bc":`4550182009330`,"url":`https://www.muji.com/tw/instruction/pdf/82009330.pdf`},{"cat":`家具`,"name":`無垢材餐桌/附抽屜/胡桃木/寬80CM`,"bc":`4550182049466`,"url":`https://www.muji.com/tw/instruction/pdf/82049466.pdf`},{"cat":`家具`,"name":`無垢材餐桌/附抽屜/胡桃木/寬140CM`,"bc":`4550182049473`,"url":`https://www.muji.com/tw/instruction/pdf/82049473.pdf`},{"cat":`家具`,"name":`無垢材餐桌/附抽屜/胡桃木/寬180CM`,"bc":`4550182049480`,"url":`https://www.muji.com/tw/instruction/pdf/82049480.pdf`},{"cat":`家具`,"name":`無垢材矮桌/附抽屜/橡木/90x45CM`,"bc":`4550182009347`,"url":`https://www.muji.com/tw/instruction/pdf/82009347.pdf`},{"cat":`家具`,"name":`無垢材矮桌/附抽屜/橡木/110x55CM`,"bc":`4550182009200`,"url":`https://www.muji.com/tw/instruction/pdf/82009200.pdf`},{"cat":`家具`,"name":`無垢材矮桌/附抽屜/胡桃木/90x45CM`,"bc":`4550182049497`,"url":`https://www.muji.com/tw/instruction/pdf/82049497.pdf`},{"cat":`家具`,"name":`無垢材矮桌/附抽屜/胡桃木/110x55CM`,"bc":`4550182049510`,"url":`https://www.muji.com/tw/instruction/pdf/82049510.pdf`},{"cat":`家具`,"name":`無垢材橢圓餐桌/橡木/摺疊加長80-120`,"bc":`4550182009248`,"url":`https://www.muji.com/tw/instruction/pdf/82009248.pdf`},{"cat":`家具`,"name":`無垢材橢圓餐桌/胡桃木/摺疊加長80-120`,"bc":`4550182049558`,"url":`https://www.muji.com/tw/instruction/pdf/82049558.pdf`},{"cat":`家具`,"name":`無垢材橢圓餐桌/橡木/摺疊加長140-220`,"bc":`4550182009231`,"url":`https://www.muji.com/tw/instruction/pdf/82009231.pdf`},{"cat":`家具`,"name":`無垢材橢圓餐桌/胡桃木/摺疊加長140-220`,"bc":`4550182049541`,"url":`https://www.muji.com/tw/instruction/pdf/82049541.pdf`},{"cat":`家具`,"name":`SUS追加用側片/不鏽鋼/大/2S`,"bc":`4934761179223`,"url":`https://www.muji.com/tw/instruction/pdf/61179223.pdf`},{"cat":`家具`,"name":`SUS追加用側片/不鏽鋼/中/2S`,"bc":`4934761179230`,"url":`https://www.muji.com/tw/instruction/pdf/61179230.pdf`},{"cat":`家具`,"name":`SUS追加用側片/不鏽鋼/小/2S`,"bc":`4934761179247`,"url":`https://www.muji.com/tw/instruction/pdf/61179247.pdf`},{"cat":`家具`,"name":`SUS追加用側片/不鏽鋼/迷你/2S`,"bc":`4934761179254`,"url":`https://www.muji.com/tw/instruction/pdf/61179254.pdf`},{"cat":`家具`,"name":`SUS追加用側片/灰/大/2S`,"bc":`4934761179629`,"url":`https://www.muji.com/tw/instruction/pdf/61179629.pdf`},{"cat":`家具`,"name":`SUS追加用側片/灰/中/2S`,"bc":`4934761179636`,"url":`https://www.muji.com/tw/instruction/pdf/61179636.pdf`},{"cat":`家具`,"name":`SUS追加用側片/灰/小/2S`,"bc":`4934761179643`,"url":`https://www.muji.com/tw/instruction/pdf/61179643.pdf`},{"cat":`家具`,"name":`SUS追加用側片/灰/迷你/2S`,"bc":`4934761179650`,"url":`https://www.muji.com/tw/instruction/pdf/61179650.pdf`},{"cat":`家具`,"name":`SUS追加用側片/亮面淺灰/迷你/9S`,"bc":`4550002998363`,"url":`https://www.muji.com/tw/instruction/pdf/02998363.pdf`},{"cat":`家具`,"name":`SUS追加用側片/亮面淺灰/小/9S`,"bc":`4550002998370`,"url":`https://www.muji.com/tw/instruction/pdf/02998370.pdf`},{"cat":`家具`,"name":`SUS追加用側片/亮面淺灰/中/9S`,"bc":`4550002998387`,"url":`https://www.muji.com/tw/instruction/pdf/02998387.pdf`},{"cat":`家具`,"name":`SUS追加用側片/亮面淺灰/大/9S`,"bc":`4550002998394`,"url":`https://www.muji.com/tw/instruction/pdf/02998394.pdf`},{"cat":`家具`,"name":`SUS追加棚/不鏽鋼/84/9S`,"bc":`4550002998509`,"url":`https://www.muji.com/tw/instruction/pdf/02998509.pdf`},{"cat":`家具`,"name":`SUS追加棚/不鏽鋼/56/9S`,"bc":`4550002998516`,"url":`https://www.muji.com/tw/instruction/pdf/02998516.pdf`},{"cat":`家具`,"name":`SUS追加棚/不鏽鋼/42/9S`,"bc":`4550002998523`,"url":`https://www.muji.com/tw/instruction/pdf/02998523.pdf`},{"cat":`家具`,"name":`SUS追加棚/鋼製/亮面淺灰/84/9S`,"bc":`4550002998547`,"url":`https://www.muji.com/tw/instruction/pdf/02998547.pdf`},{"cat":`家具`,"name":`SUS追加棚/鋼製/亮面淺灰/56/9S`,"bc":`4550002998554`,"url":`https://www.muji.com/tw/instruction/pdf/02998554.pdf`},{"cat":`家具`,"name":`SUS追加棚/鋼製/亮面淺灰/42/9S`,"bc":`4550002998561`,"url":`https://www.muji.com/tw/instruction/pdf/02998561.pdf`},{"cat":`家具`,"name":`SUS交叉棒/不鏽鋼/84/大/2S`,"bc":`4934761179261`,"url":`https://www.muji.com/tw/instruction/pdf/61179261.pdf`},{"cat":`家具`,"name":`SUS交叉棒/不鏽鋼/42-56/小/2S`,"bc":`4934761179278`,"url":`https://www.muji.com/tw/instruction/pdf/61179278.pdf`},{"cat":`家具`,"name":`SUS交叉棒/灰/84/大/2S`,"bc":`4934761179667`,"url":`https://www.muji.com/tw/instruction/pdf/61179667.pdf`},{"cat":`家具`,"name":`SUS交叉棒/灰/42-56/小/2S`,"bc":`4934761179674`,"url":`https://www.muji.com/tw/instruction/pdf/61179674.pdf`},{"cat":`家具`,"name":`SUS交叉棒/亮面淺灰/84/大/9S`,"bc":`4550002998738`,"url":`https://www.muji.com/tw/instruction/pdf/02998738.pdf`},{"cat":`家具`,"name":`SUS交叉棒/亮面淺灰/42-56/小/9S`,"bc":`4550002998745`,"url":`https://www.muji.com/tw/instruction/pdf/02998745.pdf`},{"cat":`家具`,"name":`SUS側板/大/亮面淺灰/9S`,"bc":`4550182141160`,"url":`https://www.muji.com/tw/instruction/pdf/82141160.pdf`},{"cat":`家具`,"name":`SUS側板/小/亮面淺灰/9S`,"bc":`4550182141177`,"url":`https://www.muji.com/tw/instruction/pdf/82141177.pdf`},{"cat":`家具`,"name":`SUS側板/小/不鏽鋼/2S`,"bc":`4934761179285`,"url":`https://www.muji.com/tw/instruction/pdf/61179285.pdf`},{"cat":`家具`,"name":`SUS側板/小/淺灰`,"bc":`4548076580898`,"url":`https://www.muji.com/tw/instruction/pdf/76580898.pdf`},{"cat":`家具`,"name":`SUS側板/大/深灰`,"bc":`4548076581406`,"url":`https://www.muji.com/tw/instruction/pdf/76581406.pdf`},{"cat":`家具`,"name":`SUS側板/小/深灰`,"bc":`4548076580904`,"url":`https://www.muji.com/tw/instruction/pdf/76580904.pdf`},{"cat":`家具`,"name":`SUS背板/小/84cm/亮面淺灰/9S`,"bc":`4550182141184`,"url":`https://www.muji.com/tw/instruction/pdf/82141184.pdf`},{"cat":`家具`,"name":`SUS背板/小/56cm/亮面淺灰/9S`,"bc":`4550182141191`,"url":`https://www.muji.com/tw/instruction/pdf/82141191.pdf`},{"cat":`家具`,"name":`SUS背板/大/84cm/亮面淺灰/9S`,"bc":`4550182141207`,"url":`https://www.muji.com/tw/instruction/pdf/82141207.pdf`},{"cat":`家具`,"name":`SUS背板/大/56cm/亮面淺灰/9S`,"bc":`4550182141214`,"url":`https://www.muji.com/tw/instruction/pdf/82141214.pdf`},{"cat":`家具`,"name":`SUS背板/大/84cm/深灰`,"bc":`4548076580775`,"url":`https://www.muji.com/tw/instruction/pdf/76580775.pdf`},{"cat":`家具`,"name":`SUS背板/大/56cm/深灰`,"bc":`4548076580782`,"url":`https://www.muji.com/tw/instruction/pdf/76580782.pdf`},{"cat":`家具`,"name":`SUS背板/小/84cm/淺灰`,"bc":`4548076580959`,"url":`https://www.muji.com/tw/instruction/pdf/76580959.pdf`},{"cat":`家具`,"name":`SUS背板/小/56cm/淺灰`,"bc":`4548076580966`,"url":`https://www.muji.com/tw/instruction/pdf/76580966.pdf`},{"cat":`家具`,"name":`SUS背板/大/84cm/淺灰`,"bc":`4548076580973`,"url":`https://www.muji.com/tw/instruction/pdf/76580973.pdf`},{"cat":`家具`,"name":`SUS背板/大/56cm/淺灰`,"bc":`4548076580980`,"url":`https://www.muji.com/tw/instruction/pdf/76580980.pdf`},{"cat":`家具`,"name":`SUS背板/小/84cm/深灰`,"bc":`4548076580997`,"url":`https://www.muji.com/tw/instruction/pdf/76580997.pdf`},{"cat":`家具`,"name":`SUS背板/小/56cm/深灰`,"bc":`4548076581000`,"url":`https://www.muji.com/tw/instruction/pdf/76581000.pdf`},{"cat":`家具`,"name":`SUS層板高度調整金具/不鏽鋼系列用`,"bc":`4548076580850`,"url":`https://www.muji.com/tw/instruction/pdf/76580850.pdf`},{"cat":`家具`,"name":`SUS層板高度調整金具/SUS灰色系列用`,"bc":`4548076580867`,"url":`https://www.muji.com/tw/instruction/pdf/76580867.pdf`},{"cat":`家具`,"name":`SUS層板高度調整金具/SUS亮面淺灰系列用`,"bc":`4550002998851`,"url":`https://www.muji.com/tw/instruction/pdf/02998851.pdf`},{"cat":`家具`,"name":`SUS不鏽鋼層架組/寬/大/9S`,"bc":`4550002999032`,"url":`https://www.muji.com/tw/instruction/pdf/02999032.pdf`},{"cat":`家具`,"name":`SUS不鏽鋼層架組/大/9S`,"bc":`4550002999063`,"url":`https://www.muji.com/tw/instruction/pdf/02999063.pdf`},{"cat":`家具`,"name":`SUS鋼製層架組/亮面淺灰/寬/大/9S`,"bc":`4550002999094`,"url":`https://www.muji.com/tw/instruction/pdf/02999094.pdf`},{"cat":`家具`,"name":`SUS鋼製層架組/亮面淺灰/大/9S`,"bc":`4550002999131`,"url":`https://www.muji.com/tw/instruction/pdf/02999131.pdf`},{"cat":`家具`,"name":`SUS不鏽鋼層架組/寬/中/9S`,"bc":`4550002999049`,"url":`https://www.muji.com/tw/instruction/pdf/02999049.pdf`},{"cat":`家具`,"name":`SUS不鏽鋼層架組/中/9S`,"bc":`4550002999070`,"url":`https://www.muji.com/tw/instruction/pdf/02999070.pdf`},{"cat":`家具`,"name":`SUS鋼製層架組/亮面淺灰/寬/中/9S`,"bc":`4550002999100`,"url":`https://www.muji.com/tw/instruction/pdf/02999100.pdf`},{"cat":`家具`,"name":`SUS鋼製層架組/亮面淺灰/中/9S`,"bc":`4550002999148`,"url":`https://www.muji.com/tw/instruction/pdf/02999148.pdf`},{"cat":`家具`,"name":`SUS不鏽鋼層架組/寬/小/9S`,"bc":`4550002999056`,"url":`https://www.muji.com/tw/instruction/pdf/02999056.pdf`},{"cat":`家具`,"name":`SUS不鏽鋼層架組/小/9S`,"bc":`4550002999087`,"url":`https://www.muji.com/tw/instruction/pdf/02999087.pdf`},{"cat":`家具`,"name":`SUS鋼製層架組/亮面淺灰/寬/小/9S`,"bc":`4550002999117`,"url":`https://www.muji.com/tw/instruction/pdf/02999117.pdf`},{"cat":`家具`,"name":`SUS鋼製層架組/亮面淺灰/小/9S`,"bc":`4550002999155`,"url":`https://www.muji.com/tw/instruction/pdf/02999155.pdf`},{"cat":`家具`,"name":`組合床台帆布收納籃用軌道/SS`,"bc":`4549738370260`,"url":`https://www.muji.com/tw/instruction/pdf/38370260.pdf`},{"cat":`家具`,"name":`組合床台帆布收納籃用軌道/S`,"bc":`4549738370277`,"url":`https://www.muji.com/tw/instruction/pdf/38370277.pdf`},{"cat":`家具`,"name":`組合床台帆布收納籃用軌道/SD`,"bc":`4549738370284`,"url":`https://www.muji.com/tw/instruction/pdf/38370284.pdf`},{"cat":`家具`,"name":`組合床台帆布收納籃用軌道/D`,"bc":`4549738370291`,"url":`https://www.muji.com/tw/instruction/pdf/38370291.pdf`},{"cat":`家具`,"name":`組合床台帆布收納籃用軌道/Q`,"bc":`4549738370307`,"url":`https://www.muji.com/tw/instruction/pdf/38370307.pdf`},{"cat":`家具`,"name":`組合床台用帆布收納籃/小`,"bc":`4549738370321`,"url":`https://www.muji.com/tw/instruction/pdf/38370321.pdf`},{"cat":`家具`,"name":`組合床台用帆布收納籃/大`,"bc":`4549738370338`,"url":`https://www.muji.com/tw/instruction/pdf/38370338.pdf`},{"cat":`家具`,"name":`橡木薄型收納架/寬型/大/深22cm`,"bc":`4549738749820`,"url":`https://www.muji.com/tw/instruction/pdf/38749820.pdf`},{"cat":`家具`,"name":`橡木薄型收納架/大/深22cm`,"bc":`4549738749530`,"url":`https://www.muji.com/tw/instruction/pdf/38749530.pdf`},{"cat":`家具`,"name":`橡木薄型收納架/寬型/小/深22cm`,"bc":`4549738749837`,"url":`https://www.muji.com/tw/instruction/pdf/38749837.pdf`},{"cat":`家具`,"name":`橡木薄型收納架/小/深22cm`,"bc":`4549738749547`,"url":`https://www.muji.com/tw/instruction/pdf/38749547.pdf`},{"cat":`家具`,"name":`橡木薄型收納架/追加組/寬型/深22cm`,"bc":`4549738749554`,"url":`https://www.muji.com/tw/instruction/pdf/38749554.pdf`},{"cat":`家具`,"name":`橡木薄型收納架/追加組/深22cm`,"bc":`4549738749561`,"url":`https://www.muji.com/tw/instruction/pdf/38749561.pdf`},{"cat":`家具`,"name":`橡木薄型收納架/轉角用/大/深22cm`,"bc":`4549738749615`,"url":`https://www.muji.com/tw/instruction/pdf/38749615.pdf`},{"cat":`家具`,"name":`橡木薄型收納架/轉角用/小/深22cm`,"bc":`4549738749622`,"url":`https://www.muji.com/tw/instruction/pdf/38749622.pdf`},{"cat":`家具`,"name":`橡木薄型收納架/追棚/寬型/深22cm`,"bc":`4549738749653`,"url":`https://www.muji.com/tw/instruction/pdf/38749653.pdf`},{"cat":`家具`,"name":`橡木薄型收納架/追棚/深22cm`,"bc":`4549738749660`,"url":`https://www.muji.com/tw/instruction/pdf/38749660.pdf`},{"cat":`家具`,"name":`橡木薄型收納架/轉角用追加棚/深22cm`,"bc":`4549738749691`,"url":`https://www.muji.com/tw/instruction/pdf/38749691.pdf`},{"cat":`家具`,"name":`橡木薄型收納架用書擋`,"bc":`4549738749714`,"url":`https://www.muji.com/tw/instruction/pdf/38749714.pdf`},{"cat":`家具`,"name":`橡木薄型收納架用層板檔板/寬型`,"bc":`4549738749721`,"url":`https://www.muji.com/tw/instruction/pdf/38749721.pdf`},{"cat":`家具`,"name":`橡木薄型收納架用層板檔板`,"bc":`4549738749738`,"url":`https://www.muji.com/tw/instruction/pdf/38749738.pdf`},{"cat":`家具`,"name":`不織布分隔袋/大/4格/2入`,"bc":`4550002502867`,"url":`https://www.muji.com/tw/instruction/pdf/02502867.pdf`},{"cat":`家具`,"name":`不織布分隔袋/中/4格/2入`,"bc":`4550002502874`,"url":`https://www.muji.com/tw/instruction/pdf/02502874.pdf`},{"cat":`家具`,"name":`不織布分隔袋/小/4格/2入`,"bc":`4550002502881`,"url":`https://www.muji.com/tw/instruction/pdf/02502881.pdf`},{"cat":`家具`,"name":`不織布分隔袋/大/12格/1入`,"bc":`4550002502898`,"url":`https://www.muji.com/tw/instruction/pdf/02502898.pdf`},{"cat":`家具`,"name":`橡木組合收納櫃/半型/抽屜/2段`,"bc":`4550002528706`,"url":`https://www.muji.com/tw/instruction/pdf/02528706.pdf`},{"cat":`家具`,"name":`胡桃木組合收納櫃/半型/抽屜/2段`,"bc":`4550002528713`,"url":`https://www.muji.com/tw/instruction/pdf/02528713.pdf`},{"cat":`家具`,"name":`橡木組合收納櫃/半型/抽屜/1段`,"bc":`4550002528720`,"url":`https://www.muji.com/tw/instruction/pdf/02528720.pdf`},{"cat":`家具`,"name":`胡桃木組合收納櫃/半型/抽屜/1段`,"bc":`4550002528737`,"url":`https://www.muji.com/tw/instruction/pdf/02528737.pdf`},{"cat":`家具`,"name":`橡木組合收納櫃/半型/開放式`,"bc":`4550002528744`,"url":`https://www.muji.com/tw/instruction/pdf/02528744.pdf`},{"cat":`家具`,"name":`胡桃木組合收納櫃/半型/開放式`,"bc":`4550002528751`,"url":`https://www.muji.com/tw/instruction/pdf/02528751.pdf`},{"cat":`家具`,"name":`橡木組合收納櫃/半型/抽屜/2個`,"bc":`4550002528515`,"url":`https://www.muji.com/tw/instruction/pdf/02528515.pdf`},{"cat":`家具`,"name":`胡桃木組合收納櫃/半型/抽屜/2個`,"bc":`4550002528522`,"url":`https://www.muji.com/tw/instruction/pdf/02528522.pdf`},{"cat":`家具`,"name":`工作椅/灰/09`,"bc":`4548718121298`,"url":`https://www.muji.com/tw/instruction/pdf/18121298.pdf`},{"cat":`家具`,"name":`工作椅/黑/09`,"bc":`4548718121304`,"url":`https://www.muji.com/tw/instruction/pdf/18121304.pdf`},{"cat":`家具`,"name":`工作椅手把/灰/09`,"bc":`4548718121861`,"url":`https://www.muji.com/tw/instruction/pdf/18121861.pdf`},{"cat":`家具`,"name":`工作椅手把/黑/09`,"bc":`4548718121878`,"url":`https://www.muji.com/tw/instruction/pdf/18121878.pdf`},{"cat":`家具`,"name":`松木矮桌/可折疊/19A`,"bc":`4550002460785`,"url":`https://www.muji.com/tw/instruction/pdf/02460785.pdf`},{"cat":`家具`,"name":`簡約圓椅/深灰/9A`,"bc":`4550182484670`,"url":`https://www.muji.com/tw/instruction/pdf/82484670.pdf`},{"cat":`家具`,"name":`簡約圓椅/淺灰/9A`,"bc":`4550182484687`,"url":`https://www.muji.com/tw/instruction/pdf/82484687.pdf`},{"cat":`家具`,"name":`壁掛家具/相框/A3/橡木`,"bc":`4549738988793`,"url":`https://www.muji.com/tw/instruction/pdf/38988793.pdf`},{"cat":`食品`,"name":`DIY印度烙餅200g(4片份)`,"bc":`4550182144338`,"url":`https://www.muji.com/tw/instruction/pdf/82144338.pdf`}];
 const STORES=[
 {"name":"台北旗艦店","city":"台北","addr":"台北市大安區忠孝東路四段181號B1","tel":"02-2711-0088","services":["Interior Advisor","刺繡","印章","改衣","修鞋","Café & Meal MUJI"]},
@@ -1101,55 +1287,91 @@ const STORES=[
 {"name":"宜蘭羅東店","city":"宜蘭","addr":"宜蘭縣羅東鎮中正北路6號B2","tel":"03-957-0990","services":["刺繡","印章"]}
 ];
 const SIZE_DATA={
-  "女裝上衣春夏":{headers:["日本(cm)","XS","S","M","L","XL","XXL"],rows:[["身長","150~156","153~159","156~162","159~165","162~168","165~171"],["胸圍","74~80","77~83","80~86","83~89","89~95","95~101"],["腰圍","56~62","59~65","62~68","66~72","72~78","78~84"],["臀圍","81~87","84~90","87~93","91~97","97~103","103~109"]]},
-  "女裝上衣秋冬":{headers:["日本(cm)","XS","S","M","L","XL","XXL"],rows:[["身長","149~153","151~157","155~161","159~165","163~169","167~173"],["胸圍","73~77","75~81","80~86","85~91","90~96","95~101"],["腰圍","56~60","58~64","63~69","68~74","73~79","78~84"],["臀圍","81~85","83~89","88~94","93~99","98~104","103~109"]]},
-  "女裝下著腰圍":{headers:["腰圍(吋)","22","23","24","25","26","27","28","29"],rows:[["腰圍(cm)","56","58.5","61","63.5","66","68.5","71","73.5"]]},
-  "男裝上衣春夏":{headers:["日本(cm)","XS","S","M","L","XL","XXL"],rows:[["身長","155~165","","165~175","","175~185",""],["胸圍","76~84","80~88","88~96","96~104","104~112","112~120"],["腰圍","64~72","68~76","76~84","84~92","92~100","100~108"],["臀圍","78~86","82~90","90~98","98~106","106~114","114~122"]]},
-  "男裝上衣秋冬":{headers:["日本(cm)","XS","S","M","L","XL","XXL"],rows:[["身長","155~163","160~168","166~174","172~180","178~186","180~188"],["胸圍","76~84","80~88","88~96","96~104","104~112","112~120"],["腰圍","64~72","68~76","76~84","84~92","92~100","100~108"],["臀圍","78~86","82~90","90~98","98~106","106~114","114~122"]]},
-  "男裝下著腰圍":{headers:["腰圍(吋)","28","29","30","31","32","33","34","35","36"],rows:[["腰圍(cm)","71","73.5","76","78.5","81","83.5","86","88.5","91"]]},
-  "LABO女裝上衣":{headers:["日本(cm)","S","M","L","XL"],rows:[["身長","151~157","155~161","159~165","163~169"],["胸圍","75~81","80~86","85~91","90~96"]]},
-  "LABO男裝上衣":{headers:["日本(cm)","XS","S","M","L","XL"],rows:[["身長","154~162","160~168","166~174","172~180","178~186"],["胸圍","76~84","80~88","88~96","96~104","104~112"]]},
-  "童裝新生兒":{headers:["尺寸","60","70","80"],rows:[["建議年齡","3~6個月","6個月~1歲","1~1.5歲"],["身高(cm)","55~65","65~75","75~85"],["體重(kg)","6","9","11"]]},
-  "童裝幼兒":{headers:["尺寸","80","90","100"],rows:[["建議年齡","1~1.5歲","1.5~2.5歲","3~4歲"],["身高(cm)","75~85","85~95","95~105"],["體重(kg)","11","13","16"],["帽子尺寸","50","50~52","50~52"],["鞋款尺寸","13","14~15","15~16"]]},
-  "童裝兒童春夏":{headers:["尺寸","110","120","130","140","150"],rows:[["建議年齡","5~6歲","7~8歲","9~10歲","11~12歲","13~14歲"],["身高(cm)","105~115","115~125","125~135","135~145","145~155"],["女童腰圍","47~53","49~55","51~57","53~59","56~63"],["男童腰圍","49~55","51~57","53~59","54~62","58~66"]]},
-  "童裝兒童秋冬":{headers:["尺寸","110","120","130","140","150"],rows:[["建議年齡","4~6歲","6~7歲","8~9歲","10~12歲","13~14歲"],["身高(cm)","105~115","115~125","125~135","135~145","145~155"],["女童腰圍","47~53","49~55","51~57","54~60","57~63"],["男童腰圍","49~55","51~57","53~59","56~62","59~65"]]},
-  "女內衣秋冬":{headers:["日本(cm)","S","M","L","XL","XXL"],rows:[["身長","151~157","155~161","159~165","163~169","167~173"],["胸圍","75~81","80~86","85~91","90~96","95~101"],["腰圍","58~64","63~69","68~74","73~79","78~84"],["臀圍","83~89","88~94","93~99","98~104","103~109"]]},
-  "男內衣秋冬":{headers:["日本(cm)","S","M","L","XL","XXL"],rows:[["身長","160~168","166~174","172~180","178~186","180~188"],["胸圍","80~88","88~96","96~104","104~112","112~120"],["腰圍","68~76","76~84","84~92","92~100","100~108"],["臀圍","82~90","90~98","98~106","106~114","114~122"]]},
-  "女鞋":{headers:["日本(cm)","22","22.5","23","23.5","24","24.5","25.5"],rows:[["美國(US)","4½","5","5½","6","6½","7","7½"],["英國(UK)","3","3½","4","4½","5","5½","6"],["義大利","34","35","36","37","38","39","40"],["法國","34","35","35.5","36","36.5","37","37.5"]]},
-  "男鞋":{headers:["日本(cm)","24.5","25","25.5","26","26.5","27","27.5"],rows:[["美國(US)","6½","7","7½","8","8½","9","9½"],["英國(UK)","6","6½","7","7½","8","8½","9"],["義大利","39","40","41","42","43","44","45"],["法國","39","40","41","42","43","44","45"]]}
+"女裝上衣春夏":{headers:["日本(cm)","XS","S","M","L","XL","XXL"],rows:[["身長","150~156","153~159","156~162","159~165","162~168","165~171"],["胸圍","74~80","77~83","80~86","83~89","89~95","95~101"],["腰圍","56~62","59~65","62~68","66~72","72~78","78~84"],["臀圍","81~87","84~90","87~93","91~97","97~103","103~109"]]},
+"女裝上衣秋冬":{headers:["日本(cm)","XS","S","M","L","XL","XXL"],rows:[["身長","149~153","151~157","155~161","159~165","163~169","167~173"],["胸圍","73~77","75~81","80~86","85~91","90~96","95~101"],["腰圍","56~60","58~64","63~69","68~74","73~79","78~84"],["臀圍","81~85","83~89","88~94","93~99","98~104","103~109"]]},
+"女裝下著腰圍":{headers:["腰圍(吋)","22","23","24","25","26","27","28","29"],rows:[["腰圍(cm)","56","58.5","61","63.5","66","68.5","71","73.5"]]},
+"男裝上衣春夏":{headers:["日本(cm)","XS","S","M","L","XL","XXL"],rows:[["身長","155~165","","165~175","","175~185",""],["胸圍","76~84","80~88","88~96","96~104","104~112","112~120"],["腰圍","64~72","68~76","76~84","84~92","92~100","100~108"],["臀圍","78~86","82~90","90~98","98~106","106~114","114~122"]]},
+"男裝上衣秋冬":{headers:["日本(cm)","XS","S","M","L","XL","XXL"],rows:[["身長","155~163","160~168","166~174","172~180","178~186","180~188"],["胸圍","76~84","80~88","88~96","96~104","104~112","112~120"],["腰圍","64~72","68~76","76~84","84~92","92~100","100~108"],["臀圍","78~86","82~90","90~98","98~106","106~114","114~122"]]},
+"男裝下著腰圍":{headers:["腰圍(吋)","28","29","30","31","32","33","34","35","36"],rows:[["腰圍(cm)","71","73.5","76","78.5","81","83.5","86","88.5","91"]]},
+"LABO女裝上衣":{headers:["日本(cm)","S","M","L","XL"],rows:[["身長","151~157","155~161","159~165","163~169"],["胸圍","75~81","80~86","85~91","90~96"]]},
+"LABO男裝上衣":{headers:["日本(cm)","XS","S","M","L","XL"],rows:[["身長","154~162","160~168","166~174","172~180","178~186"],["胸圍","76~84","80~88","88~96","96~104","104~112"]]},
+"童裝新生兒":{headers:["尺寸","60","70","80"],rows:[["建議年齡","3~6個月","6個月~1歲","1~1.5歲"],["身高(cm)","55~65","65~75","75~85"],["體重(kg)","6","9","11"]]},
+"童裝幼兒":{headers:["尺寸","80","90","100"],rows:[["建議年齡","1~1.5歲","1.5~2.5歲","3~4歲"],["身高(cm)","75~85","85~95","95~105"],["體重(kg)","11","13","16"],["帽子尺寸","50","50~52","50~52"],["鞋款尺寸","13","14~15","15~16"]]},
+"童裝兒童春夏":{headers:["尺寸","110","120","130","140","150"],rows:[["建議年齡","5~6歲","7~8歲","9~10歲","11~12歲","13~14歲"],["身高(cm)","105~115","115~125","125~135","135~145","145~155"],["女童腰圍","47~53","49~55","51~57","53~59","56~63"],["男童腰圍","49~55","51~57","53~59","54~62","58~66"]]},
+"童裝兒童秋冬":{headers:["尺寸","110","120","130","140","150"],rows:[["建議年齡","4~6歲","6~7歲","8~9歲","10~12歲","13~14歲"],["身高(cm)","105~115","115~125","125~135","135~145","145~155"],["女童腰圍","47~53","49~55","51~57","54~60","57~63"],["男童腰圍","49~55","51~57","53~59","56~62","59~65"]]},
+"女內衣秋冬":{headers:["日本(cm)","S","M","L","XL","XXL"],rows:[["身長","151~157","155~161","159~165","163~169","167~173"],["胸圍","75~81","80~86","85~91","90~96","95~101"],["腰圍","58~64","63~69","68~74","73~79","78~84"],["臀圍","83~89","88~94","93~99","98~104","103~109"]]},
+"男內衣秋冬":{headers:["日本(cm)","S","M","L","XL","XXL"],rows:[["身長","160~168","166~174","172~180","178~186","180~188"],["胸圍","80~88","88~96","96~104","104~112","112~120"],["腰圍","68~76","76~84","84~92","92~100","100~108"],["臀圍","82~90","90~98","98~106","106~114","114~122"]]},
+"女鞋":{headers:["日本(cm)","22","22.5","23","23.5","24","24.5","25.5"],rows:[["美國(US)","4½","5","5½","6","6½","7","7½"],["英國(UK)","3","3½","4","4½","5","5½","6"],["義大利","34","35","36","37","38","39","40"],["法國","34","35","35.5","36","36.5","37","37.5"]]},
+"男鞋":{headers:["日本(cm)","24.5","25","25.5","26","26.5","27","27.5"],rows:[["美國(US)","6½","7","7½","8","8½","9","9½"],["英國(UK)","6","6½","7","7½","8","8½","9"],["義大利","39","40","41","42","43","44","45"],["法國","39","40","41","42","43","44","45"]]}
 };
 const DC_CENTERS=[
-  {name:"南區服務中心",tel:"02-29385477",addr:"116台北市文山區木新路二段268號",region:"北部"},
-  {name:"北區服務中心",tel:"02-87706787",addr:"105台北市松山區民族東路708號",region:"北部"},
-  {name:"板雙服務中心",tel:"02-22680033",addr:"236新北市土城區中華路二段239號",region:"北部"},
-  {name:"三新服務中心",tel:"02-85225438",addr:"242新北市新莊區化成路417號",region:"北部"},
-  {name:"基隆服務中心",tel:"02-24515811",addr:"206基隆市七堵區福一街143號",region:"北部"},
-  {name:"宜蘭服務中心",tel:"03-9333623",addr:"260宜蘭市嵐峰路1段16號",region:"北部"},
-  {name:"桃園服務中心",tel:"03-3441640",addr:"338桃園縣蘆竹鄉龍安街2段310號",region:"北部"},
-  {name:"中壢服務中心",tel:"03-4581865",addr:"320桃園縣中壢市惠州街120號",region:"北部"},
-  {name:"新竹服務中心",tel:"03-5588736",addr:"302新竹縣竹北市光明三路135號",region:"北部"},
-  {name:"苗栗服務中心",tel:"037-636686",addr:"351苗栗縣頭份鎮民族路536號",region:"中部"},
-  {name:"台中服務中心",tel:"04-23130476",addr:"407台中市青海路一段188號",region:"中部"},
-  {name:"潭子服務中心",tel:"04-23918298",addr:"406台中市太平區育賢路117號",region:"中部"},
-  {name:"清水服務中心",tel:"04-26233422",addr:"436台中市清水區五權東路130號",region:"中部"},
-  {name:"彰化服務中心",tel:"04-7125299",addr:"500彰化市埔西街98號",region:"中部"},
-  {name:"草屯服務中心",tel:"049-2304451",addr:"542南投縣草屯鎮成功路一段52號",region:"中部"},
-  {name:"斗南服務中心",tel:"05-5974063",addr:"630雲林縣斗南鎮黎明二街24號",region:"中部"},
-  {name:"嘉義服務中心",tel:"05-2360048",addr:"600嘉義市博愛路二段567號",region:"中部"},
-  {name:"新營服務中心",tel:"06-6359492",addr:"730台南市新營區大德街22號",region:"南部"},
-  {name:"台南服務中心",tel:"06-2649174",addr:"702台南市大成路二段62號",region:"南部"},
-  {name:"高雄服務中心",tel:"07-3823686",addr:"807高雄市三民區灣興街84號",region:"南部"},
-  {name:"岡山服務中心",tel:"07-6226055",addr:"820高雄市岡山區岡山北路267號",region:"南部"},
-  {name:"屏東服務中心",tel:"08-7539840",addr:"900屏東市建南路150號",region:"南部"},
-  {name:"花蓮服務中心",tel:"03-8540168",addr:"970花蓮縣吉安鄉稻興一街7號",region:"東部"},
-  {name:"台東服務中心",tel:"089-324956",addr:"950台東市豐榮路191號1樓",region:"東部"},
-  {name:"金門服務中心",tel:"082-320395",addr:"893金門縣金城鎮金城新莊7巷6號",region:"離島"},
-  {name:"澎湖服務中心",tel:"06-9219462",addr:"880馬公市西文里63-28號",region:"離島"}
+{name:"南區服務中心",tel:"02-29385477",addr:"116台北市文山區木新路二段268號",region:"北部"},
+{name:"北區服務中心",tel:"02-87706787",addr:"105台北市松山區民族東路708號",region:"北部"},
+{name:"板雙服務中心",tel:"02-22680033",addr:"236新北市土城區中華路二段239號",region:"北部"},
+{name:"三新服務中心",tel:"02-85225438",addr:"242新北市新莊區化成路417號",region:"北部"},
+{name:"基隆服務中心",tel:"02-24515811",addr:"206基隆市七堵區福一街143號",region:"北部"},
+{name:"宜蘭服務中心",tel:"03-9333623",addr:"260宜蘭市嵐峰路1段16號",region:"北部"},
+{name:"桃園服務中心",tel:"03-3441640",addr:"338桃園縣蘆竹鄉龍安街2段310號",region:"北部"},
+{name:"中壢服務中心",tel:"03-4581865",addr:"320桃園縣中壢市惠州街120號",region:"北部"},
+{name:"新竹服務中心",tel:"03-5588736",addr:"302新竹縣竹北市光明三路135號",region:"北部"},
+{name:"苗栗服務中心",tel:"037-636686",addr:"351苗栗縣頭份鎮民族路536號",region:"中部"},
+{name:"台中服務中心",tel:"04-23130476",addr:"407台中市青海路一段188號",region:"中部"},
+{name:"潭子服務中心",tel:"04-23918298",addr:"406台中市太平區育賢路117號",region:"中部"},
+{name:"清水服務中心",tel:"04-26233422",addr:"436台中市清水區五權東路130號",region:"中部"},
+{name:"彰化服務中心",tel:"04-7125299",addr:"500彰化市埔西街98號",region:"中部"},
+{name:"草屯服務中心",tel:"049-2304451",addr:"542南投縣草屯鎮成功路一段52號",region:"中部"},
+{name:"斗南服務中心",tel:"05-5974063",addr:"630雲林縣斗南鎮黎明二街24號",region:"中部"},
+{name:"嘉義服務中心",tel:"05-2360048",addr:"600嘉義市博愛路二段567號",region:"中部"},
+{name:"新營服務中心",tel:"06-6359492",addr:"730台南市新營區大德街22號",region:"南部"},
+{name:"台南服務中心",tel:"06-2649174",addr:"702台南市大成路二段62號",region:"南部"},
+{name:"高雄服務中心",tel:"07-3823686",addr:"807高雄市三民區灣興街84號",region:"南部"},
+{name:"岡山服務中心",tel:"07-6226055",addr:"820高雄市岡山區岡山北路267號",region:"南部"},
+{name:"屏東服務中心",tel:"08-7539840",addr:"900屏東市建南路150號",region:"南部"},
+{name:"花蓮服務中心",tel:"03-8540168",addr:"970花蓮縣吉安鄉稻興一街7號",region:"東部"},
+{name:"台東服務中心",tel:"089-324956",addr:"950台東市豐榮路191號1樓",region:"東部"},
+{name:"金門服務中心",tel:"082-320395",addr:"893金門縣金城鎮金城新莊7巷6號",region:"離島"},
+{name:"澎湖服務中心",tel:"06-9219462",addr:"880馬公市西文里63-28號",region:"離島"}
 ];
-const LAUNDRY=[{"group":`水洗`,"items":[{"label":`不能水洗`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <path d="M8 36 L24 12 L40 36 Z" fill="none" stroke="#333" stroke-width="2.5"/>   <line x1="8" y1="36" x2="40" y2="36" stroke="#333" stroke-width="2.5"/>   <line x1="10" y1="10" x2="38" y2="38" stroke="#c00" stroke-width="2.5"/>   <line x1="38" y1="10" x2="10" y2="38" stroke="#c00" stroke-width="2.5"/> </svg>`},{"label":`手洗，水溫最高40度`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <path d="M8 36 L24 12 L40 36 Z" fill="none" stroke="#333" stroke-width="2.5"/>   <line x1="8" y1="36" x2="40" y2="36" stroke="#333" stroke-width="2.5"/>   <text x="24" y="30" text-anchor="middle" font-size="10" fill="#333">手洗</text> </svg>`},{"label":`可機洗，最高水溫30度，標準洗程`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <path d="M8 36 L24 12 L40 36 Z" fill="none" stroke="#333" stroke-width="2.5"/>   <line x1="8" y1="36" x2="40" y2="36" stroke="#333" stroke-width="2.5"/>   <text x="24" y="30" text-anchor="middle" font-size="11" font-weight="bold" fill="#333">30</text> </svg>`},{"label":`可機洗，最高水溫40度，溫和洗程`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <path d="M8 36 L24 12 L40 36 Z" fill="none" stroke="#333" stroke-width="2.5"/>   <line x1="8" y1="36" x2="40" y2="36" stroke="#333" stroke-width="2.5"/>   <text x="24" y="30" text-anchor="middle" font-size="11" font-weight="bold" fill="#333">40</text> </svg>`},{"label":`可機洗，最高水溫40度，極輕柔洗程`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <path d="M8 36 L24 12 L40 36 Z" fill="none" stroke="#333" stroke-width="2.5"/>   <line x1="8" y1="34" x2="40" y2="34" stroke="#333" stroke-width="2.5"/>   <line x1="8" y1="38" x2="40" y2="38" stroke="#333" stroke-width="2.5"/>   <text x="24" y="29" text-anchor="middle" font-size="10" font-weight="bold" fill="#333">40</text> </svg>`}]},{"group":`漂白`,"items":[{"label":`可使用任何漂白劑`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <polygon points="24,8 44,40 4,40" fill="none" stroke="#333" stroke-width="2.5"/> </svg>`},{"label":`只可使用氧化物漂白劑`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <polygon points="24,8 44,40 4,40" fill="none" stroke="#333" stroke-width="2.5"/>   <line x1="16" y1="20" x2="32" y2="36" stroke="#333" stroke-width="2"/>   <line x1="20" y1="16" x2="36" y2="32" stroke="#333" stroke-width="2"/> </svg>`},{"label":`不可漂白`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <polygon points="24,8 44,40 4,40" fill="none" stroke="#333" stroke-width="2.5"/>   <line x1="10" y1="10" x2="38" y2="38" stroke="#c00" stroke-width="2.5"/>   <line x1="38" y1="10" x2="10" y2="38" stroke="#c00" stroke-width="2.5"/> </svg>`}]},{"group":`自然乾燥`,"items":[{"label":`懸掛晾乾`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <rect x="6" y="6" width="36" height="36" rx="3" fill="none" stroke="#333" stroke-width="2.5"/>   <line x1="24" y1="12" x2="24" y2="36" stroke="#333" stroke-width="2.5"/> </svg>`},{"label":`懸掛滴乾`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <rect x="6" y="6" width="36" height="36" rx="3" fill="none" stroke="#333" stroke-width="2.5"/>   <line x1="19" y1="12" x2="19" y2="36" stroke="#333" stroke-width="2.5"/>   <line x1="29" y1="12" x2="29" y2="36" stroke="#333" stroke-width="2.5"/> </svg>`},{"label":`平攤晾乾`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <rect x="6" y="6" width="36" height="36" rx="3" fill="none" stroke="#333" stroke-width="2.5"/>   <line x1="12" y1="24" x2="36" y2="24" stroke="#333" stroke-width="2.5"/> </svg>`},{"label":`平攤滴乾`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <rect x="6" y="6" width="36" height="36" rx="3" fill="none" stroke="#333" stroke-width="2.5"/>   <line x1="12" y1="20" x2="36" y2="20" stroke="#333" stroke-width="2.5"/>   <line x1="12" y1="28" x2="36" y2="28" stroke="#333" stroke-width="2.5"/> </svg>`},{"label":`陰涼處懸掛晾乾`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <rect x="6" y="6" width="36" height="36" rx="3" fill="none" stroke="#333" stroke-width="2.5"/>   <line x1="6" y1="6" x2="42" y2="42" stroke="#333" stroke-width="2"/>   <line x1="24" y1="12" x2="24" y2="36" stroke="#333" stroke-width="2.5"/> </svg>`},{"label":`陰涼處平攤晾乾`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <rect x="6" y="6" width="36" height="36" rx="3" fill="none" stroke="#333" stroke-width="2.5"/>   <line x1="6" y1="6" x2="42" y2="42" stroke="#333" stroke-width="2"/>   <line x1="12" y1="24" x2="36" y2="24" stroke="#333" stroke-width="2.5"/> </svg>`}]},{"group":`翻滾烘乾`,"items":[{"label":`可烘乾，一般溫度（最高80度）`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <rect x="4" y="4" width="40" height="40" rx="4" fill="none" stroke="#333" stroke-width="2.5"/>   <circle cx="24" cy="24" r="14" fill="none" stroke="#333" stroke-width="2.5"/>   <circle cx="24" cy="24" r="2" fill="#333"/> </svg>`},{"label":`可烘乾，低溫（最高60度）`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <rect x="4" y="4" width="40" height="40" rx="4" fill="none" stroke="#333" stroke-width="2.5"/>   <circle cx="24" cy="24" r="14" fill="none" stroke="#333" stroke-width="2.5"/>   <circle cx="19" cy="24" r="2" fill="#333"/>   <circle cx="29" cy="24" r="2" fill="#333"/> </svg>`},{"label":`不可翻滾烘乾`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <rect x="4" y="4" width="40" height="40" rx="4" fill="none" stroke="#333" stroke-width="2.5"/>   <circle cx="24" cy="24" r="14" fill="none" stroke="#333" stroke-width="2.5"/>   <line x1="10" y1="10" x2="38" y2="38" stroke="#c00" stroke-width="2.5"/>   <line x1="38" y1="10" x2="10" y2="38" stroke="#c00" stroke-width="2.5"/> </svg>`}]},{"group":`熨燙`,"items":[{"label":`最高200度熨燙`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <path d="M6 16 Q6 30 24 30 Q42 30 42 16 L42 16 Z" fill="none" stroke="#333" stroke-width="2.5"/>   <rect x="20" y="30" width="8" height="10" fill="none" stroke="#333" stroke-width="2.5"/>   <circle cx="17" cy="20" r="2" fill="#333"/>   <circle cx="24" cy="20" r="2" fill="#333"/>   <circle cx="31" cy="20" r="2" fill="#333"/> </svg>`},{"label":`最高150度熨燙`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <path d="M6 16 Q6 30 24 30 Q42 30 42 16 L42 16 Z" fill="none" stroke="#333" stroke-width="2.5"/>   <rect x="20" y="30" width="8" height="10" fill="none" stroke="#333" stroke-width="2.5"/>   <circle cx="20" cy="20" r="2" fill="#333"/>   <circle cx="28" cy="20" r="2" fill="#333"/> </svg>`},{"label":`最高110度熨燙（不可蒸氣）`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <path d="M6 16 Q6 30 24 30 Q42 30 42 16 L42 16 Z" fill="none" stroke="#333" stroke-width="2.5"/>   <rect x="20" y="30" width="8" height="10" fill="none" stroke="#333" stroke-width="2.5"/>   <circle cx="24" cy="20" r="2" fill="#333"/> </svg>`},{"label":`不可熨燙`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <path d="M6 16 Q6 30 24 30 Q42 30 42 16 L42 16 Z" fill="none" stroke="#333" stroke-width="2.5"/>   <rect x="20" y="30" width="8" height="10" fill="none" stroke="#333" stroke-width="2.5"/>   <line x1="10" y1="10" x2="38" y2="38" stroke="#c00" stroke-width="2.5"/>   <line x1="38" y1="10" x2="10" y2="38" stroke="#c00" stroke-width="2.5"/> </svg>`}]},{"group":`乾洗／專業洗`,"items":[{"label":`可乾洗（四氯乙烯或石油系），標準程序`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <circle cx="24" cy="24" r="18" fill="none" stroke="#333" stroke-width="2.5"/>   <text x="24" y="29" text-anchor="middle" font-size="14" font-weight="bold" fill="#333">P</text> </svg>`},{"label":`可乾洗（石油系溶劑）`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <circle cx="24" cy="24" r="18" fill="none" stroke="#333" stroke-width="2.5"/>   <text x="24" y="29" text-anchor="middle" font-size="14" font-weight="bold" fill="#333">F</text> </svg>`},{"label":`不可專業乾洗`,"svg":`<svg viewBox="0 0 48 48" width="48" height="48">   <circle cx="24" cy="24" r="18" fill="none" stroke="#333" stroke-width="2.5"/>   <line x1="10" y1="10" x2="38" y2="38" stroke="#c00" stroke-width="2.5"/>   <line x1="38" y1="10" x2="10" y2="38" stroke="#c00" stroke-width="2.5"/> </svg>`}]}];
+const LAUNDRY=[
+{group:"水洗",items:[
+{label:"不能水洗",svg:`<svg viewBox="0 0 48 48" width="44" height="44"><path d="M8 36 L24 12 L40 36 Z" fill="none" stroke="#333" stroke-width="2.5"/><line x1="8" y1="36" x2="40" y2="36" stroke="#333" stroke-width="2.5"/><line x1="10" y1="12" x2="38" y2="38" stroke="#c00" stroke-width="2.5"/><line x1="38" y1="12" x2="10" y2="38" stroke="#c00" stroke-width="2.5"/></svg>`},
+{label:"手洗，水溫最高40度",svg:`<svg viewBox="0 0 48 48" width="44" height="44"><path d="M8 36 L24 12 L40 36 Z" fill="none" stroke="#333" stroke-width="2.5"/><line x1="8" y1="36" x2="40" y2="36" stroke="#333" stroke-width="2.5"/><text x="24" y="30" text-anchor="middle" font-size="9" fill="#333">手洗</text></svg>`},
+{label:"可機洗，最高30度，標準洗程",svg:`<svg viewBox="0 0 48 48" width="44" height="44"><path d="M8 36 L24 12 L40 36 Z" fill="none" stroke="#333" stroke-width="2.5"/><line x1="8" y1="36" x2="40" y2="36" stroke="#333" stroke-width="2.5"/><text x="24" y="31" text-anchor="middle" font-size="12" font-weight="bold" fill="#333">30</text></svg>`},
+{label:"可機洗，最高40度，溫和洗程",svg:`<svg viewBox="0 0 48 48" width="44" height="44"><path d="M8 36 L24 12 L40 36 Z" fill="none" stroke="#333" stroke-width="2.5"/><line x1="8" y1="36" x2="40" y2="36" stroke="#333" stroke-width="2.5"/><text x="24" y="31" text-anchor="middle" font-size="12" font-weight="bold" fill="#333">40</text></svg>`},
+{label:"可機洗，最高40度，極輕柔洗程",svg:`<svg viewBox="0 0 48 48" width="44" height="44"><path d="M8 36 L24 12 L40 36 Z" fill="none" stroke="#333" stroke-width="2.5"/><line x1="8" y1="34" x2="40" y2="34" stroke="#333" stroke-width="2.5"/><line x1="8" y1="38" x2="40" y2="38" stroke="#333" stroke-width="2.5"/><text x="24" y="29" text-anchor="middle" font-size="11" font-weight="bold" fill="#333">40</text></svg>`}
+]},
+{group:"漂白",items:[
+{label:"可使用任何漂白劑",svg:`<svg viewBox="0 0 48 48" width="44" height="44"><polygon points="24,8 44,40 4,40" fill="none" stroke="#333" stroke-width="2.5"/></svg>`},
+{label:"只可使用氧化物漂白劑",svg:`<svg viewBox="0 0 48 48" width="44" height="44"><polygon points="24,8 44,40 4,40" fill="none" stroke="#333" stroke-width="2.5"/><line x1="16" y1="20" x2="32" y2="36" stroke="#333" stroke-width="2"/><line x1="20" y1="16" x2="36" y2="32" stroke="#333" stroke-width="2"/></svg>`},
+{label:"不可漂白",svg:`<svg viewBox="0 0 48 48" width="44" height="44"><polygon points="24,8 44,40 4,40" fill="none" stroke="#333" stroke-width="2.5"/><line x1="10" y1="10" x2="38" y2="38" stroke="#c00" stroke-width="2.5"/><line x1="38" y1="10" x2="10" y2="38" stroke="#c00" stroke-width="2.5"/></svg>`}
+]},
+{group:"自然乾燥",items:[
+{label:"懸掛晾乾",svg:`<svg viewBox="0 0 48 48" width="44" height="44"><rect x="6" y="6" width="36" height="36" rx="3" fill="none" stroke="#333" stroke-width="2.5"/><line x1="24" y1="12" x2="24" y2="36" stroke="#333" stroke-width="2.5"/></svg>`},
+{label:"懸掛滴乾",svg:`<svg viewBox="0 0 48 48" width="44" height="44"><rect x="6" y="6" width="36" height="36" rx="3" fill="none" stroke="#333" stroke-width="2.5"/><line x1="19" y1="12" x2="19" y2="36" stroke="#333" stroke-width="2.5"/><line x1="29" y1="12" x2="29" y2="36" stroke="#333" stroke-width="2.5"/></svg>`},
+{label:"平攤晾乾",svg:`<svg viewBox="0 0 48 48" width="44" height="44"><rect x="6" y="6" width="36" height="36" rx="3" fill="none" stroke="#333" stroke-width="2.5"/><line x1="12" y1="24" x2="36" y2="24" stroke="#333" stroke-width="2.5"/></svg>`},
+{label:"平攤滴乾",svg:`<svg viewBox="0 0 48 48" width="44" height="44"><rect x="6" y="6" width="36" height="36" rx="3" fill="none" stroke="#333" stroke-width="2.5"/><line x1="12" y1="20" x2="36" y2="20" stroke="#333" stroke-width="2.5"/><line x1="12" y1="28" x2="36" y2="28" stroke="#333" stroke-width="2.5"/></svg>`},
+{label:"陰涼處懸掛晾乾",svg:`<svg viewBox="0 0 48 48" width="44" height="44"><rect x="6" y="6" width="36" height="36" rx="3" fill="none" stroke="#333" stroke-width="2.5"/><line x1="6" y1="6" x2="24" y2="24" stroke="#333" stroke-width="1.5"/><line x1="24" y1="12" x2="24" y2="36" stroke="#333" stroke-width="2.5"/></svg>`},
+{label:"陰涼處平攤晾乾",svg:`<svg viewBox="0 0 48 48" width="44" height="44"><rect x="6" y="6" width="36" height="36" rx="3" fill="none" stroke="#333" stroke-width="2.5"/><line x1="6" y1="6" x2="24" y2="24" stroke="#333" stroke-width="1.5"/><line x1="12" y1="24" x2="36" y2="24" stroke="#333" stroke-width="2.5"/></svg>`}
+]},
+{group:"翻滾烘乾",items:[
+{label:"可烘乾，一般溫度（最高80度）",svg:`<svg viewBox="0 0 48 48" width="44" height="44"><rect x="4" y="4" width="40" height="40" rx="4" fill="none" stroke="#333" stroke-width="2.5"/><circle cx="24" cy="24" r="14" fill="none" stroke="#333" stroke-width="2.5"/><circle cx="24" cy="24" r="2.5" fill="#333"/></svg>`},
+{label:"可烘乾，低溫（最高60度）",svg:`<svg viewBox="0 0 48 48" width="44" height="44"><rect x="4" y="4" width="40" height="40" rx="4" fill="none" stroke="#333" stroke-width="2.5"/><circle cx="24" cy="24" r="14" fill="none" stroke="#333" stroke-width="2.5"/><circle cx="19" cy="24" r="2.5" fill="#333"/><circle cx="29" cy="24" r="2.5" fill="#333"/></svg>`},
+{label:"不可翻滾烘乾",svg:`<svg viewBox="0 0 48 48" width="44" height="44"><rect x="4" y="4" width="40" height="40" rx="4" fill="none" stroke="#333" stroke-width="2.5"/><circle cx="24" cy="24" r="14" fill="none" stroke="#333" stroke-width="2.5"/><line x1="10" y1="10" x2="38" y2="38" stroke="#c00" stroke-width="2.5"/><line x1="38" y1="10" x2="10" y2="38" stroke="#c00" stroke-width="2.5"/></svg>`}
+]},
+{group:"熨燙",items:[
+{label:"最高200度熨燙",svg:`<svg viewBox="0 0 52 40" width="52" height="40"><path d="M4 14 Q4 30 26 30 Q48 30 48 14 Z" fill="none" stroke="#333" stroke-width="2.5"/><rect x="22" y="30" width="8" height="8" fill="none" stroke="#333" stroke-width="2"/><circle cx="17" cy="20" r="2" fill="#333"/><circle cx="26" cy="20" r="2" fill="#333"/><circle cx="35" cy="20" r="2" fill="#333"/></svg>`},
+{label:"最高150度熨燙",svg:`<svg viewBox="0 0 52 40" width="52" height="40"><path d="M4 14 Q4 30 26 30 Q48 30 48 14 Z" fill="none" stroke="#333" stroke-width="2.5"/><rect x="22" y="30" width="8" height="8" fill="none" stroke="#333" stroke-width="2"/><circle cx="20" cy="20" r="2" fill="#333"/><circle cx="32" cy="20" r="2" fill="#333"/></svg>`},
+{label:"最高110度（不可蒸氣）",svg:`<svg viewBox="0 0 52 40" width="52" height="40"><path d="M4 14 Q4 30 26 30 Q48 30 48 14 Z" fill="none" stroke="#333" stroke-width="2.5"/><rect x="22" y="30" width="8" height="8" fill="none" stroke="#333" stroke-width="2"/><circle cx="26" cy="20" r="2" fill="#333"/></svg>`},
+{label:"不可熨燙",svg:`<svg viewBox="0 0 52 40" width="52" height="40"><path d="M4 14 Q4 30 26 30 Q48 30 48 14 Z" fill="none" stroke="#333" stroke-width="2.5"/><rect x="22" y="30" width="8" height="8" fill="none" stroke="#333" stroke-width="2"/><line x1="8" y1="8" x2="44" y2="36" stroke="#c00" stroke-width="2.5"/><line x1="44" y1="8" x2="8" y2="36" stroke="#c00" stroke-width="2.5"/></svg>`}
+]},
+{group:"乾洗／專業洗",items:[
+{label:"可乾洗（四氯乙烯/石油系），標準",svg:`<svg viewBox="0 0 48 48" width="44" height="44"><circle cx="24" cy="24" r="18" fill="none" stroke="#333" stroke-width="2.5"/><text x="24" y="30" text-anchor="middle" font-size="16" font-weight="bold" fill="#333">P</text></svg>`},
+{label:"可乾洗（石油系溶劑）",svg:`<svg viewBox="0 0 48 48" width="44" height="44"><circle cx="24" cy="24" r="18" fill="none" stroke="#333" stroke-width="2.5"/><text x="24" y="30" text-anchor="middle" font-size="16" font-weight="bold" fill="#333">F</text></svg>`},
+{label:"不可專業乾洗",svg:`<svg viewBox="0 0 48 48" width="44" height="44"><circle cx="24" cy="24" r="18" fill="none" stroke="#333" stroke-width="2.5"/><line x1="10" y1="10" x2="38" y2="38" stroke="#c00" stroke-width="2.5"/><line x1="38" y1="10" x2="10" y2="38" stroke="#c00" stroke-width="2.5"/></svg>`}
+]}
+];
 
-// 同義詞
-const SYN={'退貨':['退換貨','退款','鑑賞期'],'換貨':['退換貨','瑕疵'],'點數':['MUJI Passport','積點','折抵'],'passport':['muji passport','會員'],'配送':['運費','宅配','超商取貨','到貨'],'發票':['電子發票','統一編號','載具'],'退款':['退貨','信用卡'],'保固':['維修','故障'],'刺繡':['刺繡服務'],'洗滌':['洗衣','清洗','保養'],'羊毛':['wool','縮水'],'素材':['材質','面料','纖維'],'家具':['桌子','椅子','床架'],'聯名卡':['MUJI Card','信用卡','中信'],'風扇':['電風扇','DC馬達','循環扇'],'維修':['修理','服務中心']};
+const SYN={'退貨':['退換貨','退款','鑑賞期'],'換貨':['退換貨','瑕疵'],'點數':['MUJI Passport','積點','折抵'],'passport':['muji passport','會員'],'配送':['運費','宅配','超商取貨','到貨'],'發票':['電子發票','統一編號','載具'],'退款':['退貨','信用卡'],'保固':['維修','故障'],'刺繡':['刺繡服務'],'洗滌':['洗衣','清洗','保養'],'羊毛':['wool','縮水'],'素材':['材質','面料','纖維'],'家具':['桌子','椅子','床架','搬運','配送區域'],'聯名卡':['MUJI Card','信用卡','中信'],'風扇':['電風扇','DC馬達','循環扇'],'維修':['修理','服務中心']};
 
 function expandKW(kw){
   const t=[kw.toLowerCase()];
@@ -1159,13 +1381,72 @@ function expandKW(kw){
   return[...new Set(t)];
 }
 
-// ── 知識庫 ──
+function escH(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function formatContent(raw){
+  if(!raw) return '';
+  raw=raw.replace(/​/g,'').replace(/ /g,' ').trim();
+  const lines=raw.split(/
+/).map(l=>l.trim()).filter(l=>l);
+  let html='';let i=0;
+  while(i<lines.length){
+    const line=lines[i];
+    // 圓圈數字
+    if(/^[①②③④⑤⑥⑦⑧⑨⑩]/.test(line)){
+      const nm={'①':'1','②':'2','③':'3','④':'4','⑤':'5','⑥':'6','⑦':'7','⑧':'8','⑨':'9','⑩':'10'};
+      const n=nm[line[0]];const rest=line.slice(1).replace(/^[：:]/,'').trim();
+      html+=`<div class="cr"><span class="cn">${n}</span><span>${escH(rest)}</span></div>`;i++;continue;
+    }
+    // 1.2.3.
+    if(/^\d+[\.、]/.test(line)){
+      const m=line.match(/^(\d+)[\.、]\s*(.*)/);
+      if(m){html+=`<div class="cr"><span class="cn" style="flex-shrink:0">${m[1]}</span><span>${escH(m[2])}</span></div>`;i++;continue;}
+    }
+    // (1)(2)
+    if(/^\(\d+\)/.test(line)){
+      const m=line.match(/^\((\d+)\)\s*(.*)/);
+      html+=`<div class="cr" style="padding-left:10px"><span class="sn">${m[1]}</span><span>${escH(m[2])}</span></div>`;i++;continue;
+    }
+    // ● ※ •
+    if(/^[●•◆※▶]/.test(line)){
+      const sym=line[0];const rest=line.slice(1).trim();
+      const col=sym==='※'?'#888':'#B81C22';
+      html+=`<div class="cr"><span style="color:${col};flex-shrink:0;margin-right:4px">${sym}</span><span>${escH(rest)}</span></div>`;i++;continue;
+    }
+    // 【】區塊標題
+    if(/^【.*】/.test(line)){
+      html+=`<div style="font-weight:bold;color:#555;margin:6px 0 2px;font-size:12px">${escH(line)}</div>`;i++;continue;
+    }
+    // 費用行
+    if(/[元]\s*[：:\/]/.test(line)&&/\d/.test(line)){
+      const fl=[];
+      while(i<lines.length){
+        const l2=lines[i].trim();
+        if(!l2) break;
+        if((/[元]\s*[：:\/]/.test(l2)&&/\d/.test(l2))||/免運|免組裝|免收/.test(l2)){fl.push(l2);i++;}
+        else break;
+      }
+      if(fl.length>1){
+        html+='<table class="ft">';
+        fl.forEach(fl2=>{const p=fl2.split(/[：:]/);
+          if(p.length>=2) html+=`<tr><td>${escH(p[0].trim())}</td><td>${escH(p.slice(1).join('：').trim())}</td></tr>`;
+          else html+=`<tr><td colspan="2">${escH(fl2)}</td></tr>`;
+        });
+        html+='</table>';
+      } else {html+=`<div class="cb">${escH(fl[0]||line)}</div>`;if(!fl.length) i++;}
+      continue;
+    }
+    html+=`<div class="cb">${escH(line)}</div>`;i++;
+  }
+  return html||escH(raw);
+}
+
+// 知識庫
 const QA_CHIPS=['退換貨','Passport 點數','超商取貨','配送運費','發票','聯名卡','大型家具','保固維修','洗滌保養','素材特性'];
 function initQAChips(){
   const el=document.getElementById('qa-chips');
   QA_CHIPS.forEach(c=>{
-    const d=document.createElement('div');
-    d.className='chip';d.textContent=c;
+    const d=document.createElement('div');d.className='chip';d.textContent=c;
     d.onclick=()=>{document.getElementById('qa-input').value=c;searchQA();el.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));d.classList.add('active');};
     el.appendChild(d);
   });
@@ -1177,17 +1458,16 @@ function searchQA(){
   const terms=expandKW(kw);
   const matched=QA.filter(q=>terms.some(t=>q.t.toLowerCase().includes(t)||q.c.toLowerCase().includes(t)));
   cnt.textContent=`找到 ${matched.length} 筆結果`;
-  res.innerHTML=matched.length?matched.slice(0,30).map(q=>`<div class="card"><div class="card-title">${q.t}</div><div class="card-content">${q.c}</div><div class="card-cat">${q.cat}</div></div>`).join(''):'<div class="empty">找不到相關資料，請嘗試其他關鍵字</div>';
+  res.innerHTML=matched.length?matched.slice(0,30).map(q=>`<div class="card"><div class="card-title">${escH(q.t)}</div><div class="card-content">${formatContent(q.c)}</div><div class="card-cat">${escH(q.cat)}</div></div>`).join(''):'<div class="empty">找不到相關資料，請嘗試其他關鍵字</div>';
 }
 
-// ── 門市 ──
+// 門市
 const CITIES=[...new Set(STORES.map(s=>s.city))];
 let activeCity='';
 function initCityChips(){
   const el=document.getElementById('city-chips');
   ['全部',...CITIES].forEach(c=>{
-    const d=document.createElement('div');
-    d.className='chip'+(c==='全部'?' active':'');d.textContent=c;
+    const d=document.createElement('div');d.className='chip'+(c==='全部'?' active':'');d.textContent=c;
     d.onclick=()=>{activeCity=c==='全部'?'':c;el.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));d.classList.add('active');searchStore();};
     el.appendChild(d);
   });
@@ -1201,60 +1481,51 @@ function searchStore(){
 }
 function renderStores(list){
   document.getElementById('store-count').textContent=`共 ${list.length} 家門市`;
-  document.getElementById('store-results').innerHTML=list.length?list.map(s=>`<div class="store-card"><div class="store-name">🏪 ${s.name}</div><div class="store-addr">📍 ${s.addr}</div><div class="store-tel">📞 ${s.tel}</div><div class="store-svcs">${s.services.map(sv=>`<span class="svc">${sv}</span>`).join('')}</div></div>`).join(''):'<div class="empty">找不到符合的門市</div>';
+  document.getElementById('store-results').innerHTML=list.length?list.map(s=>`<div class="sc"><div class="sn2">🏪 ${escH(s.name)}</div><div class="sa">📍 ${escH(s.addr)}</div><div class="st">📞 ${escH(s.tel)}</div><div class="ss">${s.services.map(sv=>`<span class="sv">${escH(sv)}</span>`).join('')}</div></div>`).join(''):'<div class="empty">找不到符合的門市</div>';
 }
 
-// ── 尺寸 ──
-const SIZE_TABS=Object.keys(SIZE_DATA);let activeSize=SIZE_TABS[0];
+// 尺寸
+const STABS=Object.keys(SIZE_DATA);let activeSize=STABS[0];
 function initSizeTabs(){
   const el=document.getElementById('size-tabs');
-  SIZE_TABS.forEach(k=>{
-    const d=document.createElement('div');d.className='size-tab'+(k===activeSize?' active':'');d.textContent=k;
-    d.onclick=()=>{activeSize=k;el.querySelectorAll('.size-tab').forEach(x=>x.classList.remove('active'));d.classList.add('active');renderSize();};
+  STABS.forEach(k=>{
+    const d=document.createElement('div');d.className='stab'+(k===activeSize?' active':'');d.textContent=k;
+    d.onclick=()=>{activeSize=k;el.querySelectorAll('.stab').forEach(x=>x.classList.remove('active'));d.classList.add('active');renderSize();};
     el.appendChild(d);
   });
   renderSize();
 }
 function renderSize(){
   const data=SIZE_DATA[activeSize];
-  const rows=data.rows.map(r=>`<tr>${r.map((c,i)=>`${i===0?`<td>${c}</td>`:`<td>${c}</td>`}`).join('')}</tr>`).join('');
-  document.getElementById('size-content').innerHTML=`<div style="overflow-x:auto"><table class="size-table"><thead><tr>${data.headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div>`;
+  const rows=data.rows.map(r=>`<tr>${r.map((c,i)=>`<td>${escH(c)}</td>`).join('')}</tr>`).join('');
+  document.getElementById('size-content').innerHTML=`<div style="overflow-x:auto"><table class="stable"><thead><tr>${data.headers.map(h=>`<th>${escH(h)}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 
-// ── 說明書 ──
+// 說明書
 function searchManual(){
   const kw=document.getElementById('manual-input').value.trim().toLowerCase();
   const cnt=document.getElementById('manual-count'),res=document.getElementById('manual-results');
   if(!kw){res.innerHTML='';cnt.textContent='';return;}
   const matched=MANUALS.filter(m=>m.name.toLowerCase().includes(kw)||m.bc.includes(kw)||m.cat.toLowerCase().includes(kw));
   cnt.textContent=`找到 ${matched.length} 筆`;
-  res.innerHTML=matched.length?matched.slice(0,30).map(m=>`<div class="manual-card"><div class="manual-info"><div class="manual-cat">${m.cat}</div><div class="manual-name">${m.name}</div><div class="manual-bc">條碼：${m.bc}</div></div><a class="pdf-btn" href="${m.url}" target="_blank">查看PDF</a></div>`).join(''):'<div class="empty">找不到相關說明書</div>';
+  res.innerHTML=matched.length?matched.slice(0,30).map(m=>`<div class="mc"><div class="mi"><div class="mcat">${escH(m.cat)}</div><div class="mname">${escH(m.name)}</div><div class="mbc">條碼：${escH(m.bc)}</div></div><a class="pbtn" href="${escH(m.url)}" target="_blank">查看PDF</a></div>`).join(''):'<div class="empty">找不到相關說明書</div>';
 }
 
-// ── 洗滌標示 ──
+// 洗滌
 function initLaundry(){
-  const el=document.getElementById('laundry-content');
-  el.innerHTML=LAUNDRY.map(g=>`
-    <div class="laundry-group">
-      <div class="group-title">${g.group}</div>
-      <div class="laundry-grid">${g.items.map(item=>`
-        <div class="laundry-item">
-          ${item.svg}
-          <div class="laundry-label">${item.label}</div>
-        </div>`).join('')}
-      </div>
-    </div>`).join('');
+  document.getElementById('laundry-content').innerHTML=LAUNDRY.map(g=>`
+    <div class="lg"><div class="gt">${escH(g.group)}</div>
+    <div class="lgrid">${g.items.map(item=>`<div class="li">${item.svg}<div class="ll">${escH(item.label)}</div></div>`).join('')}</div></div>`).join('');
 }
 
-// ── DC風扇維修 ──
+// DC風扇
 const REGIONS=['全部','北部','中部','南部','東部','離島'];
 let activeRegion='';
 function initDC(){
   const el=document.getElementById('region-tabs');
   REGIONS.forEach(r=>{
-    const d=document.createElement('div');
-    d.className='region-tab'+(r==='全部'?' active':'');d.textContent=r;
-    d.onclick=()=>{activeRegion=r==='全部'?'':r;el.querySelectorAll('.region-tab').forEach(x=>x.classList.remove('active'));d.classList.add('active');searchDC();};
+    const d=document.createElement('div');d.className='rtab'+(r==='全部'?' active':'');d.textContent=r;
+    d.onclick=()=>{activeRegion=r==='全部'?'':r;el.querySelectorAll('.rtab').forEach(x=>x.classList.remove('active'));d.classList.add('active');searchDC();};
     el.appendChild(d);
   });
   renderDC(DC_CENTERS);
@@ -1262,23 +1533,22 @@ function initDC(){
 function searchDC(){
   const kw=document.getElementById('dc-input').value.trim().toLowerCase();
   let list=activeRegion?DC_CENTERS.filter(c=>c.region===activeRegion):DC_CENTERS;
-  if(kw) list=list.filter(c=>c.name.toLowerCase().includes(kw)||c.addr.includes(kw)||c.region.includes(kw));
+  if(kw) list=list.filter(c=>c.name.toLowerCase().includes(kw)||c.addr.includes(kw));
   renderDC(list);
 }
 function renderDC(list){
-  const byRegion={};
-  list.forEach(c=>{if(!byRegion[c.region])byRegion[c.region]=[];byRegion[c.region].push(c);});
-  const regionOrder=['北部','中部','南部','東部','離島'];
+  const byR={};list.forEach(c=>{if(!byR[c.region]) byR[c.region]=[];byR[c.region].push(c);});
+  const order=['北部','中部','南部','東部','離島'];
   let html='';
-  regionOrder.forEach(r=>{
-    if(!byRegion[r]) return;
-    html+=`<div class="section-label">📍 ${r}（${byRegion[r].length}個據點）</div>`;
-    html+=byRegion[r].map(c=>`<div class="dc-card"><div class="dc-icon">🔧</div><div class="dc-info"><div class="dc-name">${c.name}</div><div class="dc-addr">${c.addr}</div><div class="dc-tel">📞 ${c.tel}</div></div></div>`).join('');
+  order.forEach(r=>{
+    if(!byR[r]) return;
+    html+=`<div class="slabel">📍 ${r}（${byR[r].length}個據點）</div>`;
+    html+=byR[r].map(c=>`<div class="dc"><div style="font-size:20px;flex-shrink:0">🔧</div><div><div class="dcn">${escH(c.name)}</div><div class="dca">${escH(c.addr)}</div><div class="dct">📞 ${escH(c.tel)}</div></div></div>`).join('');
   });
   document.getElementById('dc-results').innerHTML=html||'<div class="empty">找不到符合的據點</div>';
 }
 
-// ── 分頁切換 ──
+// 分頁
 function showTab(id,el){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
@@ -1286,102 +1556,12 @@ function showTab(id,el){
   el.classList.add('active');
 }
 
-
-function formatContent(raw) {
-  if (!raw) return '';
-  // 清除零寬空白和多餘空格
-  raw = raw.replace(/\u200b/g, '').replace(/\u00a0/g, ' ').trim();
-
-  const lines = raw.split(/\n/).map(l => l.trim()).filter(l => l);
-  let html = '';
-  let i = 0;
-
-  while (i < lines.length) {
-    const line = lines[i];
-
-    // 圓圈數字 ①②③...
-    if (/^[①②③④⑤⑥⑦⑧⑨⑩]/.test(line)) {
-      const numMap = {'①':'1','②':'2','③':'3','④':'4','⑤':'5','⑥':'6','⑦':'7','⑧':'8','⑨':'9','⑩':'10'};
-      const num = numMap[line[0]];
-      const rest = line.slice(1).replace(/^[：:]/, '').trim();
-      html += `<div class="content-row"><span class="content-num">${num}</span><span>${escHtml(rest)}</span></div>`;
-      i++; continue;
-    }
-
-    // 阿拉伯數字加點：1. 2. 3. 或 1、2、
-    if (/^\d+[\.、]/.test(line)) {
-      const match = line.match(/^(\d+)[\.、]\s*(.*)/);
-      if (match) {
-        html += `<div class="content-row" style="margin:4px 0;align-items:flex-start"><span class="content-num" style="flex-shrink:0;margin-top:1px">${match[1]}</span><span style="line-height:1.75">${escHtml(match[2])}</span></div>`;
-        i++; continue;
-      }
-    }
-
-    // (1)(2)(3) 括號數字
-    if (/^\(\d+\)/.test(line)) {
-      const match = line.match(/^\((\d+)\)\s*(.*)/);
-      html += `<div class="content-row" style="padding-left:12px;margin:3px 0"><span class="sub-num">${match[1]}</span><span>${escHtml(match[2])}</span></div>`;
-      i++; continue;
-    }
-
-    // ● • ※ 項目符號
-    if (/^[●•◆▶※]/.test(line)) {
-      const sym = line[0];
-      const rest = line.slice(1).trim();
-      const color = sym === '※' ? '#888' : '#B81C22';
-      html += `<div class="content-row" style="margin:3px 0"><span style="color:${color};margin-right:6px;flex-shrink:0;font-size:12px">${sym}</span><span>${escHtml(rest)}</span></div>`;
-      i++; continue;
-    }
-
-    // 費用對照行（含「元：」或「元/」的費用行，且有數字）
-    if (/[元]\s*[：:\/]/.test(line) && /\d/.test(line)) {
-      const feeLines = [];
-      while (i < lines.length) {
-        const fl = lines[i].trim();
-        if (!fl) break;
-        if ((/[元]\s*[：:\/]/.test(fl) && /\d/.test(fl)) || /免運|免組裝|免收/.test(fl)) {
-          feeLines.push(fl); i++;
-        } else break;
-      }
-      if (feeLines.length > 1) {
-        html += '<table class="fee-table">';
-        feeLines.forEach(fl => {
-          const parts = fl.split(/[：:]/);
-          if (parts.length >= 2) {
-            html += `<tr><td>${escHtml(parts[0].trim())}</td><td>${escHtml(parts.slice(1).join('：').trim())}</td></tr>`;
-          } else {
-            html += `<tr><td colspan="2">${escHtml(fl)}</td></tr>`;
-          }
-        });
-        html += '</table>';
-      } else {
-        html += `<div class="content-block">${escHtml(feeLines[0] || line)}</div>`;
-        if (!feeLines.length) i++;
-      }
-      continue;
-    }
-
-    // 一般文字
-    html += `<div class="content-block" style="margin:3px 0;line-height:1.75">${escHtml(line)}</div>`;
-    i++;
-  }
-  return html || escHtml(raw);
-}
-
-function escHtml(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-
 // 初始化
-initQAChips();
-initCityChips();
-initSizeTabs();
-initLaundry();
-initDC();
-['qa','store','manual','dc'].forEach(id=>{
-  const el=document.getElementById(id+'-input');
-  if(el) el.addEventListener('keydown',e=>{if(e.key==='Enter') window[`search${id.charAt(0).toUpperCase()+id.slice(1)}`]();});
-});
+initQAChips();initCityChips();initSizeTabs();initLaundry();initDC();
+document.getElementById('qa-input').addEventListener('input',searchQA);
+document.getElementById('qa-input').addEventListener('keydown',e=>{if(e.key==='Enter') searchQA();});
+document.getElementById('manual-input').addEventListener('keydown',e=>{if(e.key==='Enter') searchManual();});
+document.getElementById('dc-input').addEventListener('keydown',e=>{if(e.key==='Enter') searchDC();});
 </script>
 </body>
 </html>
