@@ -528,6 +528,20 @@ function expandKW(kw){
 
 function escH(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
+function linkify(s){
+  // ==文字== 轉成螢光筆標記
+  s=s.replace(/==([^=]+)==/g, '<mark style="background:#fff176;padding:1px 3px;border-radius:3px;font-weight:bold;color:#333">$1</mark>');
+  // http/https URL 轉超連結
+  s=s.replace(/(https?:\/\/[^\s<"]+)/g, '<a href="$1" target="_blank" style="color:#B81C22;text-decoration:underline;word-break:break-all">$1</a>');
+  return s;
+}
+
+function linkify(s){
+  // 把 http/https 開頭的網址轉成可點擊的超連結
+  return s.replace(/(https?:\/\/[^\s<「」，。、！？；：）\)]+)/g,
+    '<a href="$1" target="_blank" style="color:#B81C22;word-break:break-all;text-decoration:underline">$1</a>');
+}
+
 function formatContent(raw){
   if(!raw) return '';
   raw=raw.replace(/\u200b/g,'').replace(/\u00a0/g,' ').trim();
@@ -622,10 +636,24 @@ function formatContent(raw){
     // 一般文字
     out+=`<div class="cb">${escH(line)}</div>`;i++;
   }
-  return out||escH(raw);
+  return linkify(out||escH(raw));
 }
 
 function escH(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function linkify(s){
+  // ==文字== 轉成螢光筆標記
+  s=s.replace(/==([^=]+)==/g, '<mark style="background:#fff176;padding:1px 3px;border-radius:3px;font-weight:bold;color:#333">$1</mark>');
+  // http/https URL 轉超連結
+  s=s.replace(/(https?:\/\/[^\s<"]+)/g, '<a href="$1" target="_blank" style="color:#B81C22;text-decoration:underline;word-break:break-all">$1</a>');
+  return s;
+}
+
+function linkify(s){
+  // 把 http/https 開頭的網址轉成可點擊的超連結
+  return s.replace(/(https?:\/\/[^\s<「」，。、！？；：）\)]+)/g,
+    '<a href="$1" target="_blank" style="color:#B81C22;word-break:break-all;text-decoration:underline">$1</a>');
+}
 
 function formatContent(raw){
   if(!raw) return '';
@@ -702,10 +730,24 @@ function formatContent(raw){
     // 一般文字
     out+=`<div class="cb">${escH(line)}</div>`;i++;
   }
-  return out||escH(raw);
+  return linkify(out||escH(raw));
 }
 
 function escH(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function linkify(s){
+  // ==文字== 轉成螢光筆標記
+  s=s.replace(/==([^=]+)==/g, '<mark style="background:#fff176;padding:1px 3px;border-radius:3px;font-weight:bold;color:#333">$1</mark>');
+  // http/https URL 轉超連結
+  s=s.replace(/(https?:\/\/[^\s<"]+)/g, '<a href="$1" target="_blank" style="color:#B81C22;text-decoration:underline;word-break:break-all">$1</a>');
+  return s;
+}
+
+function linkify(s){
+  // 把 http/https 開頭的網址轉成可點擊的超連結
+  return s.replace(/(https?:\/\/[^\s<「」，。、！？；：）\)]+)/g,
+    '<a href="$1" target="_blank" style="color:#B81C22;word-break:break-all;text-decoration:underline">$1</a>');
+}
 
 function formatContent(raw){
   if(!raw) return '';
