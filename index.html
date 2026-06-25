@@ -1289,51 +1289,63 @@ function showTab(id,el){
 
 function formatContent(raw) {
   if (!raw) return '';
-  // 偵測費用表格格式（含「：」和「元」的行）
-  const lines = raw.split(/\n/);
+  // 清除零寬空白和多餘空格
+  raw = raw.replace(/\u200b/g, '').replace(/\u00a0/g, ' ').trim();
+
+  const lines = raw.split(/\n/).map(l => l.trim()).filter(l => l);
   let html = '';
   let i = 0;
-  while (i < lines.length) {
-    const line = lines[i].trim();
-    if (!line) { i++; continue; }
 
-    // 圓圈數字 ①②③④⑤⑥⑦⑧⑨⑩
+  while (i < lines.length) {
+    const line = lines[i];
+
+    // 圓圈數字 ①②③...
     if (/^[①②③④⑤⑥⑦⑧⑨⑩]/.test(line)) {
-      const num = line[0];
       const numMap = {'①':'1','②':'2','③':'3','④':'4','⑤':'5','⑥':'6','⑦':'7','⑧':'8','⑨':'9','⑩':'10'};
+      const num = numMap[line[0]];
       const rest = line.slice(1).replace(/^[：:]/, '').trim();
-      html += `<div class="content-row"><span class="content-num">${numMap[num]}</span><span>${escHtml(rest)}</span></div>`;
+      html += `<div class="content-row"><span class="content-num">${num}</span><span>${escHtml(rest)}</span></div>`;
       i++; continue;
+    }
+
+    // 阿拉伯數字加點：1. 2. 3. 或 1、2、
+    if (/^\d+[\.、]/.test(line)) {
+      const match = line.match(/^(\d+)[\.、]\s*(.*)/);
+      if (match) {
+        html += `<div class="content-row" style="margin:4px 0;align-items:flex-start"><span class="content-num" style="flex-shrink:0;margin-top:1px">${match[1]}</span><span style="line-height:1.75">${escHtml(match[2])}</span></div>`;
+        i++; continue;
+      }
     }
 
     // (1)(2)(3) 括號數字
     if (/^\(\d+\)/.test(line)) {
       const match = line.match(/^\((\d+)\)\s*(.*)/);
-      html += `<div class="content-row" style="padding-left:8px"><span class="sub-num">${match[1]}</span><span>${escHtml(match[2])}</span></div>`;
+      html += `<div class="content-row" style="padding-left:12px;margin:3px 0"><span class="sub-num">${match[1]}</span><span>${escHtml(match[2])}</span></div>`;
       i++; continue;
     }
 
-    // ● 或 • 項目符號
-    if (/^[●•◆▶]/.test(line)) {
+    // ● • ※ 項目符號
+    if (/^[●•◆▶※]/.test(line)) {
+      const sym = line[0];
       const rest = line.slice(1).trim();
-      html += `<div class="content-row"><span style="color:#B81C22;margin-right:6px;flex-shrink:0">●</span><span>${escHtml(rest)}</span></div>`;
+      const color = sym === '※' ? '#888' : '#B81C22';
+      html += `<div class="content-row" style="margin:3px 0"><span style="color:${color};margin-right:6px;flex-shrink:0;font-size:12px">${sym}</span><span>${escHtml(rest)}</span></div>`;
       i++; continue;
     }
 
-    // 費用對照行（格式：「未滿XXXX元：XXX元」或含「/」的費用）
-    if (/[元圓]\s*[：:\/]/.test(line) && /\d/.test(line)) {
-      // 收集連續的費用行
+    // 費用對照行（含「元：」或「元/」的費用行，且有數字）
+    if (/[元]\s*[：:\/]/.test(line) && /\d/.test(line)) {
       const feeLines = [];
       while (i < lines.length) {
         const fl = lines[i].trim();
         if (!fl) break;
-        if (/[元圓]\s*[：:\/]/.test(fl) && /\d/.test(fl) || /免運|免組裝|免收/.test(fl)) {
+        if ((/[元]\s*[：:\/]/.test(fl) && /\d/.test(fl)) || /免運|免組裝|免收/.test(fl)) {
           feeLines.push(fl); i++;
         } else break;
       }
       if (feeLines.length > 1) {
         html += '<table class="fee-table">';
-        feeLines.forEach((fl, idx) => {
+        feeLines.forEach(fl => {
           const parts = fl.split(/[：:]/);
           if (parts.length >= 2) {
             html += `<tr><td>${escHtml(parts[0].trim())}</td><td>${escHtml(parts.slice(1).join('：').trim())}</td></tr>`;
@@ -1343,16 +1355,17 @@ function formatContent(raw) {
         });
         html += '</table>';
       } else {
-        html += `<div class="content-block">${escHtml(feeLines[0])}</div>`;
+        html += `<div class="content-block">${escHtml(feeLines[0] || line)}</div>`;
+        if (!feeLines.length) i++;
       }
       continue;
     }
 
     // 一般文字
-    html += `<div class="content-block">${escHtml(line)}</div>`;
+    html += `<div class="content-block" style="margin:3px 0;line-height:1.75">${escHtml(line)}</div>`;
     i++;
   }
-  return html;
+  return html || escHtml(raw);
 }
 
 function escHtml(s) {
