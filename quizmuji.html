@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MUJI 客服知識測驗</title>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+
+:root {
+  --green: #4CAF7D;
+  --green-dark: #3a9a68;
+  --green-light: #e8f5ee;
+  --orange: #E8763A;
+  --red: #e53e3e;
+  --blue: #3182CE;
+  --blue-light: #EBF8FF;
+  --yellow: #D69E2E;
+  --yellow-light: #FFFFF0;
+  --bg: #F5F7FA;
+  --card: #ffffff;
+  --text: #2D3748;
+  --muted: #718096;
+  --border: #E2E8F0;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 15px;
+}
+
+.header {
+  background: #2D3748;
+  color: #fff;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+  position: sticky; top: 0; z-index: 10;
+}
+.header-icon {
+  width: 44px; height: 44px;
+  background: linear-gradient(135deg, var(--green), var(--green-dark));
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; flex-shrink: 0;
+}
+.header h1 { font-size: 17px; font-weight: 900; }
+.header p { font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 2px; }
+
+.container { max-width: 700px; margin: 28px auto; padding: 0 16px 60px; }
+
+.card {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 28px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  margin-bottom: 16px;
+  animation: fadeIn 0.3s ease;
+}
+
+/* Start */
+.start-emoji { font-size: 52px; text-align: center; margin-bottom: 12px; }
+.start-title { font-size: 22px; font-weight: 900; text-align: center; margin-bottom: 6px; }
+.start-sub { color: var(--muted); text-align: center; font-size: 14px; margin-bottom: 24px; line-height: 1.7; }
+
+.info-row { display: flex; gap: 10px; margin-bottom: 24px; flex-wrap: wrap; }
+.info-chip {
+  flex: 1; min-width: 100px;
+  background: var(--green-light);
+  border-radius: 10px;
+  padding: 12px 10px; text-align: center;
+}
+.info-chip .num { font-size: 18px; font-weight: 900; color: var(--green-dark); }
+.info-chip .lbl { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+.form-group { margin-bottom: 16px; }
+.form-group label {
+  display: block; font-size: 12px; font-weight: 700;
+  color: var(--muted); margin-bottom: 6px;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.form-group input, .form-group select {
+  width: 100%; padding: 11px 14px;
+  border: 2px solid var(--border); border-radius: 10px;
+  font-size: 14px; font-family: inherit; color: var(--text);
+  outline: none; transition: border-color 0.2s;
+}
+.form-group input:focus, .form-group select:focus { border-color: var(--green); }
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 6px; padding: 12px 24px; border-radius: 999px;
+  border: none; cursor: pointer; font-size: 14px; font-weight: 700;
+  font-family: inherit; transition: all 0.2s; width: 100%;
+}
+.btn-green { background: var(--green); color: #fff; }
+.btn-green:hover { background: var(--green-dark); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(76,175,125,0.4); }
+.btn-green:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+.btn-outline { background: transparent; color: var(--green-dark); border: 2px solid var(--green); }
+.btn-outline:hover { background: var(--green-light); }
+.btn-orange { background: var(--orange); color: #fff; }
+.btn-orange:hover { background: #c9622e; }
+.btn-blue { background: var(--blue); color: #fff; }
+.btn-blue:hover { background: #2b6cb0; }
+
+/* Progress */
+.quiz-progress { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.progress-bar-wrap { flex: 1; height: 8px; background: var(--border); border-radius: 999px; overflow: hidden; }
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--green), var(--green-dark));
+  border-radius: 999px; transition: width 0.4s ease;
+}
+.progress-txt { font-size: 12px; font-weight: 700; color: var(--muted); white-space: nowrap; }
+
+.live-score { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+.live-score-bar { flex: 1; height: 6px; background: var(--border); border-radius: 999px; overflow: hidden; }
+.live-score-fill { height: 100%; background: var(--green); border-radius: 999px; transition: width 0.4s; }
+
+/* Type badge */
+.type-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 12px; border-radius: 999px;
+  font-size: 12px; font-weight: 700; margin-bottom: 10px;
+}
+.type-tf { background: #EBF8FF; color: #2B6CB0; }
+.type-single { background: var(--green-light); color: var(--green-dark); }
+.type-multi { background: #FAF5FF; color: #553C9A; }
+
+.q-text { font-size: 16px; font-weight: 700; line-height: 1.6; margin-bottom: 8px; }
+.q-hint { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+
+/* Options */
+.options { display: flex; flex-direction: column; gap: 10px; }
+.option {
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 16px; border: 2px solid var(--border);
+  border-radius: 12px; cursor: pointer; transition: all 0.18s; user-select: none;
+}
+.option:hover:not(.disabled) { border-color: var(--green); background: var(--green-light); }
+.option.selected { border-color: var(--green); background: var(--green-light); }
+.option.correct { border-color: #38a169 !important; background: #f0fff4 !important; }
+.option.wrong { border-color: var(--red) !important; background: #fff5f5 !important; }
+.option.show-correct { border-color: #38a169 !important; background: #f0fff4 !important; }
+.option.disabled { cursor: default; }
+
+.opt-marker {
+  width: 28px; height: 28px; flex-shrink: 0;
+  border-radius: 6px; background: var(--bg);
+  border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 900; transition: all 0.18s;
+}
+.opt-marker.circle { border-radius: 50%; }
+.option.selected .opt-marker { background: var(--green); border-color: var(--green); color: #fff; }
+.option.correct .opt-marker { background: #38a169 !important; border-color: #38a169 !important; color: #fff !important; }
+.option.wrong .opt-marker { background: var(--red) !important; border-color: var(--red) !important; color: #fff !important; }
+.option.show-correct .opt-marker { background: #38a169 !important; border-color: #38a169 !important; color: #fff !important; }
+.opt-text { font-size: 14px; line-height: 1.5; flex: 1; }
+
+.explain-box {
+  display: none; margin-top: 14px; padding: 14px 16px;
+  border-radius: 10px; font-size: 13px; line-height: 1.7;
+}
+.explain-box.ok { background: #f0fff4; border-left: 4px solid #38a169; color: #276749; }
+.explain-box.ng { background: #fff5f5; border-left: 4px solid var(--red); color: #c53030; }
+.explain-box.partial { background: #FFFFF0; border-left: 4px solid var(--yellow); color: #744210; }
+
+.quiz-nav { display: flex; gap: 10px; margin-top: 20px; }
+.quiz-nav .btn { flex: 1; }
+
+/* Result */
+.result-top { text-align: center; padding-bottom: 24px; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
+.result-emoji { font-size: 60px; margin-bottom: 8px; }
+.result-name { font-size: 17px; font-weight: 900; margin-bottom: 4px; }
+.result-score-big { font-size: 64px; font-weight: 900; line-height: 1; margin: 12px 0 6px; }
+.result-score-big.pass { color: var(--green-dark); }
+.result-score-big.fail { color: var(--red); }
+.result-verdict {
+  display: inline-block; padding: 6px 20px;
+  border-radius: 999px; font-size: 14px; font-weight: 700; margin-top: 8px;
+}
+.verdict-pass { background: var(--green-light); color: var(--green-dark); }
+.verdict-fail { background: #fff5f5; color: var(--red); }
+
+.score-breakdown { display: flex; gap: 10px; margin-top: 20px; }
+.score-chip { flex: 1; padding: 14px 10px; border-radius: 12px; text-align: center; }
+.score-chip .sc-num { font-size: 22px; font-weight: 900; }
+.score-chip .sc-lbl { font-size: 11px; color: var(--muted); margin-top: 3px; }
+.chip-correct { background: #f0fff4; }
+.chip-correct .sc-num { color: #38a169; }
+.chip-wrong { background: #fff5f5; }
+.chip-wrong .sc-num { color: var(--red); }
+.chip-partial { background: #FFFFF0; }
+.chip-partial .sc-num { color: var(--yellow); }
+.chip-total { background: var(--bg); }
+
+.section-title { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+
+.review-item { padding: 14px 16px; border-radius: 12px; margin-bottom: 10px; font-size: 13px; line-height: 1.6; }
+.review-item.r-correct { background: #f0fff4; border-left: 3px solid #38a169; }
+.review-item.r-wrong { background: #fff5f5; border-left: 3px solid var(--red); }
+.review-item.r-partial { background: #FFFFF0; border-left: 3px solid var(--yellow); }
+.review-item .r-q { font-weight: 700; margin-bottom: 6px; }
+.review-item .r-type { font-size: 11px; opacity: 0.7; margin-bottom: 4px; }
+.review-item .r-detail { color: var(--muted); font-size: 12px; }
+.r-correct-ans { color: #38a169; font-weight: 700; }
+.r-wrong-ans { color: var(--red); font-weight: 700; }
+
+.email-status {
+  display: none; margin-top: 14px; padding: 14px 16px;
+  border-radius: 10px; font-size: 13px; text-align: center; line-height: 1.8;
+}
+.email-status.sending { background: #EBF8FF; color: #2B6CB0; }
+.email-status.sent { background: var(--green-light); color: var(--green-dark); }
+.email-status.error { background: #fff5f5; color: var(--red); }
+
+/* Loading */
+.loading-screen { text-align: center; padding: 50px 20px; }
+.spinner {
+  width: 44px; height: 44px; border: 4px solid var(--border);
+  border-top-color: var(--green); border-radius: 50%;
+  animation: spin 0.8s linear infinite; margin: 0 auto 20px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-screen p { color: var(--muted); font-size: 14px; line-height: 1.8; }
+.loading-screen .sub { font-size: 12px; margin-top: 8px; color: #a0aec0; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+.btn-row .btn { flex: 1; min-width: 140px; }
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <div class="header-icon">🛍️</div>
+  <div>
+    <h1>MUJI 無印良品客服知識測驗</h1>
+    <p>MUJI 無印良品客服委外｜內部教育訓練</p>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- Screen: 開始 -->
+  <div id="screen-start" class="card">
+    <div class="start-emoji">📋</div>
+    <div class="start-title">MUJI 客服知識測驗</div>
+    <div class="start-sub">題庫共 116 題，依 11 大分類抽 31 題<br>混合是非、單選、複選　85 分以上通過，成績自動寄送主管</div>
+
+    <div class="info-row">
+      <div class="info-chip">
+        <div class="num">31</div>
+        <div class="lbl">隨機題數</div>
+      </div>
+      <div class="info-chip">
+        <div class="num">85</div>
+        <div class="lbl">及格分數</div>
+      </div>
+      <div class="info-chip">
+        <div class="num">三種</div>
+        <div class="lbl">題型</div>
+      </div>
+      <div class="info-chip">
+        <div class="num">即時</div>
+        <div class="lbl">Email 回報</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>您的姓名</label>
+      <input type="text" id="inp-name" placeholder="請輸入真實姓名">
+    </div>
+    <div class="form-group">
+      <label>測驗專案</label>
+      <select id="inp-city" disabled style="background:#f7f3ec;color:#7B1A1F;font-weight:700;cursor:default">
+        <option value="MUJI無印良品" selected>MUJI 無印良品</option>
+      </select>
+    </div>
+
+    <button class="btn btn-green" onclick="startQuiz()">🚀 開始測驗</button>
+  </div>
+
+  <!-- Screen: Loading -->
+  <div id="screen-loading" class="card" style="display:none">
+    <div class="loading-screen">
+      <div class="spinner"></div>
+      <p>📋 正在為您抽題中…</p>
+      <p class="sub">即將開始測驗，請稍候…</p>
+    </div>
+  </div>
+
+  <!-- Screen: 測驗 -->
+  <div id="screen-quiz" class="card" style="display:none">
+    <div class="quiz-progress">
+      <div class="progress-bar-wrap">
+        <div class="progress-bar" id="progress-bar" style="width:0%"></div>
+      </div>
+      <div class="progress-txt" id="progress-txt">1 / 15</div>
+    </div>
+    <div class="live-score">
+      <span id="live-score-txt">目前得分 0 分</span>
+      <div class="live-score-bar">
+        <div class="live-score-fill" id="live-score-fill" style="width:0%"></div>
+      </div>
+    </div>
+    <div class="type-badge" id="type-badge">是非題</div>
+    <div class="q-text" id="q-text"></div>
+    <div class="q-hint" id="q-hint"></div>
+    <div class="options" id="options"></div>
+    <div class="explain-box" id="explain-box"></div>
+    <div class="quiz-nav">
+      <button class="btn btn-green" id="btn-next" onclick="nextQ()" disabled>下一題 →</button>
+    </div>
+  </div>
+
+  <!-- Screen: 結果 -->
+  <div id="screen-result" class="card" style="display:none">
+    <div class="result-top">
+      <div class="result-emoji" id="result-emoji">🎉</div>
+      <div class="result-name" id="result-name"></div>
+      <div class="result-score-big" id="result-score"></div>
+      <div class="result-verdict" id="result-verdict"></div>
+      <div class="score-breakdown">
+        <div class="score-chip chip-correct">
+          <div class="sc-num" id="sc-correct">0</div>
+          <div class="sc-lbl">全對</div>
+        </div>
+        <div class="score-chip chip-partial">
+          <div class="sc-num" id="sc-partial">0</div>
+          <div class="sc-lbl">部分對</div>
+        </div>
+        <div class="score-chip chip-wrong">
+          <div class="sc-num" id="sc-wrong">0</div>
+          <div class="sc-lbl">答錯</div>
+        </div>
+        <div class="score-chip chip-total">
+          <div class="sc-num" id="sc-total">0</div>
+          <div class="sc-lbl">總題數</div>
+        </div>
+      </div>
+    </div>
+    <div class="section-title">📝 詳細解析</div>
+    <div id="review-list"></div>
+    <div class="email-status" id="email-status"></div>
+    <div class="btn-row" id="result-btns"></div>
+  </div>
+
+</div>
+
+<script>
+
+const CONFIG = {
+  EMAILJS_PUBLIC_KEY: 'GL2bE8A4d3jSItIUJ',
+  EMAILJS_SERVICE_ID: 'service_xuahpmn',
+  EMAILJS_TEMPLATE_ID: 'template_xpitx4k',
+  MANAGER_EMAIL: 'khnpduty@chainsea.com.tw',
+  SHEET_URL: 'https://script.google.com/macros/s/AKfycbyhuGFvsAVaPzn45xiM380sM3s1a_L-tv5zw0eSSt-pUbaQaBppubkHotocrOjWG97p/exec'
+};
+
+const CITY_QA = {};
+
+let S = {
+  name:'', city:'',
+  questions:[], current:0,
+  answers:[],
+  totalPts:0, earnedPts:0,
+  answered:false,
+  _multiSelected: new Set()
+};
+
+emailjs.init(CONFIG.EMAILJS_PUBLIC_KEY);
+
+function show(id){
+  ['screen-start','screen-loading','screen-quiz','screen-result'].forEach(s=>{
+    const el=document.getElementById(s);
+    if(el) el.style.display=(s===id?'block':'none');
+  });
+}
+
+const QUIZ_PLAN = [{"cat": "退換貨與通路差異", "pick": 4}, {"cat": "客訴分級與後送SOP", "pick": 4}, {"cat": "紅線行為與資安", "pick": 2}, {"cat": "Passport會員與點數", "pick": 3}, {"cat": "聯名卡MUJI Card", "pick": 2}, {"cat": "官網與蝦皮通路", "pick": 3}, {"cat": "商品知識與使用保養", "pick": 3}, {"cat": "維修保固與家具配送", "pick": 2}, {"cat": "門市發票與品牌", "pick": 2}, {"cat": "客服SOP流程知識", "pick": 3}, {"cat": "尺寸與洗滌保養知識", "pick": 3}];
+
+const QUESTION_BANK = [{"cat": "退換貨與通路差異", "type": "tf", "q": "MUJI 門市購買商品的退換貨鑑賞期為購買日起 7 天內。", "ans": false, "explain": "錯誤。門市退換貨鑑賞期為購買日起「10 天」內，且須回原購買門市辦理。"}, {"cat": "退換貨與通路差異", "type": "single", "q": "MUJI 門市購買的商品要退換貨，鑑賞期是幾天？", "opts": ["7 天", "10 天", "14 天", "15 天"], "ans": [1], "explain": "門市退換貨鑑賞期為購買日起 10 天內，且須回原購買門市辦理。"}, {"cat": "退換貨與通路差異", "type": "tf", "q": "蝦皮旗艦館購買的商品，鑑賞期與官網一樣都是 10 天。", "ans": false, "explain": "錯誤。蝦皮旗艦館鑑賞期為 15 天、官網為 10 天，兩通路不同不可混淆。"}, {"cat": "退換貨與通路差異", "type": "single", "q": "顧客在蝦皮旗艦館下單，商品鑑賞期為幾天？", "opts": ["7 天", "10 天", "15 天", "30 天"], "ans": [2], "explain": "蝦皮旗艦館鑑賞期 15 天，官網 10 天。這是最容易講錯的地方。"}, {"cat": "退換貨與通路差異", "type": "single", "q": "MUJI 官網購物的鑑賞期是幾天？", "opts": ["7 天", "10 天", "15 天", "30 天"], "ans": [1], "explain": "官網鑑賞期 10 天（猶豫期非試用期），蝦皮 15 天。"}, {"cat": "退換貨與通路差異", "type": "tf", "q": "門市購買的商品，可以拿到任何一家 MUJI 門市辦理退換貨。", "ans": false, "explain": "錯誤。門市購買須回「原購買門市」辦理，因交易資料保存於原門市。"}, {"cat": "退換貨與通路差異", "type": "tf", "q": "官網購物僅提供退貨、不提供換貨服務。", "ans": true, "explain": "正確。官網為加速流程僅提供退貨，如需換貨請先退貨後重新訂購。"}, {"cat": "退換貨與通路差異", "type": "single", "q": "使用 MUJI passport 點數、優惠券或抵用券支付的交易，退貨時如何處理？", "opts": ["全額退現金", "僅提供換貨服務", "退回等值點數", "無法退換"], "ans": [1], "explain": "以點數、優惠券、抵用券等具期限之支付方式交易，僅提供換貨服務。"}, {"cat": "退換貨與通路差異", "type": "multi", "q": "下列哪些情況「恕無法辦理退換貨」（商品瑕疵除外）？（複選）", "opts": ["超過退換貨期限", "發票、贈品未附回", "貼身衣物、已洗滌商品", "商品全新且包裝完整"], "ans": [0, 1, 2], "explain": "超期、缺附件、貼身/已使用商品皆不可退；全新完整才可退換。"}, {"cat": "退換貨與通路差異", "type": "tf", "q": "官網購物的生鮮／產地直送食品享有 7 天鑑賞期。", "ans": false, "explain": "錯誤。生鮮食品自 105/1/1 起不適用消保法第 19 條，不享 7 天鑑賞期、無法退貨。"}, {"cat": "退換貨與通路差異", "type": "single", "q": "家具商品退貨若已拋棄原包裝材，如何處理？", "opts": ["仍可正常退貨", "除商品瑕疵外恕無法退換貨", "扣 5% 後可退", "換貨不退貨"], "ans": [1], "explain": "若已選擇回收包裝材，因商品已非完整包裝，除瑕疵外恕無法退換貨。"}, {"cat": "退換貨與通路差異", "type": "single", "q": "官網退貨時若商品包裝或吊牌遺失、污損，會如何處理？", "opts": ["直接拒絕退貨", "酌收商品購入價 5% 整新費用", "酌收 500 元", "全額退款"], "ans": [1], "explain": "包裝或吊牌遺失污損，將酌收購入價 5%（小數點捨去）作整新費用。"}, {"cat": "客訴分級與後送SOP", "type": "single", "q": "依客訴 SOP，「說明退換貨規則、查訂單、告知門市資訊」屬於哪一類案件？", "opts": ["A 類（當下解決）", "B 類（時限內回覆）", "C 類（後送）", "不需分類"], "ans": [0], "explain": "屬 A 類，可直接告知客戶，確認無其他問題後結案。"}, {"cat": "客訴分級與後送SOP", "type": "single", "q": "「確認物流進度、退款狀態查詢、庫存確認」屬於哪一類案件？", "opts": ["A 類（當下解決）", "B 類（時限內回覆）", "C 類（後送）", "不需分類"], "ans": [1], "explain": "屬 B 類，需在 SLA 承諾時間內回覆，並告知客戶預計回覆時間。"}, {"cat": "客訴分級與後送SOP", "type": "single", "q": "「退款金額爭議、點數異常調整、客訴升級」屬於哪一類案件？", "opts": ["A 類（當下解決）", "B 類（時限內回覆）", "C 類（後送）", "都可自行處理"], "ans": [2], "explain": "屬 C 類，需後送 MUJI 窗口並填寫案件登錄表，告知客戶等候時間。"}, {"cat": "客訴分級與後送SOP", "type": "tf", "q": "A 類案件可以當下直接告知客戶，確認無其他問題後即可結案。", "ans": true, "explain": "正確。A 類為當下即可解決的案件。"}, {"cat": "客訴分級與後送SOP", "type": "multi", "q": "依 SOP，下列哪些情況「一律後送」，客服不可自行決定？（複選）", "opts": ["客戶要求退款（不論金額大小）", "查詢門市營業時間", "Passport 點數異常需系統端調整", "客戶明確表示要向上申訴或媒體投訴"], "ans": [0, 2, 3], "explain": "退款要求、點數異常、客訴升級／媒體投訴皆須後送；查門市營業時間屬 A 類。"}, {"cat": "客訴分級與後送SOP", "type": "tf", "q": "只要退款金額很小，客服就可以自行答應客戶退款。", "ans": false, "explain": "錯誤。客戶要求退款不論金額大小一律後送，客服不可自行承諾。"}, {"cat": "客訴分級與後送SOP", "type": "multi", "q": "後送前，要先告訴客戶哪些事？（複選）", "opts": ["說明後送原因", "給出預計回覆時間", "確認客戶方便的聯絡方式", "保證一定會退款"], "ans": [0, 1, 2], "explain": "要說明原因、給預計時間、確認聯絡方式；但不承諾結果，不可保證退款。"}, {"cat": "客訴分級與後送SOP", "type": "single", "q": "後送通報案件編號的格式為何？", "opts": ["YYYYMMDD＋當日流水號", "客戶電話號碼", "訂單編號", "隨機亂碼"], "ans": [0], "explain": "案件編號格式為 YYYYMMDD＋當日流水號，由系統（Apps Script）自動產生。"}, {"cat": "客訴分級與後送SOP", "type": "tf", "q": "後送通報表單的案件編號需要客服自己手動輸入。", "ans": false, "explain": "錯誤。案件編號由系統自動產生，勿讓填表人自行填寫。"}, {"cat": "客訴分級與後送SOP", "type": "multi", "q": "後送通報表單中，下列哪些是「必填」欄位？（複選）", "opts": ["客服人員姓名", "問題描述", "客戶訴求", "方便聯絡時間"], "ans": [0, 1, 2], "explain": "客服人員姓名、問題描述、客戶訴求為必填；方便聯絡時間為選填。"}, {"cat": "客訴分級與後送SOP", "type": "single", "q": "後送通報表單的「客服人員姓名」欄位是用什麼方式維護？", "opts": ["每次手動打字", "從人員名單分頁自動讀取的下拉選單", "寫死在程式碼裡", "不需填寫"], "ans": [1], "explain": "姓名採下拉選單，從試算表人員名單分頁讀取，人員異動只需改試算表。"}, {"cat": "客訴分級與後送SOP", "type": "single", "q": "案件較複雜、需附截圖、且需完整紀錄留存時，建議用哪個管道後送？", "opts": ["Email", "LINE", "電話", "都不用"], "ans": [0], "explain": "Email 適合複雜、需附件、需留存的案件；LINE 適合單純快速通報。"}, {"cat": "客訴分級與後送SOP", "type": "single", "q": "案件單純、需要快速通報、業主習慣即時訊息時，建議用哪個管道？", "opts": ["Email", "LINE", "公文", "簡訊"], "ans": [1], "explain": "LINE 適合單純、需快速通報，或業主不常看信時使用。"}, {"cat": "客訴分級與後送SOP", "type": "tf", "q": "用 Email 後送時，截圖或照片應以附件形式夾帶，勿貼入內文。", "ans": true, "explain": "正確。截圖照片應以附件夾帶，勿貼內文，以利業主閱讀。"}, {"cat": "客訴分級與後送SOP", "type": "tf", "q": "同一客戶重複來件時，Email 主旨應加註「（第 2 次）」以利追蹤。", "ans": true, "explain": "正確。同一客戶重複來件，主旨加註次數方便業主追蹤。"}, {"cat": "客訴分級與後送SOP", "type": "single", "q": "後送案件處理後，應在內部系統或工作紀錄註記什麼？", "opts": ["只記金額", "註記「已後送」及通報時間", "不用註記", "記客戶生日"], "ans": [1], "explain": "通報後請註記「已後送」及通報時間，便於追蹤案件進度。"}, {"cat": "紅線行為與資安", "type": "multi", "q": "下列哪些是客服「絕對不能做」的紅線行為？（複選）", "opts": ["直接承諾退款金額或退款日期", "自行修改客戶訂單或點數", "在社群媒體代表 MUJI 發言", "依 SOP 向客戶說明退換貨規則"], "ans": [0, 1, 2], "explain": "前三項為紅線；依 SOP 說明規則是正常服務，並非紅線。"}, {"cat": "紅線行為與資安", "type": "tf", "q": "遇到很急的客戶，客服可以先口頭答應「一定可以幫您處理退款」，之後再後送確認。", "ans": false, "explain": "錯誤。不可承諾超出權限的事，只能說「會確認後回覆」。"}, {"cat": "紅線行為與資安", "type": "tf", "q": "客服可以把 MUJI 內部流程或聯絡人資訊提供給客戶，方便客戶自己聯繫。", "ans": false, "explain": "錯誤。基於資安與保密規範，內部資料不得對外洩漏。"}, {"cat": "紅線行為與資安", "type": "tf", "q": "客服可以在官方社群媒體上代表 MUJI 回覆網友留言。", "ans": false, "explain": "錯誤。官方社群由 MUJI 公關統一管理，客服不代為發言。"}, {"cat": "紅線行為與資安", "type": "tf", "q": "客戶的姓名、電話、Email 僅供本次案件處理使用，不得外傳。", "ans": true, "explain": "正確。客戶個資僅限本次案件使用，須依保密協議保管。"}, {"cat": "紅線行為與資安", "type": "single", "q": "客戶情緒激動，明確表示要向媒體投訴，客服應如何處理？", "opts": ["立即回嗆客戶", "後送並通報主管，屬需業主評估的升級案件", "直接掛斷電話", "答應客戶所有要求"], "ans": [1], "explain": "涉及媒體、社群曝光風險的案件應後送，屬客訴升級需業主評估。"}, {"cat": "紅線行為與資安", "type": "tf", "q": "退款需要客戶提供身分證字號時，可以口頭跟客戶說「隨便給一個就好」。", "ans": false, "explain": "錯誤。身分證資訊用於票據交換所一次性驗證，須為帳戶持有人本人，不可造假。"}, {"cat": "紅線行為與資安", "type": "single", "q": "客服在通話中發現無法回答客戶問題時，最適當的做法是？", "opts": ["隨便編一個答案", "誠實告知會確認後回覆，並依流程後送或查證", "直接說不知道就掛斷", "請客戶自己上網查"], "ans": [1], "explain": "不確定時不亂承諾、不編造，誠實告知會查證後回覆，依流程處理。"}, {"cat": "Passport會員與點數", "type": "single", "q": "MUJI passport 點數的基本回饋方式為何？", "opts": ["每滿 50 元回饋 1 點", "每滿 100 元回饋 1 點，1 點折抵 1 元", "每筆固定 10 點", "消費金額 5% 回饋"], "ans": [1], "explain": "單筆消費每滿 100 元回饋 1 點，1 點可折抵消費金額 1 元。"}, {"cat": "Passport會員與點數", "type": "tf", "q": "MUJI passport APP 需要支付入會費或月會費才能使用。", "ans": false, "explain": "錯誤。MUJI passport 為免費，不需入會費、月會費，僅網路通信費由顧客自負。"}, {"cat": "Passport會員與點數", "type": "single", "q": "實體門市消費後，MUJI passport 點數通常第幾天發送？", "opts": ["當天", "隔天", "第 11 天", "第 30 天"], "ans": [2], "explain": "實體門市消費享 10 日退換貨權益，點數於第 11 天發送。"}, {"cat": "Passport會員與點數", "type": "single", "q": "MUJI passport 點數的有效期限為何？", "opts": ["發送日起 90 天", "發送日起 180 天", "發送日起 365 天", "永久有效"], "ans": [2], "explain": "點數期限為發送日起 365 天內可使用，實際以 APP 顯示為準。"}, {"cat": "Passport會員與點數", "type": "single", "q": "會員生日禮如何取得？可獲得什麼？", "opts": ["自動獲得 500 元", "於會員資料填寫生日，生日當月可獲 150 元抵用券", "需消費滿額才有", "電洽客服索取"], "ans": [1], "explain": "於會員資料填寫生日，生日當月可獲 150 元抵用券，每年僅寄送一次。"}, {"cat": "Passport會員與點數", "type": "tf", "q": "MUJI passport 生日禮每年會寄送多次。", "ans": false, "explain": "錯誤。生日禮每年只寄送一次，若已獲得，即使生日也不會再寄。"}, {"cat": "Passport會員與點數", "type": "single", "q": "2025 年 4 月起的 MUJI passport 版本，帳號以什麼註冊？", "opts": ["Email", "手機號碼（僅能綁定單一門號）", "身分證字號", "會員卡號"], "ans": [1], "explain": "2025/4 起版本須以手機號碼註冊，該帳號僅能綁定單一手機號碼。"}, {"cat": "Passport會員與點數", "type": "single", "q": "顧客手機遺失想暫停 Passport 服務，應如何處理？", "opts": ["無法暫停", "撥打客服專線 0800-50-51-51 按 2 協助暫停", "自行到門市處理", "刪除 APP 即可"], "ans": [1], "explain": "手機遺失或故障，可撥客服專線 0800-50-51-51 按 2，提供本人證明協助暫停。"}, {"cat": "Passport會員與點數", "type": "multi", "q": "下列哪些通路「不提供」MUJI passport 點數回饋？（複選）", "opts": ["外部網路平台門市", "花車門市", "全聯店中店", "台灣無印良品實體門市"], "ans": [0, 1, 2], "explain": "外部平台、花車、全聯店中店、外送、電話訂購不回饋；官方實體門市與官網可回饋。"}, {"cat": "Passport會員與點數", "type": "tf", "q": "官網購物的運費、手續費也可以累積 MUJI passport 點數。", "ans": false, "explain": "錯誤。運費、手續費、服務費等非商品本身金額不予回饋點數。"}, {"cat": "Passport會員與點數", "type": "single", "q": "顧客想註銷（退會）MUJI passport 帳號，會失去什麼？", "opts": ["只失去優惠券", "無法再使用或查看點數、優惠券、交易紀錄", "僅解除門號綁定", "什麼都不會失去"], "ans": [1], "explain": "退會後無法再使用或查看點數、優惠券、交易紀錄，門號綁定也會解除。"}, {"cat": "Passport會員與點數", "type": "tf", "q": "持海外版 MUJI passport 可以在台灣門市消費累積點數。", "ans": false, "explain": "錯誤。持海外版無法於台灣門市/官網累積點數，但可參加台灣週間活動。"}, {"cat": "聯名卡MUJI Card", "type": "tf", "q": "MUJI 聯名卡的發卡銀行是台新銀行。", "ans": false, "explain": "錯誤。MUJI 聯名卡發卡行為「中國信託」，並非台新銀行。"}, {"cat": "聯名卡MUJI Card", "type": "single", "q": "MUJI 聯名卡的發卡銀行是哪一家？", "opts": ["台新銀行", "中國信託", "國泰世華", "玉山銀行"], "ans": [1], "explain": "MUJI 聯名卡由中國信託發卡，會員資料異動需與中國信託聯繫。"}, {"cat": "聯名卡MUJI Card", "type": "single", "q": "MUJI 無印良品聯名卡自哪一天起終止所有優惠回饋？", "opts": ["2025/1/1", "2025/7/1", "2026/1/1", "2027/1/1"], "ans": [2], "explain": "聯名卡自 2026/1/1 起不再提供消費回饋、生日點數回饋，亦不再累積半年消費。"}, {"cat": "聯名卡MUJI Card", "type": "tf", "q": "MUJI 聯名卡目前仍可正常申辦新卡、升等或轉卡。", "ans": false, "explain": "錯誤。聯名卡已停止申辦，無法再申請升等或轉卡。"}, {"cat": "聯名卡MUJI Card", "type": "single", "q": "聯名卡因遺失或毀損需補發，最晚可申請到什麼時候？", "opts": ["2025/12/31", "2026/6/30", "2026/12/31", "無期限"], "ans": [2], "explain": "2026/12/31 前因遺失或毀損可向發卡銀行申請補發。"}, {"cat": "聯名卡MUJI Card", "type": "single", "q": "MUJI Dollar 的累積方式（2025/12/31 前）為何？", "opts": ["任何付款方式都可累積", "持聯名卡於實體/餐飲門市刷卡，每滿 100 元累積 5 點", "網路門市刷卡也可累積", "現金消費可累積"], "ans": [1], "explain": "2025/12/31 前持聯名卡於實體/餐飲門市刷卡，每滿 100 元累積 MUJI Dollar 5 點。"}, {"cat": "聯名卡MUJI Card", "type": "tf", "q": "網路門市以聯名卡刷卡，一樣可以累積聯名卡的年度消費金額。", "ans": false, "explain": "錯誤。網路門市僅開放 Passport 會員累積，聯名卡消費累積需透過實體門市交易。"}, {"cat": "聯名卡MUJI Card", "type": "single", "q": "顧客詢問聯名卡半年滿額回饋，2025/7/1~12/31 消費滿多少可享加碼？", "opts": ["滿 1 萬", "滿 2 萬", "滿 3 萬", "滿 5 萬"], "ans": [2], "explain": "2025/7/1~12/31 持聯名卡於實體/餐飲門市消費滿 3 萬元以上，可享滿額加碼回饋。"}, {"cat": "官網與蝦皮通路", "type": "multi", "q": "MUJI 官網購物提供哪些付款方式？（複選）", "opts": ["線上刷卡（可分期最多 3 期 0 利率）", "街口支付", "LINE Pay", "貨到付款現金"], "ans": [0, 1, 2], "explain": "官網提供線上刷卡（可分 3 期 0 利率）、街口、LINE Pay、悠遊付；無貨到付現金。"}, {"cat": "官網與蝦皮通路", "type": "single", "q": "官網選擇「超商取貨」，商品到店後幾天內要取貨？", "opts": ["3 天", "5 天", "7 天", "14 天"], "ans": [2], "explain": "商品送達指定超商後以簡訊通知，請於通知日起 7 天內取貨。"}, {"cat": "官網與蝦皮通路", "type": "single", "q": "官網「門市自取服務」取貨時需要攜帶什麼？", "opts": ["不需帶任何東西", "取貨人身份證明文件並告知手機末三碼", "原信用卡", "訂購證明列印本"], "ans": [1], "explain": "門市自取需攜帶取貨人身分證明文件（駕照/身分證/健保卡），並告知手機末三碼。"}, {"cat": "官網與蝦皮通路", "type": "tf", "q": "官網購物選擇門市自取時，門市會免費提供紙袋。", "ans": false, "explain": "錯誤。響應環保，門市取貨恕不提供紙袋，需自備購物袋或付費購買。"}, {"cat": "官網與蝦皮通路", "type": "single", "q": "官網宅配（新竹物流）一般約幾個工作天送達？", "opts": ["當天", "約 2-3 個工作天", "約 7 天", "約 14 天"], "ans": [1], "explain": "新竹物流宅配約 2-3 個工作天送達，單筆運費 150 元、滿 2000 免運。"}, {"cat": "官網與蝦皮通路", "type": "single", "q": "蝦皮旗艦館訂單成立後，如需取消最晚要在多久內？", "opts": ["隨時可取消", "訂單成立 24 小時內", "出貨前都可以", "7 天內"], "ans": [1], "explain": "蝦皮訂單成立後恕無法變更，如需取消請在訂單成立 24 小時內取消。"}, {"cat": "官網與蝦皮通路", "type": "tf", "q": "蝦皮旗艦館以分期付款的訂單，可以只退部分商品。", "ans": false, "explain": "錯誤。依蝦皮系統機制，分期付款訂單僅能整筆退貨，無法部分退貨。"}, {"cat": "官網與蝦皮通路", "type": "single", "q": "蝦皮旗艦館的聊聊客服服務時間為何？", "opts": ["24 小時", "週一~週日 9-18 點（國定假日暫停）", "僅平日", "週一~週五 9-21 點"], "ans": [1], "explain": "蝦皮聊聊服務時間為週一~週日 9 點~18 點，國定假日暫停服務。"}, {"cat": "官網與蝦皮通路", "type": "single", "q": "蝦皮旗艦館的發票由誰開立？", "opts": ["MUJI 自行開立", "蝦皮代開發票", "九易宇軒開立", "不開發票"], "ans": [1], "explain": "蝦皮賣場為蝦皮代開發票，需開統編請結帳前填寫，更改請洽蝦皮客服。"}, {"cat": "官網與蝦皮通路", "type": "single", "q": "官網退款作業由哪一家處理（金流）？", "opts": ["MUJI 財務部", "91APP", "中國信託", "蝦皮"], "ans": [1], "explain": "官網付款、退款作業由 91APP 處理，相關問題可洽 91APP 客服 02-7723-1622。"}, {"cat": "官網與蝦皮通路", "type": "single", "q": "官網退款一般需要多久退款至指定帳戶？", "opts": ["當天", "1-2 個工作天", "約 7 至 10 個工作天", "30 天"], "ans": [2], "explain": "待確認退貨完成、帳戶資訊正確後，約 7 至 10 個工作天退款至指定帳戶。"}, {"cat": "官網與蝦皮通路", "type": "tf", "q": "官網訂單運費在退貨時一律會全額退還。", "ans": false, "explain": "錯誤。運費為商店寄出時已負擔之費用，退貨僅針對商品銷售金額退款，運費不退。"}, {"cat": "商品知識與使用保養", "type": "single", "q": "顧客問「素食者可否食用即食迷你拉麵」，正確回覆為何？", "opts": ["完全純素可安心食用", "無葷食成份，但製程會與其他食品共用生產線，敏感者請留意", "含葷不可食用", "需另外訂購素食版"], "ans": [1], "explain": "即食迷你拉麵無葷食成份，惟製程會與其他食品共用生產線，故亦含該成份，敏感者請留意。"}, {"cat": "商品知識與使用保養", "type": "tf", "q": "美妝保養商品有特別為孕婦體質設計，孕婦可安心使用。", "ans": false, "explain": "錯誤。美妝保養商品無特別為懷孕體質設計，建議先諮詢專業醫師。"}, {"cat": "商品知識與使用保養", "type": "single", "q": "木製家具預防發霉，建議與牆面保留多少距離？", "opts": ["緊貼牆面", "約 10 公分", "約 50 公分", "1 公尺"], "ans": [1], "explain": "家具與牆面建議保留約 10 公分空間讓濕氣散除，避免直接貼合牆面。"}, {"cat": "商品知識與使用保養", "type": "single", "q": "已經發霉的木製品，正確處理方式為何？", "opts": ["直接丟棄", "放通風處乾燥，用刷子刷除黴菌後以中性清潔劑擦拭", "用漂白水浸泡", "送回門市"], "ans": [1], "explain": "放通風處乾燥，用刷子刷除黴菌，以溫水稀釋中性清潔劑擦拭後再用乾布擦淨。"}, {"cat": "商品知識與使用保養", "type": "single", "q": "新家具有甲醛味道，最基本的處理方式是什麼？", "opts": ["噴香水遮蓋", "保持室內空氣流通、盡量開窗通風", "用吹風機吹", "密閉放置"], "ans": [1], "explain": "甲醛會緩慢釋放，需保持室內空氣流通、盡量開窗通風，夏季梅雨季尤其注意。"}, {"cat": "商品知識與使用保養", "type": "single", "q": "保養彈簧床墊，建議多久對調頭尾方向一次？", "opts": ["每週", "每 3~4 個月", "每年", "不需對調"], "ans": [1], "explain": "建議每隔 3~4 個月定期對調床墊頭尾方向並上下翻轉，讓彈簧平均承重。"}, {"cat": "商品知識與使用保養", "type": "multi", "q": "關於床墊使用安全，下列哪些是正確的注意事項？（複選）", "opts": ["請勿於床墊站立、跳躍", "請勿於床上吸菸", "請勿讓床墊壓住電線", "可在床邊使用爐具"], "ans": [0, 1, 2], "explain": "不可站跳、吸菸、壓電線（防火災）；不可在床邊使用爐具。"}, {"cat": "商品知識與使用保養", "type": "single", "q": "超音波芳香噴霧器、空氣循環風扇的清潔方式，客服應如何提供？", "opts": ["口頭詳細說明拆解", "提供官方清潔教學影片連結", "請客戶送回原廠", "無法清潔"], "ans": [1], "explain": "超音波噴霧器與空氣循環風扇皆有官方清潔教學影片，可提供 YouTube 連結給顧客。"}, {"cat": "商品知識與使用保養", "type": "single", "q": "DC 馬達風扇故障，客服應如何協助？", "opts": ["告知無法維修", "參考包裝內維修地點自行送修，或電洽客服", "僅能換新", "送回日本"], "ans": [1], "explain": "可參考商品包裝內註明之維修地點自行送修，或電洽 0800-50-51-51 客服。"}, {"cat": "商品知識與使用保養", "type": "tf", "q": "除了 DC 馬達風扇以外的電器商品，MUJI 均提供維修服務。", "ans": false, "explain": "錯誤。電器類商品（除 DC 馬達風扇外）恕無提供維修服務。"}, {"cat": "商品知識與使用保養", "type": "single", "q": "羽毛軟墊沙發若羽毛從縫線飛出，正確說明為何？", "opts": ["屬瑕疵可退貨", "已做防絨加工但仍可能自縫合處漏出羽軸，屬正常現象", "需送修", "無法處理"], "ans": [1], "explain": "採高密度表布並施以防絨加工，但仍可能自縫合處漏出羽軸，清除飛出羽毛後可繼續使用。"}, {"cat": "商品知識與使用保養", "type": "multi", "q": "顧客詢問門市可提供哪些加工/修改服務？（複選）", "opts": ["褲長修改（限特定褲款）", "刺繡服務（現場範本字型圖案）", "禮物包裝", "服飾配件包款維修"], "ans": [0, 1, 2], "explain": "門市提供褲長修改、刺繡（限範本）、禮物包裝；服飾配件包款目前無維修服務。"}, {"cat": "商品知識與使用保養", "type": "single", "q": "顧客想修改在門市買的「家居服」褲長，可以嗎？", "opts": ["可以免費修改", "家居服屬特殊材質版型，恕不提供修改服務", "需付費修改", "送回原廠修改"], "ans": [1], "explain": "家居服屬特殊材質及版型，恕不提供修改服務；褲長修改限丹寧褲、綾織褲等。"}, {"cat": "商品知識與使用保養", "type": "single", "q": "褲長修改服務可修改的褲款為何？", "opts": ["所有褲子", "男女裝丹寧褲、綾織褲", "僅童裝", "僅短褲"], "ans": [1], "explain": "僅提供基本褲長、平針縫法修改，褲款限男女裝丹寧褲、綾織褲；童裝、家居服等不提供。"}, {"cat": "維修保固與家具配送", "type": "tf", "q": "國外購買的 MUJI 商品，在台灣一律享有免費保固維修。", "ans": false, "explain": "錯誤。非台灣購買之商品恕無退換貨及保固維修；海外行李箱可在台「付費」維修。"}, {"cat": "維修保固與家具配送", "type": "single", "q": "顧客的行李箱在保固期內損壞，如何處理？", "opts": ["一律付費維修", "將保證書連同行李箱攜至實體門市，保固內免費維修", "無法維修", "送回日本"], "ans": [1], "explain": "台灣官方通路購買且在保固期內，將保證書連同行李箱攜至實體門市，保固內免費維修。"}, {"cat": "維修保固與家具配送", "type": "single", "q": "拉桿箱（行李箱）的保固期限為多久？", "opts": ["半年", "1 年", "2 年", "3 年"], "ans": [2], "explain": "拉桿箱（行李箱）保固期限為兩年，需於保固期間內符合條件。"}, {"cat": "維修保固與家具配送", "type": "single", "q": "兒童三輪車的保固期限為多久？", "opts": ["半年", "1 年", "2 年", "3 年"], "ans": [1], "explain": "兒童三輪車的保固期限為 1 年，需依使用說明書正常使用。"}, {"cat": "維修保固與家具配送", "type": "tf", "q": "木製家具發霉屬於環境因素，MUJI 不提供發霉的商品保固。", "ans": true, "explain": "正確。發霉屬環境因素，本公司無法提供商品保固。"}, {"cat": "維修保固與家具配送", "type": "single", "q": "大型家具官網購物的「三大優惠」不包含下列何者？", "opts": ["滿 30,000 元免運費", "3 年保固服務", "免組裝費、免樓層搬運費", "終身免費到府清潔"], "ans": [3], "explain": "三大優惠為滿 3 萬免運、3 年保固、免組裝費免樓層搬運費；無終身清潔服務。"}, {"cat": "維修保固與家具配送", "type": "single", "q": "大型家具官網購物，自 2025/10/1 起運費如何計算？", "opts": ["一律免運", "依訂單金額 500~1,500 元，滿 30,000 免運", "固定 1,500 元", "依重量計費"], "ans": [1], "explain": "自 2025/10/1 起運費依結帳金額計算（500~1,500 元），滿 30,000 元免運費。"}, {"cat": "維修保固與家具配送", "type": "single", "q": "家具配送需人工搬運上下樓（無電梯），樓層搬運費如何計算？", "opts": ["免費", "每層樓每件 50 元，逐層累加", "固定 500 元", "每層 200 元"], "ans": [1], "explain": "無電梯需人工搬運時，每層樓不計件數收費 50 元，每增加一樓層加計 50 元。"}, {"cat": "維修保固與家具配送", "type": "tf", "q": "家具配送可以由顧客指定確切的配送時間。", "ans": false, "explain": "錯誤。恕無法指定配送時間，由專人於 1-2 個工作天內電話聯繫約配。"}, {"cat": "維修保固與家具配送", "type": "single", "q": "家具因顧客個人因素逾 30 日無法配送，第 31 日起如何計費？", "opts": ["免費保管", "每筆訂單每日計收 200 元倉儲費", "每日 500 元", "直接取消訂單"], "ans": [1], "explain": "因顧客個人因素逾 30 日無法配送，自第 31 日起每筆訂單每日計收 200 元倉儲費。"}, {"cat": "門市發票與品牌", "type": "single", "q": "MUJI 客服中心的服務時間為何？", "opts": ["24 小時", "週一~週日 09:00~18:00", "僅平日 9-17", "週一~週五 9-21"], "ans": [1], "explain": "客服中心服務時間為星期一～星期日 09:00～18:00。"}, {"cat": "門市發票與品牌", "type": "single", "q": "MUJI 官網購物的發票由哪一家開立？", "opts": ["MUJI 自行開立", "九易宇軒受託代銷並開立統一發票", "91APP", "蝦皮"], "ans": [1], "explain": "官網購物由九易宇軒受託代銷貨物，並開立統一發票給消費者。"}, {"cat": "門市發票與品牌", "type": "tf", "q": "官網購物開立的是電子發票，不會主動寄送紙本。", "ans": true, "explain": "正確。依電子發票實施作業要點，開立電子發票不寄紙本，會上傳整合平台留存。"}, {"cat": "門市發票與品牌", "type": "single", "q": "顧客訂購時選擇「捐贈發票」，事後可以改回自己索取嗎？", "opts": ["可以隨時改", "已捐贈的發票無法索取紙本及更改捐贈對象", "7 天內可改", "付費可改"], "ans": [1], "explain": "已捐贈的發票無法索取紙本發票及更改捐贈對象，如有退換貨本公司將作廢該發票。"}, {"cat": "門市發票與品牌", "type": "tf", "q": "官網訂單發票可以指定開立日期、更改品名或金額。", "ans": false, "explain": "錯誤。發票印製為系統自動作業，依訂購品名金額開立，無法指定日期或更改品名金額。"}, {"cat": "門市發票與品牌", "type": "single", "q": "顧客問「如何辨識網路上賣的是不是 MUJI 正品」，正確回覆為何？", "opts": ["所有網路商品都是正品", "僅官方授權通路（官網、博客來、momo、PChome、東森）可確認來源", "無法辨識", "看包裝就知道"], "ans": [1], "explain": "官方授權網路通路為官網購物、博客來、momo、PChome24h、東森購物；非授權通路恕無法確認來源。"}, {"cat": "門市發票與品牌", "type": "tf", "q": "MUJI 無印良品實體門市自 2019 年底起已停止跨店調貨服務。", "ans": true, "explain": "正確。實體門市已於 2019 年底停止調貨服務，可參考電話訂購服務。"}, {"cat": "門市發票與品牌", "type": "single", "q": "MUJI 官網購物網址與客服信箱，下列何者正確？", "opts": ["shop.muji.tw／muji4you@mail.muji.tw", "muji.com.tw／service@muji.tw", "mujishop.tw／cs@muji.tw", "muji.tw／help@muji.tw"], "ans": [0], "explain": "官網為 https://shop.muji.tw/，客服信箱為 muji4you@mail.muji.tw。"}, {"cat": "客服SOP流程知識", "type": "single", "q": "「颱風天正常配送但顧客無法收貨，配送時間需延後」這個案件情境，主要是由哪些單位協同處理？", "opts": ["僅客服單位", "DC、客服單位（客服室、物流企劃室）", "僅門市", "僅91APP"], "ans": [1], "explain": "此為客服SOP「配送問題／大型家具（特殊狀況更改時間）」流程，由 DC、客服單位（客服室、物流企劃室）協同處理。"}, {"cat": "客服SOP流程知識", "type": "single", "q": "「客服運費補收．退款／整新費處理」屬於判斷式流程，第一層要先判斷什麼？", "opts": ["顧客的消費金額", "退貨是否驗收成功", "商品是否過季", "顧客是否為會員"], "ans": [1], "explain": "此流程第一層要先判斷「退貨是否驗收成功」，再依是否瑕疵、是否整筆退費逐層判斷運費與整新費怎麼算。"}, {"cat": "客服SOP流程知識", "type": "tf", "q": "蝦皮退貨「退回商品不完整」的爭議案件，處理時需要視是否超過 D+2 來決定爭議途徑。", "ans": true, "explain": "正確。這類案件需視是否超過 D+2（出貨後第2天）來決定要走哪個爭議處理途徑。"}, {"cat": "客服SOP流程知識", "type": "single", "q": "「訂單不成立處理／人工撈單號／蝦皮」這個流程屬於下列哪一個案件大類？", "opts": ["客服 CALL CENTER 案件", "DC 倉庫案件", "門市案件", "91 後台案件"], "ans": [1], "explain": "屬於 DC 倉庫案件類別，需要 DC、蝦皮客服、客服單位協同人工撈單號處理。"}, {"cat": "客服SOP流程知識", "type": "multi", "q": "「客人已取貨但門市尚未驗收」這個案件，會牽涉到下列哪些處理單位？（複選）", "opts": ["門市", "讌涵", "NEC", "蝦皮LINE客服"], "ans": [0, 1, 2], "explain": "此案件由門市反映、讌涵回信協調、NEC協助修改貨態，三方共同處理；蝦皮LINE客服不涉及此案件。"}, {"cat": "客服SOP流程知識", "type": "single", "q": "「DC 拋單前庫缺處理」流程中，系統接收訂單時發現庫存異常，是由哪個系統自動發信通知？", "opts": ["91APP後台", "IMS／OMS", "蝦皮後台", "ERP系統"], "ans": [1], "explain": "顧客訂購商品後，IMS／OMS 接收訂單時若發現庫存異常（拋單前庫缺），系統會自動發信通知。"}, {"cat": "客服SOP流程知識", "type": "single", "q": "「客服室案件處理」這個流程在整套SOP裡扮演什麼角色？", "opts": ["最終結案窗口", "分派入口，客服聯繫顧客後依狀況分派至對應流程", "只負責家具配送，其他不受理", "純粹通知不需處理"], "ans": [1], "explain": "客服室反映家具配送或新竹物流相關問題後，由客服聯繫顧客，再依狀況分派至對應的後續處理流程。"}, {"cat": "客服SOP流程知識", "type": "single", "q": "目前客服案件處理SOP手冊，總共整理了幾個流程、分成幾大類別？", "opts": ["15個流程／3大類", "21個流程／5大類", "30個流程／6大類", "10個流程／2大類"], "ans": [1], "explain": "SOP手冊共21個流程，分成客服CALL CENTER案件、DC倉庫案件、門市案件、91後台案件、客服室案件共5大類。"}, {"cat": "尺寸與洗滌保養知識", "type": "single", "q": "女裝上衣（針織衫、休閒衫、襯衫）的尺寸對照表，是以哪個時間點區分成新舊兩種版型規格？", "opts": ["2020年", "2022年秋冬起", "2023年春夏起", "沒有區分"], "ans": [1], "explain": "女裝、男裝上衣尺寸表都以「2022年秋冬起」為分界，分成舊款式與新款式兩套對照表，查詢時要先確認商品款式年份。"}, {"cat": "尺寸與洗滌保養知識", "type": "single", "q": "胸罩尺寸對照表是依照哪兩個數值去對應尺寸的？", "opts": ["身高 × 體重", "下胸圍 × 罩杯差", "腰圍 × 臀圍", "手臂長 × 肩寬"], "ans": [1], "explain": "胸罩尺寸對照表是依「下胸圍 × 罩杯差」去查對應的尺寸標示。"}, {"cat": "尺寸與洗滌保養知識", "type": "multi", "q": "有機棉材質的缺點特性有哪些？（複選）", "opts": ["水洗會縮小", "易起皺", "易褪色", "接縫處易鬆脫"], "ans": [0, 1], "explain": "有機棉的缺點是「水洗會縮小」「易起皺」；易褪色是絲的特性，接縫處易鬆脫是麻的特性。"}, {"cat": "尺寸與洗滌保養知識", "type": "single", "q": "羊毛衣物若洗滌標示為「手洗」，建議使用的水溫不可超過攝氏幾度？", "opts": ["30度", "40度", "50度", "60度"], "ans": [1], "explain": "羊毛手洗水溫不可超過攝氏40度，且須用中性洗劑（建議羊毛專用洗劑）。"}, {"cat": "尺寸與洗滌保養知識", "type": "single", "q": "羊毛衣物手洗時，浸泡加輕壓洗滌的全程時間，最長不可以超過幾分鐘？", "ans": [2], "opts": ["1分鐘", "3分鐘", "5分鐘", "10分鐘"], "explain": "短時間浸泡（3分鐘內）後輕壓洗滌，全程不可超過5分鐘，且絕對不可摩擦搓洗或扭轉擰乾。"}, {"cat": "尺寸與洗滌保養知識", "type": "single", "q": "絲質衣物洗滌時，特別要避免使用哪一種漂白劑？", "opts": ["氧系漂白劑", "氯系漂白劑", "任何漂白劑都可以", "不需要注意"], "ans": [1], "explain": "絲質衣物應避免使用氯系漂白劑，且因潮濕狀態下摩擦易起毛，水洗時不可強力摩擦，也要避免紫外線照射。"}, {"cat": "尺寸與洗滌保養知識", "type": "single", "q": "「番手」這個紡織名詞，數字愈大代表紗線愈怎麼樣？", "opts": ["愈粗", "愈細", "愈長", "愈短"], "ans": [1], "explain": "番手是表示紡紗粗細的單位，數字愈大代表紗線愈細（粗番手20番手以下、細番手50番手以上）。"}, {"cat": "尺寸與洗滌保養知識", "type": "single", "q": "查詢寢具「床包」對應尺寸時，主要是依照什麼去對應？", "opts": ["房間坪數", "床墊尺寸（長寬高）", "枕頭數量", "被套顏色"], "ans": [1], "explain": "床包依床墊尺寸（例如單人100×200×18-28公分）去對應，被套則依棉被尺寸對應，枕套依枕頭尺寸對應，三者查詢邏輯不同要分清楚。"}];
+
+function startQuiz(){
+  const name = document.getElementById('inp-name').value.trim();
+  const city = document.getElementById('inp-city').value;
+  if(!name){ alert('請輸入姓名！'); return; }
+  S.name=name; S.city=city;
+  S.current=0; S.answers=[];
+  S.totalPts=0; S.earnedPts=0;
+  show('screen-loading');
+  setTimeout(()=>{
+    // 分類抽題：每個分類抽固定題數，類別內隨機，最後整份再打亂順序
+    let picked = [];
+    QUIZ_PLAN.forEach(function(p){
+      const pool = QUESTION_BANK.filter(function(q){ return q.cat === p.cat; });
+      const shuffledPool = pool.slice().sort(function(){ return Math.random()-0.5; });
+      picked = picked.concat(shuffledPool.slice(0, Math.min(p.pick, shuffledPool.length)));
+    });
+    // 整份考卷順序再打亂，避免同分類題目連在一起
+    S.questions = picked.sort(function(){ return Math.random()-0.5; });
+    S.questions.forEach(function(q){ S.totalPts += (q.type==='multi') ? q.ans.length : 1; });
+    show('screen-quiz');
+    renderQ();
+  }, 1000);
+}
+
+function renderQ(){
+  const q = S.questions[S.current];
+  const total = S.questions.length;
+  const cur = S.current;
+  document.getElementById('progress-bar').style.width=((cur/total)*100)+'%';
+  document.getElementById('progress-txt').textContent=(cur+1)+' / '+total;
+  const pct = S.totalPts>0 ? Math.round((S.earnedPts/S.totalPts)*100) : 0;
+  document.getElementById('live-score-txt').textContent='目前得分 '+pct+' 分';
+  document.getElementById('live-score-fill').style.width=pct+'%';
+  const badge = document.getElementById('type-badge');
+  if(q.type==='tf'){ badge.className='type-badge type-tf'; badge.textContent='🔵 是非題'; }
+  else if(q.type==='single'){ badge.className='type-badge type-single'; badge.textContent='🟢 單選題'; }
+  else { badge.className='type-badge type-multi'; badge.textContent='🟣 複選題（可多選）'; }
+  document.getElementById('q-text').textContent=q.q;
+  document.getElementById('q-hint').textContent=
+    q.type==='multi'?'⚠️ 此題為複選，請選出所有正確答案後按「確認作答」':
+    q.type==='single'?'請選擇一個最正確的答案':'請判斷對或錯';
+  const eb=document.getElementById('explain-box');
+  eb.style.display='none'; eb.className='explain-box'; eb.innerHTML='';
+  const letters=['A','B','C','D','E'];
+  let html='';
+  if(q.type==='tf'){
+    html=`<div class="option" id="opt0" onclick="selectOpt(0)"><div class="opt-marker circle">○</div><div class="opt-text">✅ 正確（是）</div></div>
+      <div class="option" id="opt1" onclick="selectOpt(1)"><div class="opt-marker circle">✕</div><div class="opt-text">❌ 錯誤（非）</div></div>`;
+  } else if(q.type==='single'){
+    html=q.opts.map((opt,i)=>`<div class="option" id="opt${i}" onclick="selectOpt(${i})"><div class="opt-marker circle">${letters[i]}</div><div class="opt-text">${opt}</div></div>`).join('');
+  } else {
+    html=q.opts.map((opt,i)=>`<div class="option" id="opt${i}" onclick="toggleMulti(${i})"><div class="opt-marker">${letters[i]}</div><div class="opt-text">${opt}</div></div>`).join('');
+    html+=`<button class="btn btn-blue" style="margin-top:14px" onclick="submitMulti()">✔ 確認作答</button>`;
+  }
+  document.getElementById('options').innerHTML=html;
+  const btn=document.getElementById('btn-next');
+  btn.disabled=true;
+  btn.textContent=(cur<total-1)?'下一題 →':'查看結果 🎯';
+  S.answered=false;
+  S._multiSelected=new Set();
+}
+
+function selectOpt(i){
+  if(S.answered) return;
+  S.answered=true;
+  const q=S.questions[S.current];
+  const correct=q.type==='tf'?(q.ans?0:1):q.ans[0];
+  const isRight=i===correct;
+  const pts=isRight?1:0;
+  S.answers.push({type:q.type,chosen:i,correct:correct,pts,maxPts:1});
+  S.earnedPts+=pts;
+  document.querySelectorAll('.option').forEach((el,idx)=>{
+    el.classList.add('disabled');
+    if(idx===correct) el.classList.add('show-correct');
+    if(idx===i && !isRight) el.classList.add('wrong');
+    if(idx===i && isRight) el.classList.add('correct');
+  });
+  showExplain(q, isRight?'ok':'ng');
+  document.getElementById('btn-next').disabled=false;
+}
+
+function toggleMulti(i){
+  if(S.answered) return;
+  const el=document.getElementById('opt'+i);
+  if(S._multiSelected.has(i)){ S._multiSelected.delete(i); el.classList.remove('selected'); }
+  else { S._multiSelected.add(i); el.classList.add('selected'); }
+}
+
+function submitMulti(){
+  if(S.answered) return;
+  S.answered=true;
+  const q=S.questions[S.current];
+  const chosen=S._multiSelected;
+  const correctSet=new Set(q.ans);
+  let pts=0;
+  const maxPts=q.ans.length;
+  q.ans.forEach(ci=>{ if(chosen.has(ci)) pts++; });
+  chosen.forEach(ci=>{ if(!correctSet.has(ci)) pts=Math.max(0,pts-1); });
+  const isAllRight=pts===maxPts && chosen.size===correctSet.size;
+  const isPartial=pts>0 && !isAllRight;
+  S.answers.push({type:'multi',chosen:new Set(chosen),correct:correctSet,pts,maxPts});
+  S.earnedPts+=pts;
+  document.querySelectorAll('.option').forEach((el,idx)=>{
+    el.classList.add('disabled');
+    if(correctSet.has(idx)) el.classList.add('show-correct');
+    if(chosen.has(idx) && !correctSet.has(idx)) el.classList.add('wrong');
+  });
+  const confirmBtn=document.getElementById('options').querySelector('.btn-blue');
+  if(confirmBtn) confirmBtn.style.display='none';
+  showExplain(q, isAllRight?'ok':isPartial?'partial':'ng', pts, maxPts);
+  document.getElementById('btn-next').disabled=false;
+}
+
+function showExplain(q, mood, pts, maxPts){
+  const eb=document.getElementById('explain-box');
+  eb.style.display='block';
+  eb.className='explain-box '+mood;
+  const icon=mood==='ok'?'✅':mood==='partial'?'⭕':'❌';
+  const label=mood==='ok'?'完全正確！':mood==='partial'?`部分正確（得 ${pts}/${maxPts} 分）`:'答錯了！';
+  eb.innerHTML=`<strong>${icon} ${label}</strong><br>${q.explain}`;
+}
+
+function nextQ(){
+  S.current++;
+  if(S.current>=S.questions.length){ showResult(); }
+  else { renderQ(); }
+}
+
+function showResult(){
+  show('screen-result');
+  const score=S.totalPts>0?Math.round((S.earnedPts/S.totalPts)*100):0;
+  const pass=score>=85;
+  document.getElementById('result-emoji').textContent=score===100?'🏆':pass?'🎉':'📚';
+  document.getElementById('result-name').textContent=S.name+'（'+S.city+'）';
+  const scoreEl=document.getElementById('result-score');
+  scoreEl.textContent=score+' 分';
+  scoreEl.className='result-score-big '+(pass?'pass':'fail');
+  const verdictEl=document.getElementById('result-verdict');
+  verdictEl.textContent=pass?'✅ 恭喜通過！':'❌ 未達及格標準（85分），建議複習後重考';
+  verdictEl.className='result-verdict '+(pass?'verdict-pass':'verdict-fail');
+  let fullCorrect=0,partial=0,wrong=0;
+  S.answers.forEach(a=>{
+    if(a.type==='multi'){
+      if(a.pts===a.maxPts && a.chosen.size===a.correct.size) fullCorrect++;
+      else if(a.pts>0) partial++;
+      else wrong++;
+    } else { if(a.pts===1) fullCorrect++; else wrong++; }
+  });
+  document.getElementById('sc-correct').textContent=fullCorrect;
+  document.getElementById('sc-partial').textContent=partial;
+  document.getElementById('sc-wrong').textContent=wrong;
+  document.getElementById('sc-total').textContent=S.questions.length;
+  const letters=['A','B','C','D','E'];
+  const html=S.answers.map((a,i)=>{
+    const q=S.questions[i];
+    let cls='r-correct',mark='✅';
+    if(a.type==='multi'){
+      const allRight=a.pts===a.maxPts && a.chosen.size===a.correct.size;
+      if(!allRight && a.pts>0){cls='r-partial';mark='⭕';}
+      else if(a.pts===0){cls='r-wrong';mark='❌';}
+    } else { if(a.pts===0){cls='r-wrong';mark='❌';} }
+    let ansDetail='';
+    if(a.type==='tf'){
+      const chLabel=a.chosen===0?'正確（是）':'錯誤（非）';
+      const corLabel=a.correct===0?'正確（是）':'錯誤（非）';
+      ansDetail=`您的答案：<span class="${a.pts?'r-correct-ans':'r-wrong-ans'}">${chLabel}</span>`+(a.pts===0?`　正確答案：<span class="r-correct-ans">${corLabel}</span>`:'');
+    } else if(a.type==='single'){
+      ansDetail=`您的答案：<span class="${a.pts?'r-correct-ans':'r-wrong-ans'}">${letters[a.chosen]} ${q.opts[a.chosen]}</span>`+(a.pts===0?`<br>正確答案：<span class="r-correct-ans">${letters[a.correct]} ${q.opts[a.correct]}</span>`:'');
+    } else {
+      const chosenStr=[...a.chosen].sort().map(c=>letters[c]+' '+q.opts[c]).join('、');
+      const correctStr=[...a.correct].sort().map(c=>letters[c]+' '+q.opts[c]).join('、');
+      ansDetail=`您選：<span class="${a.pts===a.maxPts?'r-correct-ans':'r-wrong-ans'}">${chosenStr||'（未選）'}</span><br>正解：<span class="r-correct-ans">${correctStr}</span>（得 ${a.pts}/${a.maxPts} 分）`;
+    }
+    const typeLabel=a.type==='tf'?'是非題':a.type==='single'?'單選題':'複選題';
+    return `<div class="review-item ${cls}"><div class="r-type">${mark} 第${i+1}題 · ${typeLabel}</div><div class="r-q">${q.q}</div><div class="r-detail">${ansDetail}</div></div>`;
+  }).join('');
+  document.getElementById('review-list').innerHTML=html;
+  const btns=document.getElementById('result-btns');
+  if(pass){
+    btns.innerHTML=`<button class="btn btn-outline" onclick="resetQuiz()">🔄 再測一次</button><button class="btn btn-green" onclick="sendReport(${score})">📧 寄送成績給主管</button>`;
+  } else {
+    btns.innerHTML=`<button class="btn btn-orange" onclick="retakeQuiz()">🔁 重新考試</button><button class="btn btn-green" onclick="sendReport(${score})">📧 仍要寄送成績</button>`;
+  }
+  document.getElementById('email-status').style.display='none';
+  autoSendReport(score);
+  sendToSheet(score);
+}
+
+function sendToSheet(score){
+  try{
+    var data = new URLSearchParams();
+    data.append('name', S.name);
+    data.append('city', S.city);
+    data.append('score', score);
+    data.append('passed', score>=85 ? 'true' : 'false');
+    fetch(CONFIG.SHEET_URL, {method:'POST', mode:'no-cors', body:data});
+  }catch(e){ console.log('sheet error', e); }
+}
+
+async function autoSendReport(score){
+  const pass=score>=85;
+  const now=new Date().toLocaleString('zh-TW');
+  const letters=['A','B','C','D','E'];
+  const detail=S.answers.map((a,i)=>{
+    const q=S.questions[i];
+    const mark=a.pts===a.maxPts?'✅':a.pts>0?'⭕':'❌';
+    let ans='';
+    if(a.type==='tf') ans=a.chosen===0?'正確':'錯誤';
+    else if(a.type==='single') ans=letters[a.chosen]+' '+q.opts[a.chosen];
+    else ans=[...a.chosen].map(c=>letters[c]).join('+');
+    return `${mark} Q${i+1}. ${q.q}\n   作答：${ans}`;
+  }).join('\n');
+  try {
+    await emailjs.send(CONFIG.EMAILJS_SERVICE_ID, CONFIG.EMAILJS_TEMPLATE_ID, {
+      name: S.name, city: S.city, time: now, score: score+' 分',
+      result: pass?'✅ 通過（'+score+'分）':'❌ 未通過（'+score+'分）',
+      detail: detail, to_email: CONFIG.MANAGER_EMAIL
+    });
+    const es=document.getElementById('email-status');
+    es.style.display='block'; es.className='email-status sent';
+    es.innerHTML=`✅ 成績已自動寄出！<br><small>${S.name}（${S.city}）${now}　${score}分　${pass?'通過':'未通過'}</small>`;
+  } catch(err) {
+    const es=document.getElementById('email-status');
+    es.style.display='block'; es.className='email-status error';
+    es.innerHTML=`⚠️ 自動寄送失敗，請點下方按鈕手動寄送`;
+  }
+}
+
+async function sendReport(score){
+  const es=document.getElementById('email-status');
+  es.style.display='block'; es.className='email-status sending';
+  es.textContent='📤 正在寄送中…';
+  await autoSendReport(score);
+}
+
+function retakeQuiz(){
+  const name=S.name,city=S.city;
+  S={name,city,questions:[],current:0,answers:[],totalPts:0,earnedPts:0,answered:false,_multiSelected:new Set()};
+  startQuiz();
+}
+
+function resetQuiz(){ show('screen-start'); }
+</script>
+</body>
+</html>
