@@ -182,6 +182,13 @@ mark.hl{background:#fff176;color:#333;padding:1px 3px;border-radius:3px;font-wei
 .cat-item b{color:#B81C22;margin-left:4px}
 .cat-linkbtn{display:inline-block;margin-top:8px;padding:7px 14px;background:#B81C22;color:#fff;border-radius:6px;font-size:12px;text-decoration:none}
 
+
+/* 智慧問答樣式 */
+.smart-intro{background:#FFF6F0;border:1px solid #F0D9CC;border-left:4px solid #B81C22;border-radius:8px;padding:12px 14px;font-size:14px;line-height:1.7;color:#5a4a44;margin-bottom:12px}
+.smart-intro b{color:#B81C22}
+.smart-tip{display:inline-block;margin-top:6px;color:#977;font-size:13px}
+.smart-sec{font-size:15px;font-weight:700;color:#B81C22;margin:16px 0 8px;padding-bottom:5px;border-bottom:2px solid #F0D9CC}
+.smart-card{border-left:3px solid #E3B4A0}
 </style>
 </head>
 <body>
@@ -206,6 +213,7 @@ mark.hl{background:#fff176;color:#333;padding:1px 3px;border-radius:3px;font-wei
 <div class="tab" onclick="showTab('dc',this)">🔧 DC風扇維修</div>
 <div class="tab" onclick="showTab('furniture',this)">🛋️ 大型家具</div>
 <div class="tab" onclick="showTab('reply',this)">💬 回覆範本</div>
+<div class="tab" onclick="showTab('smart',this)">🔍 智慧問答</div>
 <div class="tab" onclick="showTab('sop',this)">📋 客服SOP</div>
 <div class="tab" onclick="showTab('accounts',this)">🔐 常用網頁帳密</div>
 
@@ -289,6 +297,13 @@ mark.hl{background:#fff176;color:#333;padding:1px 3px;border-radius:3px;font-wei
   <div class="chips" id="reply-cat-chips"></div>
   <div class="rcount" id="reply-count"></div>
   <div id="reply-results"></div>
+</div>
+
+<div id="tab-smart" class="panel">
+  <div class="smart-intro">🔍 把客戶的問題整句貼進來（或自己打），系統會自動拆解重點、從<b>知識庫</b>與<b>回覆範本</b>中找出最相符的答案，依相符度排序。答案只來自本站已驗證資料，不會自動生成。<br><span class="smart-tip">例如：客人在蝦皮買的想退貨可是已經超過十天了 / 聯名卡還可以辦嗎 / 家具配送要不要運費</span></div>
+  <div class="srow"><input id="smart-input" type="text" placeholder="貼上或輸入客戶的問題…例如：蝦皮買的東西想退但超過十天了怎麼辦"></div>
+  <div class="rcount" id="smart-count"></div>
+  <div id="smart-results"><div class="empty">貼上或輸入客戶的問題，系統會自動從知識庫與回覆範本中，找出最相符的答案。</div></div>
 </div>
 
 <div id="tab-sop" class="panel">
@@ -705,6 +720,128 @@ document.getElementById('qa-input').addEventListener('keydown',e=>{if(e.key==='E
 document.getElementById('dc-input').addEventListener('keydown',e=>{if(e.key==='Enter') searchDC();});
 document.getElementById('sop-input').addEventListener('keydown',e=>{if(e.key==='Enter') searchSOP();});
 document.getElementById('acc-input').addEventListener('keydown',e=>{if(e.key==='Enter') searchAccounts();});
+
+/* ===== 智慧問答（貼整句客戶問題→依相符度排序找答案）===== */
+/* 停用詞：這些字太常見，不列入比對，避免干擾 */
+const SMART_STOP=['的','了','嗎','呢','啊','喔','唷','請','問','想','要','我','你','您','他','她','是','有','在','和','跟','與','或','也','都','就','會','可','可以','能','不','沒','很','太','個','件','筆','位','客','客人','顧客','小姐','先生','幫','幫忙','一下','怎麼','怎','如何','什麼','甚麼','為什麼','為何','哪','哪裡','哪個','多少','幾','請問','麻煩','謝謝','然後','但是','可是','因為','所以','而且','已經','還','再','把','被','讓','給','到','從','對','關於','之','其','此','該','們','一','這','那','裡','中','上','下','來','去','說','講','買','的話','目前','現在'];
+
+/* 把整句話切成有意義的關鍵詞：先抓英數/條碼，再逐字滑窗抓中文詞，套同義詞 */
+function smartTokens(text){
+  const raw=String(text).toLowerCase();
+  const set=new Set();
+  /* 1. 抓英文、數字、條碼（連續英數）*/
+  (raw.match(/[a-z0-9]{2,}/g)||[]).forEach(w=>set.add(w));
+  /* 2. 抓中文：先把非中文換成空白，再對每段中文做 2字/3字 滑窗 */
+  const zhSegs=raw.replace(/[^\u4e00-\u9fa5]+/g,' ').split(/\s+/).filter(Boolean);
+  zhSegs.forEach(seg=>{
+    /* 整段若不長就整段當一個詞 */
+    if(seg.length<=4) set.add(seg);
+    /* 2字滑窗 */
+    for(let i=0;i<seg.length-1;i++){
+      const two=seg.substr(i,2);
+      if(!SMART_STOP.includes(two)) set.add(two);
+    }
+    /* 3字滑窗（抓「鑑賞期」「聯名卡」這種）*/
+    for(let i=0;i<seg.length-2;i++){
+      set.add(seg.substr(i,3));
+    }
+  });
+  /* 3. 移除停用詞 */
+  SMART_STOP.forEach(s=>set.delete(s));
+  /* 4. 套用同義詞表 SYN（沿用知識庫的同義詞）*/
+  const base=[...set];
+  base.forEach(kw=>{
+    for(const[k,v] of Object.entries(SYN)){
+      if(kw.includes(k)||v.some(s=>kw.toLowerCase().includes(s.toLowerCase()))){
+        set.add(k.toLowerCase());
+        v.forEach(s=>set.add(s.toLowerCase()));
+      }
+    }
+  });
+  return [...set].filter(t=>t.length>=2||/[0-9]/.test(t));
+}
+
+/* 幫一筆資料算分數：標題命中權重高、內容命中權重低，命中越多詞分數越高 */
+function smartScore(tokens,title,body){
+  const t=(title||'').toLowerCase();
+  const b=(body||'').toLowerCase();
+  let score=0,hit=0;
+  tokens.forEach(tok=>{
+    let got=false;
+    if(t.includes(tok)){score+=10;got=true;}      /* 標題命中：10分 */
+    if(b.includes(tok)){score+=3;got=true;}        /* 內容命中：3分 */
+    if(got) hit++;
+  });
+  /* 命中詞數越多，額外加成（鼓勵整句都對得上的結果）*/
+  score+=hit*hit;
+  return {score,hit};
+}
+
+function smartSearch(){
+  const kw=document.getElementById('smart-input').value.trim();
+  const res=document.getElementById('smart-results');
+  const cnt=document.getElementById('smart-count');
+  if(!kw){res.innerHTML='<div class="empty">貼上或輸入客戶的問題，系統會自動從知識庫與回覆範本中，找出最相符的答案。</div>';cnt.textContent='';return;}
+  const tokens=smartTokens(kw);
+  if(!tokens.length){res.innerHTML='<div class="empty">請輸入更完整的問題內容</div>';cnt.textContent='';return;}
+
+  /* 搜知識庫 QA */
+  const qaScored=QA.map(q=>{
+    const r=smartScore(tokens,q.t,q.c);
+    return {item:q,score:r.score,hit:r.hit};
+  }).filter(x=>x.hit>0).sort((a,b)=>b.score-a.score).slice(0,8);
+
+  /* 搜回覆範本 REPLY（內容是陣列，合併成一段比對）*/
+  const rpScored=REPLY.map(r=>{
+    const body=(r.note||'')+' '+(r.c?r.c.join(' '):'');
+    const sc=smartScore(tokens,r.t,body);
+    return {item:r,score:sc.score,hit:sc.hit};
+  }).filter(x=>x.hit>0).sort((a,b)=>b.score-a.score).slice(0,5);
+
+  cnt.textContent='解析出關鍵詞：'+tokens.slice(0,12).join('、')+'　→　找到知識庫 '+qaScored.length+' 筆、回覆範本 '+rpScored.length+' 則';
+
+  let html='';
+  /* 知識庫結果 */
+  html+='<div class="smart-sec">📚 知識庫解答</div>';
+  if(qaScored.length){
+    html+=qaScored.map(x=>{
+      const q=x.item;
+      var h='<div class="card smart-card"><div class="card-title">'+escH(q.t)+'</div>'
+           +'<div class="card-content">'+formatContent(q.c)+'</div>';
+      if(q.img&&q.img.length){
+        h+=q.img.map(function(im){
+          return '<div class="qaimg"><img src="'+im.src+'" alt="'+escH(im.cap||'')+'" loading="lazy" onclick="imgZoom(this.src)">'
+                +(im.cap?'<div class="qacap">'+escH(im.cap)+'</div>':'')+'</div>';
+        }).join('');
+      }
+      return h+'<div class="card-cat">'+escH(q.cat)+'</div></div>';
+    }).join('');
+  }else{
+    html+='<div class="empty" style="margin-bottom:14px">知識庫中沒有找到相符的內容</div>';
+  }
+  /* 回覆範本結果 */
+  html+='<div class="smart-sec">💬 可直接複製的回覆範本</div>';
+  if(rpScored.length){
+    html+=rpScored.map((x,idx)=>{
+      const r=x.item;
+      const badgeClass=r.ch==='蝦皮'?'rbadge-sp':(r.ch==='官網'?'rbadge-web':'');
+      const badge='<span class="rbadge '+badgeClass+'" style="'+(r.ch==='通用'?'background:#888':'')+'">'+escH(r.ch)+'</span>';
+      const vs=r.c.map((v,i)=>{
+        const id='sv_'+idx+'_'+i;
+        const label=r.c.length>1?'<div class="rvlabel">範本 '+(i+1)+'</div>':'';
+        return '<div class="rvbox">'+label+'<button class="rcopy" onclick="copyReply(this,\''+id+'\')">複製</button><div class="rvtext" id="'+id+'">'+escL(v)+'</div></div>';
+      }).join('');
+      const note=r.note?'<div class="rnote">'+escL(r.note)+'</div>':'';
+      return '<div class="card smart-card"><div class="card-title">'+badge+escH(r.t)+'</div>'+note+vs+'<div class="card-cat">'+escH(r.ch)+'｜'+escH(r.cat)+'</div></div>';
+    }).join('');
+  }else{
+    html+='<div class="empty">回覆範本中沒有找到相符的內容</div>';
+  }
+  res.innerHTML=html;
+}
+
+document.getElementById('smart-input').addEventListener('input',smartSearch);
+document.getElementById('smart-input').addEventListener('keydown',e=>{if(e.key==='Enter') smartSearch();});
 
 </script>
 <div class="imgmodal" id="imgmodal" onclick="this.classList.remove('on')"><span class="imgclose">×</span><img id="imgmodal-img" src=""></div>
