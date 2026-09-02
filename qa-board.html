@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MUJI 客服問答板</title>
+<style>
+  :root{
+    --paper:#FAF9F6;
+    --surface:#FFFFFF;
+    --ink:#2B2A28;
+    --muted:#8A8781;
+    --line:#E7E4DD;
+    --line-soft:#F0EEE8;
+    --brand:#7A171C;
+    --brand-soft:#F3E7E4;
+    --wait:#9C6B12;
+    --wait-soft:#FBF1DE;
+    --done:#3F6B45;
+    --done-soft:#E7F0E7;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei","Segoe UI",sans-serif;
+    line-height:1.65;
+    font-size:16px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:760px;margin:0 auto;padding:28px 18px 80px;}
+
+  /* 標題 */
+  header h1{font-size:24px;font-weight:700;margin:0 0 6px;letter-spacing:.5px;}
+  header h1 .dot{color:var(--brand);}
+  header p.lead{margin:0;color:var(--muted);font-size:15px;}
+  .rule{height:1px;background:var(--line);margin:22px 0;border:0;}
+
+  /* 提問表單 */
+  .panel{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:22px 20px;
+  }
+  .panel h2{font-size:17px;font-weight:700;margin:0 0 4px;}
+  .panel .hint{margin:0 0 16px;color:var(--muted);font-size:14px;}
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:14px;font-weight:600;margin-bottom:5px;}
+  .field label .req{color:var(--brand);margin-left:2px;}
+  .field input,.field select,.field textarea{
+    width:100%;padding:10px 12px;font-size:15px;
+    font-family:inherit;color:var(--ink);
+    background:var(--paper);
+    border:1px solid var(--line);border-radius:6px;
+    transition:border-color .15s;
+  }
+  .field textarea{min-height:88px;resize:vertical;}
+  .field input:focus,.field select:focus,.field textarea:focus{
+    outline:none;border-color:var(--brand);
+  }
+  .two{display:flex;gap:12px;}
+  .two .field{flex:1;}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;
+    background:var(--brand);color:#fff;border:0;border-radius:6px;
+    padding:11px 26px;font-size:15px;font-weight:600;font-family:inherit;
+    cursor:pointer;transition:background .15s;
+  }
+  .btn:hover{background:#5F1216;}
+  .btn:disabled{background:var(--muted);cursor:default;}
+  .form-msg{margin-top:12px;font-size:14px;min-height:20px;}
+  .form-msg.ok{color:var(--done);}
+  .form-msg.err{color:var(--brand);}
+
+  /* 篩選列 */
+  .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:6px;}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;}
+  .chip{
+    border:1px solid var(--line);background:var(--surface);color:var(--muted);
+    padding:6px 13px;border-radius:20px;font-size:13px;cursor:pointer;
+    font-family:inherit;transition:all .15s;
+  }
+  .chip:hover{border-color:var(--muted);}
+  .chip.on{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .search{margin-left:auto;flex:1;min-width:150px;}
+  .search input{
+    width:100%;padding:8px 12px;font-size:14px;font-family:inherit;
+    border:1px solid var(--line);border-radius:6px;background:var(--surface);
+  }
+  .search input:focus{outline:none;border-color:var(--brand);}
+  .count{font-size:13px;color:var(--muted);margin:14px 2px 4px;}
+  .refresh{
+    background:none;border:0;color:var(--brand);font-size:13px;
+    cursor:pointer;font-family:inherit;padding:0;text-decoration:underline;
+  }
+
+  /* 問答清單 */
+  .list{margin-top:8px;}
+  .item{padding:18px 2px;border-top:1px solid var(--line);}
+  .item:first-child{border-top:0;}
+  .meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;color:var(--muted);margin-bottom:8px;}
+  .tag{padding:2px 9px;border-radius:4px;font-size:12px;font-weight:600;}
+  .tag.web{background:var(--brand-soft);color:var(--brand);}
+  .tag.shopee{background:#FCEEE2;color:#B15A15;}
+  .meta .who{color:var(--ink);font-weight:600;}
+  .meta .sep{color:var(--line);}
+  .q{font-size:16px;color:var(--ink);white-space:pre-wrap;word-break:break-word;margin-bottom:10px;}
+  .status{display:inline-block;padding:3px 11px;border-radius:20px;font-size:12px;font-weight:600;}
+  .status.wait{background:var(--wait-soft);color:var(--wait);}
+  .status.done{background:var(--done-soft);color:var(--done);}
+  .reply{
+    margin-top:11px;padding:12px 14px;background:var(--line-soft);
+    border-radius:6px;border-left:3px solid var(--brand);
+  }
+  .reply .rlabel{font-size:12px;font-weight:700;color:var(--brand);margin-bottom:3px;}
+  .reply .rtext{font-size:15px;white-space:pre-wrap;word-break:break-word;}
+
+  /* 狀態訊息 */
+  .state{text-align:center;color:var(--muted);padding:40px 20px;font-size:15px;}
+  .state.err{color:var(--brand);}
+
+  @media (max-width:520px){
+    .two{flex-direction:column;gap:0;}
+    .search{margin-left:0;order:3;width:100%;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>MUJI 客服問答板<span class="dot"> ·</span></h1>
+    <p class="lead">遇到不確定的問題,填在這裡登記;督導回覆後,所有同仁都能查得到。</p>
+  </header>
+
+  <hr class="rule">
+
+  <!-- 提問表單 -->
+  <section class="panel" aria-labelledby="askTitle">
+    <h2 id="askTitle">我要提問</h2>
+    <p class="hint">帶*的是必填。送出後會出現在下方清單,狀態一開始是「待處理」。</p>
+
+    <div class="two">
+      <div class="field">
+        <label for="channel">通路<span class="req">*</span></label>
+        <select id="channel">
+          <option value="">請選擇…</option>
+          <option value="官網">官網</option>
+          <option value="蝦皮">蝦皮</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="name">提問人<span class="req">*</span></label>
+        <input id="name" type="text" placeholder="你的姓名或工號" maxlength="30" autocomplete="off">
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="store">門市 <span style="color:var(--muted);font-weight:400;">(選填)</span></label>
+      <input id="store" type="text" placeholder="例：高雄夢時代店" maxlength="40" autocomplete="off">
+    </div>
+
+    <div class="field">
+      <label for="question">問題內容<span class="req">*</span></label>
+      <textarea id="question" placeholder="把客戶的問題、或你不確定怎麼處理的情況寫清楚。" maxlength="1000"></textarea>
+    </div>
+
+    <button class="btn" id="submitBtn">送出提問</button>
+    <div class="form-msg" id="formMsg" aria-live="polite"></div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 篩選 + 搜尋 -->
+  <div class="toolbar">
+    <div class="chips" id="channelChips">
+      <button class="chip on" data-ch="全部">全部</button>
+      <button class="chip" data-ch="官網">官網</button>
+      <button class="chip" data-ch="蝦皮">蝦皮</button>
+    </div>
+    <div class="chips" id="statusChips">
+      <button class="chip" data-st="待處理">待處理</button>
+      <button class="chip" data-st="已回覆">已回覆</button>
+    </div>
+    <div class="search">
+      <input id="search" type="text" placeholder="🔍 搜尋問題或回覆…" autocomplete="off">
+    </div>
+  </div>
+
+  <div class="count">
+    <span id="countText">載入中…</span>
+    ｜<button class="refresh" id="refreshBtn">重新整理</button>
+  </div>
+
+  <!-- 清單 -->
+  <div class="list" id="list">
+    <div class="state" id="stateMsg">正在載入問答板…</div>
+  </div>
+
+</div>
+
+<script>
+  // ====== 設定：這是你 Google Apps Script 的網址 ======
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxiv8RAQU0q33RaHD8Rr2xvq8bCdvkwhltiQARBmiMPiBFPiBxnKTIuIV0_m25M9TGH/exec";
+
+  let allRows = [];
+  let filterCh = "全部";
+  let filterSt = "全部";       // 全部 / 待處理 / 已回覆
+  let keyword = "";
+
+  const $ = (id) => document.getElementById(id);
+
+  // ---- 載入問答板 ----
+  async function loadBoard(){
+    const stateMsg = $("stateMsg");
+    $("list").innerHTML = '<div class="state" id="stateMsg">正在載入問答板…</div>';
+    $("countText").textContent = "載入中…";
+    try{
+      const res = await fetch(SCRIPT_URL, { method:"GET" });
+      const json = await res.json();
+      if(!json.ok) throw new Error("回傳格式錯誤");
+      allRows = json.data || [];
+      render();
+    }catch(err){
+      $("list").innerHTML =
+        '<div class="state err">載入失敗,請按上方「重新整理」再試一次。<br>若一直失敗,可能是網路或後端網址的問題。</div>';
+      $("countText").textContent = "";
+    }
+  }
+
+  // ---- 畫出清單 ----
+  function render(){
+    const kw = keyword.trim().toLowerCase();
+    const rows = allRows.filter(r=>{
+      if(filterCh !== "全部" && r.channel !== filterCh) return false;
+      if(filterSt !== "全部" && (r.status || "待處理") !== filterSt) return false;
+      if(kw){
+        const hay = ((r.question||"") + " " + (r.reply||"") + " " + (r.name||"") + " " + (r.store||"")).toLowerCase();
+        if(!hay.includes(kw)) return false;
+      }
+      return true;
+    });
+
+    $("countText").textContent = "共 " + rows.length + " 筆";
+
+    if(rows.length === 0){
+      $("list").innerHTML = '<div class="state">目前沒有符合的問題。換個篩選條件,或在上面登記第一筆問題吧。</div>';
+      return;
+    }
+
+    $("list").innerHTML = rows.map(r=>{
+      const status = r.status || "待處理";
+      const isDone = status === "已回覆";
+      const chClass = r.channel === "蝦皮" ? "shopee" : "web";
+      const parts = [];
+      if(r.store) parts.push(esc(r.store));
+      if(r.time)  parts.push(esc(r.time));
+      const metaTail = parts.length ? ' <span class="sep">|</span> ' + parts.join(' <span class="sep">·</span> ') : "";
+
+      let replyHtml = "";
+      if(isDone && r.reply){
+        replyHtml =
+          '<div class="reply"><div class="rlabel">督導回覆</div>' +
+          '<div class="rtext">' + esc(r.reply) + '</div></div>';
+      }
+
+      return (
+        '<div class="item">' +
+          '<div class="meta">' +
+            '<span class="tag ' + chClass + '">' + esc(r.channel || "—") + '</span>' +
+            '<span class="who">' + esc(r.name || "匿名") + '</span>' +
+            metaTail +
+          '</div>' +
+          '<div class="q">' + esc(r.question) + '</div>' +
+          '<span class="status ' + (isDone ? "done":"wait") + '">' + status + '</span>' +
+          replyHtml +
+        '</div>'
+      );
+    }).join("");
+  }
+
+  function esc(s){
+    return String(s==null?"":s)
+      .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;");
+  }
+
+  // ---- 送出提問 ----
+  async function submit(){
+    const channel = $("channel").value;
+    const name = $("name").value.trim();
+    const store = $("store").value.trim();
+    const question = $("question").value.trim();
+    const msg = $("formMsg");
+
+    msg.className = "form-msg";
+    if(!channel){ msg.className="form-msg err"; msg.textContent="請先選擇通路(官網/蝦皮)。"; return; }
+    if(!name){ msg.className="form-msg err"; msg.textContent="請填寫提問人。"; return; }
+    if(!question){ msg.className="form-msg err"; msg.textContent="請填寫問題內容。"; return; }
+
+    const btn = $("submitBtn");
+    btn.disabled = true; btn.textContent = "送出中…";
+    msg.className="form-msg"; msg.textContent="";
+
+    try{
+      // 注意：不設 Content-Type，維持 text/plain，避開 Apps Script 的跨網域限制
+      const res = await fetch(SCRIPT_URL, {
+        method:"POST",
+        body: JSON.stringify({ channel, name, store, question })
+      });
+      const json = await res.json();
+      if(!json.ok) throw new Error(json.error || "送出失敗");
+
+      msg.className="form-msg ok";
+      msg.textContent="已送出!問題已登記,下方清單會顯示為「待處理」。";
+      $("channel").value=""; $("store").value=""; $("question").value="";
+      // 保留提問人姓名，方便連續提問
+      await loadBoard();
+    }catch(err){
+      msg.className="form-msg err";
+      msg.textContent="送出失敗,請稍後再試一次。若持續失敗,請通知督導。";
+    }finally{
+      btn.disabled = false; btn.textContent = "送出提問";
+    }
+  }
+
+  // ---- 綁定事件 ----
+  document.addEventListener("DOMContentLoaded", ()=>{
+    $("submitBtn").addEventListener("click", submit);
+    $("refreshBtn").addEventListener("click", loadBoard);
+
+    $("channelChips").addEventListener("click", (e)=>{
+      const b = e.target.closest(".chip"); if(!b) return;
+      filterCh = b.dataset.ch;
+      [...$("channelChips").children].forEach(c=>c.classList.toggle("on", c===b));
+      render();
+    });
+
+    $("statusChips").addEventListener("click", (e)=>{
+      const b = e.target.closest(".chip"); if(!b) return;
+      // 再點一次同一個 = 取消，回到全部
+      if(b.classList.contains("on")){
+        b.classList.remove("on"); filterSt = "全部";
+      }else{
+        [...$("statusChips").children].forEach(c=>c.classList.remove("on"));
+        b.classList.add("on"); filterSt = b.dataset.st;
+      }
+      render();
+    });
+
+    $("search").addEventListener("input", (e)=>{ keyword = e.target.value; render(); });
+
+    loadBoard();
+  });
+</script>
+</body>
+</html>
