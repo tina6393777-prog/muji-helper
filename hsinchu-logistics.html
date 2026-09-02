@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>新竹物流交辦清單</title>
+<style>
+  :root{
+    --paper:#FAF9F6;
+    --surface:#FFFFFF;
+    --ink:#2B2A28;
+    --muted:#8A8781;
+    --line:#E7E4DD;
+    --line-soft:#F0EEE8;
+    --brand:#7A171C;
+    --brand-soft:#F3E7E4;
+    --wait:#9C6B12;
+    --wait-soft:#FBF1DE;
+    --done:#3F6B45;
+    --done-soft:#E7F0E7;
+    --fail:#7A5A5A;
+    --fail-soft:#EFE7E4;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);color:var(--ink);
+    font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei","Segoe UI",sans-serif;
+    line-height:1.6;font-size:16px;-webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:780px;margin:0 auto;padding:28px 18px 80px;}
+
+  header h1{font-size:24px;font-weight:700;margin:0 0 6px;letter-spacing:.5px;}
+  header h1 .dot{color:var(--brand);}
+  header p.lead{margin:0;color:var(--muted);font-size:15px;}
+  .rule{height:1px;background:var(--line);margin:22px 0;border:0;}
+
+  /* 建立交辦 */
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:22px 20px;}
+  .panel h2{font-size:17px;font-weight:700;margin:0 0 4px;}
+  .panel .hint{margin:0 0 16px;color:var(--muted);font-size:14px;}
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:14px;font-weight:600;margin-bottom:5px;}
+  .field label .req{color:var(--brand);margin-left:2px;}
+  .field input,.field select,.field textarea{
+    width:100%;padding:10px 12px;font-size:15px;font-family:inherit;color:var(--ink);
+    background:var(--paper);border:1px solid var(--line);border-radius:6px;transition:border-color .15s;
+  }
+  .field textarea{min-height:70px;resize:vertical;}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--brand);}
+  .two{display:flex;gap:12px;}
+  .two .field{flex:1;}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;
+    background:var(--brand);color:#fff;border:0;border-radius:6px;
+    padding:11px 26px;font-size:15px;font-weight:600;font-family:inherit;cursor:pointer;transition:background .15s;
+  }
+  .btn:hover{background:#5F1216;}
+  .btn:disabled{background:var(--muted);cursor:default;}
+  .btn.ghost{background:none;color:var(--muted);padding:11px 16px;}
+  .btn.ghost:hover{background:var(--line-soft);}
+  .btn.sm{padding:7px 16px;font-size:14px;}
+  .form-msg{margin-top:12px;font-size:14px;min-height:20px;}
+  .form-msg.ok{color:var(--done);}
+  .form-msg.err{color:var(--brand);}
+
+  /* 篩選 */
+  .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:6px;}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;}
+  .chip{border:1px solid var(--line);background:var(--surface);color:var(--muted);
+    padding:6px 13px;border-radius:20px;font-size:13px;cursor:pointer;font-family:inherit;transition:all .15s;}
+  .chip:hover{border-color:var(--muted);}
+  .chip.on{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .search{margin-left:auto;flex:1;min-width:150px;}
+  .search input{width:100%;padding:8px 12px;font-size:14px;font-family:inherit;
+    border:1px solid var(--line);border-radius:6px;background:var(--surface);}
+  .search input:focus{outline:none;border-color:var(--brand);}
+  .count{font-size:13px;color:var(--muted);margin:14px 2px 4px;}
+  .refresh{background:none;border:0;color:var(--brand);font-size:13px;cursor:pointer;font-family:inherit;padding:0;text-decoration:underline;}
+
+  /* 清單 */
+  .list{margin-top:8px;}
+  .item{padding:18px 2px;border-top:1px solid var(--line);}
+  .item:first-child{border-top:0;}
+  .row1{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px;}
+  .status{display:inline-block;padding:3px 11px;border-radius:20px;font-size:12px;font-weight:600;}
+  .status.wait{background:var(--wait-soft);color:var(--wait);}
+  .status.done{background:var(--done-soft);color:var(--done);}
+  .status.fail{background:var(--fail-soft);color:var(--fail);}
+  .cust{font-size:17px;font-weight:700;}
+  .time{font-size:13px;color:var(--muted);margin-left:auto;}
+  .kv{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:14px;margin-bottom:8px;}
+  .kv .k{color:var(--muted);white-space:nowrap;}
+  .kv .v{color:var(--ink);word-break:break-word;}
+  .task{background:var(--line-soft);border-radius:6px;padding:10px 12px;font-size:15px;white-space:pre-wrap;word-break:break-word;}
+  .task .tlabel{font-size:12px;color:var(--muted);margin-bottom:2px;}
+
+  .result{margin-top:11px;padding:12px 14px;background:var(--done-soft);border-radius:6px;border-left:3px solid var(--done);}
+  .result.fail{background:var(--fail-soft);border-left-color:var(--fail);}
+  .result .rlabel{font-size:12px;font-weight:700;color:var(--done);margin-bottom:3px;}
+  .result.fail .rlabel{color:var(--fail);}
+  .result .rtext{font-size:15px;white-space:pre-wrap;word-break:break-word;}
+  .result .rby{font-size:12px;color:var(--muted);margin-top:5px;}
+
+  .actions{margin-top:12px;}
+  .edit{margin-top:12px;padding:14px;border:1px dashed var(--line);border-radius:8px;background:var(--paper);display:none;}
+  .edit.open{display:block;}
+  .edit .field{margin-bottom:12px;}
+  .edit-btns{display:flex;gap:8px;}
+
+  .state{text-align:center;color:var(--muted);padding:40px 20px;font-size:15px;}
+  .state.err{color:var(--brand);}
+
+  @media (max-width:520px){
+    .two{flex-direction:column;gap:0;}
+    .search{margin-left:0;order:3;width:100%;}
+    .time{margin-left:0;width:100%;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>新竹物流交辦清單<span class="dot"> ·</span></h1>
+    <p class="lead">登記需要外撥的案子;同仁撥完電話後,直接在該筆按「更新」回填結果。</p>
+  </header>
+
+  <hr class="rule">
+
+  <!-- 建立交辦 -->
+  <section class="panel" aria-labelledby="newTitle">
+    <h2 id="newTitle">新增交辦</h2>
+    <p class="hint">帶*的是必填。送出後狀態自動為「待外撥」,會出現在下方清單。</p>
+
+    <div class="two">
+      <div class="field">
+        <label for="order">訂單編號<span class="req">*</span></label>
+        <input id="order" type="text" maxlength="60" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="tracking">物流單號<span class="req">*</span></label>
+        <input id="tracking" type="text" maxlength="60" autocomplete="off">
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="customer">客戶姓名<span class="req">*</span></label>
+      <input id="customer" type="text" maxlength="40" autocomplete="off">
+    </div>
+
+    <div class="field">
+      <label for="task">待聯絡事項<span class="req">*</span></label>
+      <textarea id="task" placeholder="要跟客戶確認或告知的內容。" maxlength="1000"></textarea>
+    </div>
+
+    <button class="btn" id="submitBtn">新增交辦</button>
+    <div class="form-msg" id="formMsg" aria-live="polite"></div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 篩選 -->
+  <div class="toolbar">
+    <div class="chips" id="statusChips">
+      <button class="chip on" data-st="全部">全部</button>
+      <button class="chip" data-st="待外撥">待外撥</button>
+      <button class="chip" data-st="已完成">已完成</button>
+      <button class="chip" data-st="聯絡不到">聯絡不到</button>
+    </div>
+    <div class="search">
+      <input id="search" type="text" placeholder="🔍 搜尋客戶／訂單／單號…" autocomplete="off">
+    </div>
+  </div>
+
+  <div class="count">
+    <span id="countText">載入中…</span>
+    ｜<button class="refresh" id="refreshBtn">重新整理</button>
+  </div>
+
+  <div class="list" id="list">
+    <div class="state">正在載入交辦清單…</div>
+  </div>
+
+</div>
+
+<script>
+  // ====== 設定：這是「新竹物流交辦」的 Google Apps Script 網址 ======
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxj1OBUO9tL6PvP4g7RWr0pjjsoKbRRIbVa4xDOsl5o92vCNmS2dBM0uOecsMhO-vVQyQ/exec";
+
+  const STATUSES = ["待外撥","已完成","聯絡不到"];
+  let allRows = [];
+  let filterSt = "全部";
+  let keyword = "";
+
+  const $ = (id) => document.getElementById(id);
+
+  async function loadBoard(){
+    $("list").innerHTML = '<div class="state">正在載入交辦清單…</div>';
+    $("countText").textContent = "載入中…";
+    try{
+      const res = await fetch(SCRIPT_URL, { method:"GET" });
+      const json = await res.json();
+      if(!json.ok) throw new Error("回傳格式錯誤");
+      allRows = json.data || [];
+      render();
+    }catch(err){
+      $("list").innerHTML = '<div class="state err">載入失敗,請按上方「重新整理」再試一次。</div>';
+      $("countText").textContent = "";
+    }
+  }
+
+  function statusClass(s){
+    if(s==="已完成") return "done";
+    if(s==="聯絡不到") return "fail";
+    return "wait";
+  }
+
+  function render(){
+    const kw = keyword.trim().toLowerCase();
+    const rows = allRows.filter(r=>{
+      const st = r.status || "待外撥";
+      if(filterSt !== "全部" && st !== filterSt) return false;
+      if(kw){
+        const hay = ((r.customer||"")+" "+(r.order||"")+" "+(r.tracking||"")+" "+(r.task||"")+" "+(r.result||"")+" "+(r.handler||"")).toLowerCase();
+        if(!hay.includes(kw)) return false;
+      }
+      return true;
+    });
+
+    $("countText").textContent = "共 " + rows.length + " 筆";
+
+    if(rows.length === 0){
+      $("list").innerHTML = '<div class="state">目前沒有符合的交辦。換個篩選條件,或在上面新增第一筆。</div>';
+      return;
+    }
+
+    $("list").innerHTML = rows.map(r=>{
+      const st = r.status || "待外撥";
+      const sc = statusClass(st);
+      const done = (st !== "待外撥") && r.result;
+
+      let resultHtml = "";
+      if(done){
+        const rc = st==="聯絡不到" ? " fail" : "";
+        const by = [];
+        if(r.handler) by.push("處理人：" + esc(r.handler));
+        if(r.updated) by.push(esc(r.updated));
+        resultHtml =
+          '<div class="result'+rc+'"><div class="rlabel">外撥結果</div>'+
+          '<div class="rtext">'+esc(r.result)+'</div>'+
+          (by.length ? '<div class="rby">'+by.join('　·　')+'</div>' : '')+
+          '</div>';
+      }
+
+      // 更新面板的選單
+      const opts = STATUSES.map(s=>'<option value="'+s+'"'+(s===st?' selected':'')+'>'+s+'</option>').join("");
+
+      return (
+        '<div class="item" data-order="'+esc(r.order)+'" data-tracking="'+esc(r.tracking)+'" data-customer="'+esc(r.customer)+'">'+
+          '<div class="row1">'+
+            '<span class="cust">'+esc(r.customer||"—")+'</span>'+
+            '<span class="status '+sc+'">'+st+'</span>'+
+            (r.time ? '<span class="time">建立 '+esc(r.time)+'</span>' : '')+
+          '</div>'+
+          '<div class="kv">'+
+            '<span class="k">訂單編號</span><span class="v">'+esc(r.order||"—")+'</span>'+
+            '<span class="k">物流單號</span><span class="v">'+esc(r.tracking||"—")+'</span>'+
+          '</div>'+
+          '<div class="task"><div class="tlabel">待聯絡事項</div>'+esc(r.task||"—")+'</div>'+
+          resultHtml+
+          '<div class="actions"><button class="btn sm toggle-edit">'+(done?"修改結果":"更新結果")+'</button></div>'+
+          '<div class="edit">'+
+            '<div class="field"><label>狀態</label><select class="e-status">'+opts+'</select></div>'+
+            '<div class="field"><label>外撥結果</label><textarea class="e-result" placeholder="撥打結果、客戶回覆、需後續處理事項…">'+esc(r.result||"")+'</textarea></div>'+
+            '<div class="field"><label>處理人</label><input class="e-handler" type="text" maxlength="30" value="'+esc(r.handler||"")+'" placeholder="你的姓名或工號"></div>'+
+            '<div class="edit-btns">'+
+              '<button class="btn sm save-edit">儲存</button>'+
+              '<button class="btn sm ghost cancel-edit">取消</button>'+
+            '</div>'+
+            '<div class="form-msg e-msg" aria-live="polite"></div>'+
+          '</div>'+
+        '</div>'
+      );
+    }).join("");
+  }
+
+  function esc(s){
+    return String(s==null?"":s)
+      .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
+  }
+
+  // ---- 新增交辦 ----
+  async function submit(){
+    const order = $("order").value.trim();
+    const tracking = $("tracking").value.trim();
+    const customer = $("customer").value.trim();
+    const task = $("task").value.trim();
+    const msg = $("formMsg");
+    msg.className = "form-msg";
+
+    if(!order){ msg.className="form-msg err"; msg.textContent="請填寫訂單編號。"; return; }
+    if(!tracking){ msg.className="form-msg err"; msg.textContent="請填寫物流單號。"; return; }
+    if(!customer){ msg.className="form-msg err"; msg.textContent="請填寫客戶姓名。"; return; }
+    if(!task){ msg.className="form-msg err"; msg.textContent="請填寫待聯絡事項。"; return; }
+
+    const btn = $("submitBtn");
+    btn.disabled = true; btn.textContent = "送出中…";
+    try{
+      const res = await fetch(SCRIPT_URL, { method:"POST", body: JSON.stringify({ order, tracking, customer, task }) });
+      const json = await res.json();
+      if(!json.ok) throw new Error(json.error || "送出失敗");
+      msg.className="form-msg ok"; msg.textContent="已新增!狀態為「待外撥」,顯示於下方清單。";
+      $("order").value=""; $("tracking").value=""; $("customer").value=""; $("task").value="";
+      await loadBoard();
+    }catch(err){
+      msg.className="form-msg err"; msg.textContent="送出失敗,請稍後再試一次。";
+    }finally{
+      btn.disabled = false; btn.textContent = "新增交辦";
+    }
+  }
+
+  // ---- 更新外撥結果 ----
+  async function saveEdit(item){
+    const order = item.dataset.order;
+    const tracking = item.dataset.tracking;
+    const customer = item.dataset.customer;
+    const status = item.querySelector(".e-status").value;
+    const result = item.querySelector(".e-result").value.trim();
+    const handler = item.querySelector(".e-handler").value.trim();
+    const emsg = item.querySelector(".e-msg");
+    emsg.className = "form-msg e-msg";
+
+    if(status !== "待外撥" && !result){
+      emsg.className="form-msg e-msg err"; emsg.textContent="請填寫外撥結果。"; return;
+    }
+    if(status !== "待外撥" && !handler){
+      emsg.className="form-msg e-msg err"; emsg.textContent="請填寫處理人。"; return;
+    }
+
+    const saveBtn = item.querySelector(".save-edit");
+    saveBtn.disabled = true; saveBtn.textContent = "儲存中…";
+    try{
+      const res = await fetch(SCRIPT_URL, {
+        method:"POST",
+        body: JSON.stringify({ action:"update", order, tracking, customer, status, result, handler })
+      });
+      const json = await res.json();
+      if(!json.ok) throw new Error(json.error || "更新失敗");
+      await loadBoard();
+    }catch(err){
+      emsg.className="form-msg e-msg err"; emsg.textContent="更新失敗,請稍後再試一次。";
+      saveBtn.disabled = false; saveBtn.textContent = "儲存";
+    }
+  }
+
+  // ---- 事件 ----
+  document.addEventListener("DOMContentLoaded", ()=>{
+    $("submitBtn").addEventListener("click", submit);
+    $("refreshBtn").addEventListener("click", loadBoard);
+
+    $("statusChips").addEventListener("click",(e)=>{
+      const b = e.target.closest(".chip"); if(!b) return;
+      filterSt = b.dataset.st;
+      [...$("statusChips").children].forEach(c=>c.classList.toggle("on", c===b));
+      render();
+    });
+
+    $("search").addEventListener("input",(e)=>{ keyword = e.target.value; render(); });
+
+    // 清單內的按鈕(用委派)
+    $("list").addEventListener("click",(e)=>{
+      const item = e.target.closest(".item"); if(!item) return;
+      if(e.target.closest(".toggle-edit")){
+        item.querySelector(".edit").classList.toggle("open");
+      }else if(e.target.closest(".cancel-edit")){
+        item.querySelector(".edit").classList.remove("open");
+      }else if(e.target.closest(".save-edit")){
+        saveEdit(item);
+      }
+    });
+
+    loadBoard();
+  });
+</script>
+</body>
+</html>
