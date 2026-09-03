@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>追加QA</title>
+<style>
+  :root{
+    --paper:#FAF9F6;
+    --surface:#FFFFFF;
+    --ink:#2B2A28;
+    --muted:#8A8781;
+    --line:#E7E4DD;
+    --line-soft:#F0EEE8;
+    --brand:#7A171C;
+    --brand-soft:#F3E7E4;
+    --wait:#9C6B12;
+    --wait-soft:#FBF1DE;
+    --done:#3F6B45;
+    --done-soft:#E7F0E7;
+    --fail:#7A5A5A;
+    --fail-soft:#EFE7E4;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);color:var(--ink);
+    font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei","Segoe UI",sans-serif;
+    line-height:1.6;font-size:16px;-webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:780px;margin:0 auto;padding:28px 18px 80px;}
+
+  header h1{font-size:24px;font-weight:700;margin:0 0 6px;letter-spacing:.5px;}
+  header h1 .dot{color:var(--brand);}
+  header p.lead{margin:0;color:var(--muted);font-size:15px;}
+  .rule{height:1px;background:var(--line);margin:22px 0;border:0;}
+
+  /* 表單 */
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:22px 20px;}
+  .panel h2{font-size:17px;font-weight:700;margin:0 0 4px;}
+  .panel .hint{margin:0 0 16px;color:var(--muted);font-size:14px;}
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:14px;font-weight:600;margin-bottom:5px;}
+  .field label .req{color:var(--brand);margin-left:2px;}
+  .field input,.field select,.field textarea{
+    width:100%;padding:10px 12px;font-size:15px;font-family:inherit;color:var(--ink);
+    background:var(--paper);border:1px solid var(--line);border-radius:6px;transition:border-color .15s;
+  }
+  .field textarea{min-height:70px;resize:vertical;}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--brand);}
+  .two{display:flex;gap:12px;}
+  .two .field{flex:1;}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;
+    background:var(--brand);color:#fff;border:0;border-radius:6px;
+    padding:11px 26px;font-size:15px;font-weight:600;font-family:inherit;cursor:pointer;transition:background .15s;
+  }
+  .btn:hover{background:#5F1216;}
+  .btn:disabled{background:var(--muted);cursor:default;}
+  .btn.ghost{background:none;color:var(--muted);padding:11px 16px;}
+  .btn.ghost:hover{background:var(--line-soft);}
+  .btn.sm{padding:7px 16px;font-size:14px;}
+  .form-msg{margin-top:12px;font-size:14px;min-height:20px;}
+  .form-msg.ok{color:var(--done);}
+  .form-msg.err{color:var(--brand);}
+
+  /* 搜尋 */
+  .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:6px;}
+  .search{margin-left:auto;flex:1;min-width:150px;}
+  .search input{width:100%;padding:8px 12px;font-size:14px;font-family:inherit;
+    border:1px solid var(--line);border-radius:6px;background:var(--surface);}
+  .search input:focus{outline:none;border-color:var(--brand);}
+  .count{font-size:13px;color:var(--muted);margin:14px 2px 4px;}
+  .refresh{background:none;border:0;color:var(--brand);font-size:13px;cursor:pointer;font-family:inherit;padding:0;text-decoration:underline;}
+
+  /* 清單 */
+  .list{margin-top:8px;}
+  .item{padding:18px 2px;border-top:1px solid var(--line);}
+  .item:first-child{border-top:0;}
+  .row1{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px;}
+  .status{display:inline-block;padding:3px 11px;border-radius:20px;font-size:12px;font-weight:600;}
+  .status.wait{background:var(--wait-soft);color:var(--wait);}
+  .status.done{background:var(--done-soft);color:var(--done);}
+  .cust{font-size:17px;font-weight:700;}
+  .time{font-size:13px;color:var(--muted);margin-left:auto;}
+  .kv{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:14px;margin-bottom:8px;}
+  .kv .k{color:var(--muted);white-space:nowrap;}
+  .kv .v{color:var(--ink);word-break:break-word;}
+  .task{background:var(--line-soft);border-radius:6px;padding:10px 12px;font-size:15px;white-space:pre-wrap;word-break:break-word;}
+  .task .tlabel{font-size:12px;color:var(--muted);margin-bottom:2px;}
+
+  .result{margin-top:11px;padding:12px 14px;background:var(--done-soft);border-radius:6px;border-left:3px solid var(--done);}
+  .result .rlabel{font-size:12px;font-weight:700;color:var(--done);margin-bottom:3px;}
+  .result .rtext{font-size:15px;white-space:pre-wrap;word-break:break-word;}
+
+  .actions{margin-top:12px;}
+  .edit{margin-top:12px;padding:14px;border:1px dashed var(--line);border-radius:8px;background:var(--paper);display:none;}
+  .edit.open{display:block;}
+  .edit .field{margin-bottom:12px;}
+  .edit-btns{display:flex;gap:8px;}
+
+  .state{text-align:center;color:var(--muted);padding:40px 20px;font-size:15px;}
+  .state.err{color:var(--brand);}
+
+  @media (max-width:520px){
+    .two{flex-direction:column;gap:0;}
+    .search{margin-left:0;order:3;width:100%;}
+    .time{margin-left:0;width:100%;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>追加QA<span class="dot"> ·</span></h1>
+    <p class="lead">同仁遇到不確定、覺得該補進知識庫的問題,填在這裡登記;督導確認追加後,該筆就會從清單消失。</p>
+  </header>
+
+  <hr class="rule">
+
+  <!-- 我要追加 -->
+  <section class="panel" aria-labelledby="newTitle">
+    <h2 id="newTitle">我要追加</h2>
+    <p class="hint">帶*的是必填。送出後狀態自動為「待處理」,會出現在下方清單。</p>
+
+    <div class="field">
+      <label for="question">問題／情境<span class="req">*</span></label>
+      <textarea id="question" placeholder="遇到什麼問題、或不確定怎麼處理的情況,寫清楚。" maxlength="1000"></textarea>
+    </div>
+
+    <div class="field">
+      <label for="answer">建議答案 <span style="color:var(--muted);font-weight:400;">(選填)</span></label>
+      <textarea id="answer" placeholder="如果已經有初步答案或做法,可以先寫;沒有就留空,督導會補。" maxlength="1000"></textarea>
+    </div>
+
+    <div class="two">
+      <div class="field">
+        <label for="reporter">提報人<span class="req">*</span></label>
+        <input id="reporter" type="text" placeholder="你的姓名或工號" maxlength="30" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="category">分類 <span style="color:var(--muted);font-weight:400;">(選填)</span></label>
+        <input id="category" type="text" placeholder="例:退換貨、MUJI Card、配送…" maxlength="40" autocomplete="off">
+      </div>
+    </div>
+
+    <button class="btn" id="submitBtn">送出追加</button>
+    <div class="form-msg" id="formMsg" aria-live="polite"></div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 搜尋 -->
+  <div class="toolbar">
+    <div class="search">
+      <input id="search" type="text" placeholder="🔍 搜尋問題／提報人／分類…" autocomplete="off">
+    </div>
+  </div>
+
+  <div class="count">
+    <span id="countText">載入中…</span>
+    ｜<button class="refresh" id="refreshBtn">重新整理</button>
+  </div>
+
+  <div class="list" id="list">
+    <div class="state">正在載入…</div>
+  </div>
+
+</div>
+
+<script>
+  // ====== 設定：這是「追加QA」的 Google Apps Script 網址 ======
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxTvlfuIWGOib--zQCMne5bwNsOJ1mQJAT4SRzboR5ydIs6R8s4B3qWg8oLmHhvBVEB/exec";
+
+  const STATUSES = ["待處理","已完成"];
+  let allRows = [];
+  let keyword = "";
+
+  const $ = (id) => document.getElementById(id);
+
+  async function loadBoard(){
+    $("list").innerHTML = '<div class="state">正在載入…</div>';
+    $("countText").textContent = "載入中…";
+    try{
+      const res = await fetch(SCRIPT_URL, { method:"GET" });
+      const json = await res.json();
+      if(!json.ok) throw new Error("回傳格式錯誤");
+      allRows = json.data || [];
+      render();
+    }catch(err){
+      $("list").innerHTML = '<div class="state err">載入失敗,請按上方「重新整理」再試一次。</div>';
+      $("countText").textContent = "";
+    }
+  }
+
+  function statusClass(s){
+    if(s==="已完成") return "done";
+    return "wait";
+  }
+
+  function render(){
+    const kw = keyword.trim().toLowerCase();
+    const rows = allRows.filter(r=>{
+      const st = r.status || "待處理";
+      if(st === "已完成") return false;   // 完成就消失
+      if(kw){
+        const hay = ((r.question||"")+" "+(r.answer||"")+" "+(r.reporter||"")+" "+(r.category||"")+" "+(r.note||"")+" "+(r.handler||"")).toLowerCase();
+        if(!hay.includes(kw)) return false;
+      }
+      return true;
+    });
+
+    $("countText").textContent = "待處理 " + rows.length + " 筆";
+
+    if(rows.length === 0){
+      $("list").innerHTML = '<div class="state">目前沒有待處理的追加。換個搜尋條件,或在上面新增第一筆。</div>';
+      return;
+    }
+
+    $("list").innerHTML = rows.map(r=>{
+      const st = r.status || "待處理";
+      const sc = statusClass(st);
+
+      let answerHtml = "";
+      if(r.answer){
+        answerHtml =
+          '<div class="result"><div class="rlabel">建議答案</div>'+
+          '<div class="rtext">'+esc(r.answer)+'</div></div>';
+      }
+
+      const opts = STATUSES.map(s=>'<option value="'+s+'"'+(s===st?' selected':'')+'>'+s+'</option>').join("");
+
+      return (
+        '<div class="item" data-id="'+esc(r.id)+'">'+
+          '<div class="row1">'+
+            '<span class="cust">'+esc(r.reporter||"—")+'</span>'+
+            '<span class="status '+sc+'">'+st+'</span>'+
+            (r.time ? '<span class="time">建立 '+esc(r.time)+'</span>' : '')+
+          '</div>'+
+          (r.category ? '<div class="kv"><span class="k">分類</span><span class="v">'+esc(r.category)+'</span></div>' : '')+
+          '<div class="task"><div class="tlabel">問題／情境</div>'+esc(r.question||"—")+'</div>'+
+          answerHtml+
+          '<div class="actions"><button class="btn sm toggle-edit">處理／追加完成</button></div>'+
+          '<div class="edit">'+
+            '<div class="field"><label>狀態</label><select class="e-status">'+opts+'</select></div>'+
+            '<div class="field"><label>處理備註</label><textarea class="e-note" placeholder="例:已追加到知識庫「退換貨」分類、或處理說明…">'+esc(r.note||"")+'</textarea></div>'+
+            '<div class="field"><label>處理人</label><input class="e-handler" type="text" maxlength="30" value="'+esc(r.handler||"")+'" placeholder="你的姓名或工號"></div>'+
+            '<div class="edit-btns">'+
+              '<button class="btn sm save-edit">儲存</button>'+
+              '<button class="btn sm ghost cancel-edit">取消</button>'+
+            '</div>'+
+            '<div class="form-msg e-msg" aria-live="polite"></div>'+
+          '</div>'+
+        '</div>'
+      );
+    }).join("");
+  }
+
+  function esc(s){
+    return String(s==null?"":s)
+      .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
+  }
+
+  // ---- 新增追加 ----
+  async function submit(){
+    const question = $("question").value.trim();
+    const answer = $("answer").value.trim();
+    const reporter = $("reporter").value.trim();
+    const category = $("category").value.trim();
+    const msg = $("formMsg");
+    msg.className = "form-msg";
+
+    if(!question){ msg.className="form-msg err"; msg.textContent="請填寫問題／情境。"; return; }
+    if(!reporter){ msg.className="form-msg err"; msg.textContent="請填寫提報人。"; return; }
+
+    const btn = $("submitBtn");
+    btn.disabled = true; btn.textContent = "送出中…";
+    try{
+      const res = await fetch(SCRIPT_URL, { method:"POST", body: JSON.stringify({ question, answer, reporter, category }) });
+      const json = await res.json();
+      if(!json.ok) throw new Error(json.error || "送出失敗");
+      msg.className="form-msg ok"; msg.textContent="已送出!狀態為「待處理」,顯示於下方清單。";
+      $("question").value=""; $("answer").value=""; $("reporter").value=""; $("category").value="";
+      await loadBoard();
+    }catch(err){
+      msg.className="form-msg err"; msg.textContent="送出失敗,請稍後再試一次。";
+    }finally{
+      btn.disabled = false; btn.textContent = "送出追加";
+    }
+  }
+
+  // ---- 更新（標記完成／備註） ----
+  async function saveEdit(item){
+    const id = item.dataset.id;
+    const status = item.querySelector(".e-status").value;
+    const note = item.querySelector(".e-note").value.trim();
+    const handler = item.querySelector(".e-handler").value.trim();
+    const emsg = item.querySelector(".e-msg");
+    emsg.className = "form-msg e-msg";
+
+    if(status === "已完成" && !handler){
+      emsg.className="form-msg e-msg err"; emsg.textContent="標記完成前請填寫處理人。"; return;
+    }
+
+    const saveBtn = item.querySelector(".save-edit");
+    saveBtn.disabled = true; saveBtn.textContent = "儲存中…";
+    try{
+      const res = await fetch(SCRIPT_URL, {
+        method:"POST",
+        body: JSON.stringify({ action:"update", id, status, note, handler })
+      });
+      const json = await res.json();
+      if(!json.ok) throw new Error(json.error || "更新失敗");
+      await loadBoard();
+    }catch(err){
+      emsg.className="form-msg e-msg err"; emsg.textContent="更新失敗,請稍後再試一次。";
+      saveBtn.disabled = false; saveBtn.textContent = "儲存";
+    }
+  }
+
+  // ---- 事件 ----
+  document.addEventListener("DOMContentLoaded", ()=>{
+    $("submitBtn").addEventListener("click", submit);
+    $("refreshBtn").addEventListener("click", loadBoard);
+    $("search").addEventListener("input",(e)=>{ keyword = e.target.value; render(); });
+
+    $("list").addEventListener("click",(e)=>{
+      const item = e.target.closest(".item"); if(!item) return;
+      if(e.target.closest(".toggle-edit")){
+        item.querySelector(".edit").classList.toggle("open");
+      }else if(e.target.closest(".cancel-edit")){
+        item.querySelector(".edit").classList.remove("open");
+      }else if(e.target.closest(".save-edit")){
+        saveEdit(item);
+      }
+    });
+
+    loadBoard();
+  });
+</script>
+</body>
+</html>
