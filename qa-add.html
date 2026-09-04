@@ -150,32 +150,41 @@
         </select>
       </div>
       <div class="field">
-        <label for="category">分類 <span style="color:var(--muted);font-weight:400;">(選填)</span></label>
-        <select id="category">
+        <label for="source">來源<span class="req">*</span></label>
+        <select id="source">
           <option value="">請選擇…</option>
-          <option>退貨退款</option>
-          <option>使用與保養</option>
-          <option>維修保固</option>
-          <option>官網購物相關</option>
-          <option>折價券與抵用卷</option>
-          <option>家具配送</option>
-          <option>發票問題</option>
-          <option>蝦皮旗艦館</option>
-          <option>衣著尺寸與洗滌保養</option>
-          <option>其他問題</option>
-          <option>門市服務</option>
-          <option>大宗採購</option>
-          <option>空間改造企劃</option>
-          <option>官網購物_回應範本</option>
-          <option>蝦皮購物_回應範本</option>
-          <option>物流相關</option>
-          <option>91APP後台</option>
-          <option>ERP系統</option>
-          <option>蝦皮賣場系統畫面</option>
-          <option>商品資訊</option>
-          <option>SOP流程圖</option>
+          <option>蝦皮</option>
+          <option>官網</option>
         </select>
       </div>
+    </div>
+
+    <div class="field">
+      <label for="category">分類 <span style="color:var(--muted);font-weight:400;">(選填)</span></label>
+      <select id="category">
+        <option value="">請選擇…</option>
+        <option>退貨退款</option>
+        <option>使用與保養</option>
+        <option>維修保固</option>
+        <option>官網購物相關</option>
+        <option>折價券與抵用卷</option>
+        <option>家具配送</option>
+        <option>發票問題</option>
+        <option>蝦皮旗艦館</option>
+        <option>衣著尺寸與洗滌保養</option>
+        <option>其他問題</option>
+        <option>門市服務</option>
+        <option>大宗採購</option>
+        <option>空間改造企劃</option>
+        <option>官網購物_回應範本</option>
+        <option>蝦皮購物_回應範本</option>
+        <option>物流相關</option>
+        <option>91APP後台</option>
+        <option>ERP系統</option>
+        <option>蝦皮賣場系統畫面</option>
+        <option>商品資訊</option>
+        <option>SOP流程圖</option>
+      </select>
     </div>
 
     <button class="btn" id="submitBtn">送出追加</button>
@@ -239,7 +248,7 @@
       if(st === "已完成") return false;   // 完成就消失
       if(!r.question || !String(r.question).trim()) return false;   // 空白列不顯示
       if(kw){
-        const hay = ((r.question||"")+" "+(r.answer||"")+" "+(r.reporter||"")+" "+(r.category||"")+" "+(r.note||"")+" "+(r.handler||"")).toLowerCase();
+        const hay = ((r.question||"")+" "+(r.answer||"")+" "+(r.reporter||"")+" "+(r.source||"")+" "+(r.category||"")+" "+(r.note||"")+" "+(r.handler||"")).toLowerCase();
         if(!hay.includes(kw)) return false;
       }
       return true;
@@ -272,7 +281,8 @@
             '<span class="status '+sc+'">'+st+'</span>'+
             (r.time ? '<span class="time">建立 '+esc(r.time)+'</span>' : '')+
           '</div>'+
-          (r.category ? '<div class="kv"><span class="k">分類</span><span class="v">'+esc(r.category)+'</span></div>' : '')+
+          '<div class="kv"><span class="k">來源</span><span class="v">'+esc(r.source||"—")+'</span>'+
+          (r.category ? '<span class="k">分類</span><span class="v">'+esc(r.category)+'</span>' : '')+'</div>'+
           '<div class="task"><div class="tlabel">問題／情境</div>'+esc(r.question||"—")+'</div>'+
           answerHtml+
           '<div class="actions"><button class="btn sm toggle-edit">處理／追加完成</button></div>'+
@@ -302,20 +312,22 @@
     const answer = $("answer").value.trim();
     const reporter = $("reporter").value.trim();
     const category = $("category").value.trim();
+    const source = $("source").value;
     const msg = $("formMsg");
     msg.className = "form-msg";
 
     if(!question){ msg.className="form-msg err"; msg.textContent="請填寫問題／情境。"; return; }
     if(!reporter){ msg.className="form-msg err"; msg.textContent="請填寫提報人。"; return; }
+    if(!source){ msg.className="form-msg err"; msg.textContent="請選擇來源(蝦皮/官網)。"; return; }
 
     const btn = $("submitBtn");
     btn.disabled = true; btn.textContent = "送出中…";
     try{
-      const res = await fetch(SCRIPT_URL, { method:"POST", body: JSON.stringify({ question, answer, reporter, category }) });
+      const res = await fetch(SCRIPT_URL, { method:"POST", body: JSON.stringify({ question, answer, reporter, category, source }) });
       const json = await res.json();
       if(!json.ok) throw new Error(json.error || "送出失敗");
       msg.className="form-msg ok"; msg.textContent="已送出!狀態為「待處理」,顯示於下方清單。";
-      $("question").value=""; $("answer").value=""; $("reporter").value=""; $("category").value="";
+      $("question").value=""; $("answer").value=""; $("reporter").value=""; $("category").value=""; $("source").value="";
       await loadBoard();
     }catch(err){
       msg.className="form-msg err"; msg.textContent="送出失敗,請稍後再試一次。";
