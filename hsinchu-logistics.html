@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>新竹物流交辦清單</title>
+<title>交辦清單</title>
 <style>
   :root{
     --paper:#FAF9F6;
@@ -122,7 +122,7 @@
 <div class="wrap">
 
   <header>
-    <h1>新竹物流交辦清單<span class="dot"> ·</span></h1>
+    <h1>交辦清單<span class="dot"> ·</span></h1>
     <p class="lead">登記需要外撥的案子;同仁撥完電話後,直接在該筆按「更新」回填結果。</p>
   </header>
 
@@ -149,6 +149,17 @@
       <input id="customer" type="text" maxlength="40" autocomplete="off">
     </div>
 
+    <div class="two">
+      <div class="field">
+        <label for="phone">連絡電話 <span style="color:var(--muted);font-weight:400;">(選填)</span></label>
+        <input id="phone" type="text" maxlength="30" autocomplete="off" placeholder="客戶電話">
+      </div>
+      <div class="field">
+        <label for="caseNo">案件編號 <span style="color:var(--muted);font-weight:400;">(選填)</span></label>
+        <input id="caseNo" type="text" maxlength="60" autocomplete="off">
+      </div>
+    </div>
+
     <div class="field">
       <label for="task">待聯絡事項<span class="req">*</span></label>
       <textarea id="task" placeholder="要跟客戶確認或告知的內容。" maxlength="1000"></textarea>
@@ -163,9 +174,8 @@
   <!-- 篩選 -->
   <div class="toolbar">
     <div class="chips" id="statusChips">
-      <button class="chip on" data-st="全部">全部</button>
+      <button class="chip on" data-st="全部">待處理案件</button>
       <button class="chip" data-st="待外撥">待外撥</button>
-      <button class="chip" data-st="已完成">已完成</button>
       <button class="chip" data-st="聯絡不到">聯絡不到</button>
     </div>
     <div class="search">
@@ -220,7 +230,11 @@
     const kw = keyword.trim().toLowerCase();
     const rows = allRows.filter(r=>{
       const st = r.status || "待外撥";
-      if(filterSt !== "全部" && st !== filterSt) return false;
+      if(filterSt === "全部"){
+        if(st === "已完成") return false;   // 待處理案件視圖不顯示已完成
+      } else if(st !== filterSt){
+        return false;
+      }
       if(kw){
         const hay = ((r.customer||"")+" "+(r.order||"")+" "+(r.tracking||"")+" "+(r.task||"")+" "+(r.result||"")+" "+(r.handler||"")).toLowerCase();
         if(!hay.includes(kw)) return false;
@@ -266,6 +280,8 @@
           '<div class="kv">'+
             '<span class="k">訂單編號</span><span class="v">'+esc(r.order||"—")+'</span>'+
             '<span class="k">物流單號</span><span class="v">'+esc(r.tracking||"—")+'</span>'+
+            (r.caseNo ? '<span class="k">案件編號</span><span class="v">'+esc(r.caseNo)+'</span>' : '')+
+            (r.phone ? '<span class="k">連絡電話</span><span class="v">'+esc(r.phone)+'</span>' : '')+
           '</div>'+
           '<div class="task"><div class="tlabel">待聯絡事項</div>'+esc(r.task||"—")+'</div>'+
           resultHtml+
@@ -296,6 +312,8 @@
     const tracking = $("tracking").value.trim();
     const customer = $("customer").value.trim();
     const task = $("task").value.trim();
+    const phone = $("phone").value.trim();
+    const caseNo = $("caseNo").value.trim();
     const msg = $("formMsg");
     msg.className = "form-msg";
 
@@ -307,11 +325,11 @@
     const btn = $("submitBtn");
     btn.disabled = true; btn.textContent = "送出中…";
     try{
-      const res = await fetch(SCRIPT_URL, { method:"POST", body: JSON.stringify({ order, tracking, customer, task }) });
+      const res = await fetch(SCRIPT_URL, { method:"POST", body: JSON.stringify({ order, tracking, customer, task, phone, caseNo }) });
       const json = await res.json();
       if(!json.ok) throw new Error(json.error || "送出失敗");
       msg.className="form-msg ok"; msg.textContent="已新增!狀態為「待外撥」,顯示於下方清單。";
-      $("order").value=""; $("tracking").value=""; $("customer").value=""; $("task").value="";
+      $("order").value=""; $("tracking").value=""; $("customer").value=""; $("task").value=""; $("phone").value=""; $("caseNo").value="";
       await loadBoard();
     }catch(err){
       msg.className="form-msg err"; msg.textContent="送出失敗,請稍後再試一次。";
