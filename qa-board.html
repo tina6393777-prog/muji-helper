@@ -172,6 +172,17 @@
       <input id="store" type="text" placeholder="例：王小姐" maxlength="40" autocomplete="off">
     </div>
 
+    <div class="two">
+      <div class="field">
+        <label for="order">訂單編號 <span style="color:var(--muted);font-weight:400;">(選填)</span></label>
+        <input id="order" type="text" maxlength="60" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="caseNo">案件編號 <span style="color:var(--muted);font-weight:400;">(選填)</span></label>
+        <input id="caseNo" type="text" maxlength="60" autocomplete="off">
+      </div>
+    </div>
+
     <div class="field">
       <label for="question">問題內容<span class="req">*</span></label>
       <textarea id="question" placeholder="把客戶的問題、或你不確定怎麼處理的情況寫清楚。" maxlength="1000"></textarea>
@@ -285,6 +296,7 @@
             metaTail +
           '</div>' +
           '<div class="q">' + esc(r.question) + '</div>' +
+          ((r.order || r.caseNo) ? '<div class="q-ids" style="font-size:13px;color:var(--muted);margin-top:4px;">' + [(r.order?'訂單編號：'+esc(r.order):''),(r.caseNo?'案件編號：'+esc(r.caseNo):'')].filter(Boolean).join('　·　') + '</div>' : '') +
           '<span class="status ' + (isDone ? "done":"wait") + '">' + status + '</span>' +
           replyHtml +
         '</div>'
@@ -304,6 +316,8 @@
     const name = $("name").value.trim();
     const store = $("store").value.trim();
     const question = $("question").value.trim();
+    const order = $("order").value.trim();
+    const caseNo = $("caseNo").value.trim();
     const msg = $("formMsg");
 
     msg.className = "form-msg";
@@ -319,14 +333,14 @@
       // 注意：不設 Content-Type，維持 text/plain，避開 Apps Script 的跨網域限制
       const res = await fetch(SCRIPT_URL, {
         method:"POST",
-        body: JSON.stringify({ channel, name, store, question })
+        body: JSON.stringify({ channel, name, store, question, order, caseNo })
       });
       const json = await res.json();
       if(!json.ok) throw new Error(json.error || "送出失敗");
 
       msg.className="form-msg ok";
       msg.textContent="已送出!問題已登記,下方清單會顯示為「待處理」。";
-      $("channel").value=""; $("store").value=""; $("question").value="";
+      $("channel").value=""; $("store").value=""; $("question").value=""; $("order").value=""; $("caseNo").value="";
       // 保留提問人姓名，方便連續提問
       await loadBoard();
     }catch(err){
