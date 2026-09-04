@@ -137,29 +137,43 @@
     <div class="two">
       <div class="field">
         <label for="reporter">提報人<span class="req">*</span></label>
-        <input id="reporter" type="text" placeholder="你的姓名或工號" maxlength="30" autocomplete="off">
+        <select id="reporter">
+          <option value="">請選擇…</option>
+          <option>惠娟</option>
+          <option>毓珊</option>
+          <option>玉婷</option>
+          <option>雅琴</option>
+          <option>馬嘉</option>
+          <option>佐伊</option>
+          <option>公主</option>
+          <option>菲菲</option>
+        </select>
       </div>
       <div class="field">
         <label for="category">分類 <span style="color:var(--muted);font-weight:400;">(選填)</span></label>
         <select id="category">
           <option value="">請選擇…</option>
-          <option>公司簡介</option>
-          <option>商品分類</option>
-          <option>MUJI passport 會員</option>
-          <option>MUJI Card</option>
           <option>退貨退款</option>
           <option>使用與保養</option>
           <option>維修保固</option>
-          <option>官網購物</option>
-          <option>折價券&抵用券</option>
+          <option>官網購物相關</option>
+          <option>折價券與抵用卷</option>
           <option>家具配送</option>
           <option>發票問題</option>
           <option>蝦皮旗艦館</option>
           <option>衣著尺寸與洗滌保養</option>
-          <option>禮物包裝服務</option>
+          <option>其他問題</option>
+          <option>門市服務</option>
           <option>大宗採購</option>
           <option>空間改造企劃</option>
-          <option>其他問題</option>
+          <option>官網購物_回應範本</option>
+          <option>蝦皮購物_回應範本</option>
+          <option>物流相關</option>
+          <option>91APP後台</option>
+          <option>ERP系統</option>
+          <option>蝦皮賣場系統畫面</option>
+          <option>商品資訊</option>
+          <option>SOP流程圖</option>
         </select>
       </div>
     </div>
@@ -223,6 +237,7 @@
     const rows = allRows.filter(r=>{
       const st = r.status || "待處理";
       if(st === "已完成") return false;   // 完成就消失
+      if(!r.question || !String(r.question).trim()) return false;   // 空白列不顯示
       if(kw){
         const hay = ((r.question||"")+" "+(r.answer||"")+" "+(r.reporter||"")+" "+(r.category||"")+" "+(r.note||"")+" "+(r.handler||"")).toLowerCase();
         if(!hay.includes(kw)) return false;

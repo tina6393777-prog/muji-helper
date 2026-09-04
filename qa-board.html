@@ -153,7 +153,17 @@
       </div>
       <div class="field">
         <label for="name">提問人<span class="req">*</span></label>
-        <input id="name" type="text" placeholder="你的姓名或工號" maxlength="30" autocomplete="off">
+        <select id="name">
+          <option value="">請選擇…</option>
+          <option>惠娟</option>
+          <option>毓珊</option>
+          <option>玉婷</option>
+          <option>雅琴</option>
+          <option>馬嘉</option>
+          <option>佐伊</option>
+          <option>公主</option>
+          <option>菲菲</option>
+        </select>
       </div>
     </div>
 
@@ -235,6 +245,7 @@
     const kw = keyword.trim().toLowerCase();
     const rows = allRows.filter(r=>{
       if(filterCh !== "全部" && r.channel !== filterCh) return false;
+      if(filterSt === "全部" && (r.status || "待處理") === "已回覆") return false;   // 已回覆自動下架
       if(filterSt !== "全部" && (r.status || "待處理") !== filterSt) return false;
       if(kw){
         const hay = ((r.question||"") + " " + (r.reply||"") + " " + (r.name||"") + " " + (r.store||"")).toLowerCase();
