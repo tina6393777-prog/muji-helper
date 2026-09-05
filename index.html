@@ -146,6 +146,9 @@ mark.hl{background:#fff176;color:#333;padding:1px 3px;border-radius:3px;font-wei
 .imgmodal img{max-width:96%;max-height:92%;border-radius:8px;box-shadow:0 6px 30px rgba(0,0,0,.5)}
 .imgmodal .imgclose{position:fixed;top:14px;right:20px;color:#fff;font-size:30px;font-weight:bold;cursor:pointer}
 .qlink{color:#B81C22;text-decoration:underline;word-break:break-all}
+.namelink{color:#B81C22;text-decoration:none;font-weight:bold;font-size:14px}
+.namelink:hover{text-decoration:underline}
+.namelink .arr{font-size:11px;opacity:.6;margin-left:2px}
 .qlink:hover{color:#7B1A1F}
 
 /* ===== 素材與保養 ===== */
@@ -217,7 +220,7 @@ mark.hl{background:#fff176;color:#333;padding:1px 3px;border-radius:3px;font-wei
   <a href="qa-board.html" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;background:#fff;color:#B81C22;text-decoration:none;padding:6px 14px;border-radius:8px;font-size:13px;font-weight:800;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.15)">📮 舉手發問</a>
   <a href="hsinchu-logistics.html" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;background:#fff;color:#B81C22;text-decoration:none;padding:6px 14px;border-radius:8px;font-size:13px;font-weight:800;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.15)">📞 交辦清單</a>
   <a href="qa-add.html" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;background:#fff;color:#B81C22;text-decoration:none;padding:6px 14px;border-radius:8px;font-size:13px;font-weight:800;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.15)">➕ 追加QA</a>
-  <a href="https://forms.gle/9djiVKhrqtzG8ecG9" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;background:#fff;color:#B81C22;text-decoration:none;padding:6px 14px;border-radius:8px;font-size:13px;font-weight:800;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.15)">📝 結班交接</a>
+  <a href="https://forms.gle/9djiVKhrqtzG8ecG9" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;background:#fff;color:#B81C22;text-decoration:none;padding:6px 14px;border-radius:8px;font-size:13px;font-weight:800;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.15)">📝 今日工作紀錄</a>
   <a href="hsinchu-call.html" style="display:inline-flex;align-items:center;gap:4px;background:#fff;color:#B81C22;text-decoration:none;padding:6px 14px;border-radius:8px;font-size:13px;font-weight:800;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.15)">🚚 新竹收退叫號</a>
 </header>
 
@@ -856,8 +859,8 @@ function renderAccounts(kw){
   const front = links.filter(l=>(l.cat||'官網賣場物流')==='官網賣場物流');
   document.getElementById('acc-count').textContent = '常用網頁 共 '+links.length+' 筆';
   const card = l =>
-    '<div class="link-card"><div class="link-name">'+escH(l.name)+'</div>'
-    +(l.url?'<div class="link-url"><a class="qlink" href="'+escH(l.url)+'" target="_blank">'+escH(l.url)+'</a></div>':'')
+    '<div class="link-card">'
+    +(l.url?'<div class="link-name"><a class="namelink" href="'+escH(l.url)+'" target="_blank" rel="noopener">'+escH(l.name)+' <span class="arr">↗</span></a></div>':'<div class="link-name">'+escH(l.name)+'</div>')
     +(l.cred?'<div class="link-cred">'+escL(l.cred)+'</div>':'')
     +(l.note?'<div class="link-note">'+escL(l.note)+'</div>':'')
     +'</div>';
@@ -1124,13 +1127,23 @@ document.getElementById('smart-input').addEventListener('keydown',e=>{if(e.key==
       if(!items.length) return;
       var html='<div style="background:#fff;border:1px solid #e6ded0;border-left:5px solid #B81C22;padding:9px 16px 10px">'
              +'<div style="font-weight:800;color:#B81C22;font-size:14px;margin-bottom:5px">📢 最新公告</div>';
+      var colorFor=function(cat){cat=(cat||'').trim();
+        if(/重要|緊急/.test(cat)) return '#B81C22';
+        if(/檔期|活動|促銷/.test(cat)) return '#C46A1B';
+        if(/信箱|信件|回信/.test(cat)) return '#3f6f8f';
+        if(/物流|新竹|配送|宅配|貨態/.test(cat)) return '#5a7d4f';
+        if(/商品|文旦|禮盒|預購|規格/.test(cat)) return '#6d4c8a';
+        if(/系統|後台|網頁|工具|小幫手|改版/.test(cat)) return '#2f8a8a';
+        if(!cat||/一般/.test(cat)) return '#8A8781';
+        var pal=['#3f6f8f','#5a7d4f','#C46A1B','#6d4c8a','#2f8a8a','#8a6d3b'],s=0,i;
+        for(i=0;i<cat.length;i++) s=(s+cat.charCodeAt(i))%pal.length; return pal[s];};
       items.forEach(function(it){
-        var imp=(it.cat==='重要');
-        html+='<div style="font-size:14px;line-height:1.6;margin:3px 0;'+(imp?'color:#B81C22;font-weight:700':'color:#33302c')+'">'
-           +(it.date?'<span style="display:inline-block;min-width:48px;color:#8C8578;font-weight:400;font-size:12.5px">'+esc(it.date)+'</span> ':'')
-           +(imp?'🔴 ':'')
-           +((it.cat&&!imp)?'<span style="background:#f0ece2;color:#8a6d3b;border-radius:4px;padding:0 6px;font-size:12px;margin-right:6px">'+esc(it.cat)+'</span>':'')
-           +esc(it.txt)+'</div>';
+        var col=colorFor(it.cat), imp=/重要|緊急/.test(it.cat||'');
+        html+='<div style="border-left:3px solid '+col+';padding:5px 0 5px 10px;margin:7px 0;font-size:14px;line-height:1.6">'
+           +(it.cat?'<span style="display:inline-block;background:'+col+';color:#fff;border-radius:4px;padding:1px 8px;font-size:12px;font-weight:700;margin-right:6px">'+esc(it.cat)+'</span>':'')
+           +(it.date?'<span style="color:#8C8578;font-size:12px;margin-right:6px">'+esc(it.date)+'</span>':'')
+           +'<span style="'+(imp?'color:#B81C22;font-weight:700':'color:#33302c')+'">'+esc(it.txt)+'</span>'
+           +'</div>';
       });
       html+='</div>';
       var bar=document.getElementById('notice-bar');
