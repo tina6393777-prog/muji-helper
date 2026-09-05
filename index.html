@@ -218,6 +218,7 @@ mark.hl{background:#fff176;color:#333;padding:1px 3px;border-radius:3px;font-wei
   <a href="hsinchu-logistics.html" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;background:#fff;color:#B81C22;text-decoration:none;padding:6px 14px;border-radius:8px;font-size:13px;font-weight:800;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.15)">📞 交辦清單</a>
   <a href="qa-add.html" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;background:#fff;color:#B81C22;text-decoration:none;padding:6px 14px;border-radius:8px;font-size:13px;font-weight:800;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.15)">➕ 追加QA</a>
   <a href="https://forms.gle/9djiVKhrqtzG8ecG9" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;background:#fff;color:#B81C22;text-decoration:none;padding:6px 14px;border-radius:8px;font-size:13px;font-weight:800;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.15)">📝 結班交接</a>
+  <a href="hsinchu-call.html" style="display:inline-flex;align-items:center;gap:4px;background:#fff;color:#B81C22;text-decoration:none;padding:6px 14px;border-radius:8px;font-size:13px;font-weight:800;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.15)">🚚 新竹收退叫號</a>
 </header>
 
 <a href="daily-plan.html" target="_blank" rel="noopener" style="display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;background:#FBF3D9;border-bottom:1px solid #e6ded0;border-left:5px solid #B81C22;padding:10px 16px;text-decoration:none;color:#33302c;font-size:14px;line-height:1.5"><span style="background:#B81C22;color:#fff;font-weight:800;border-radius:20px;padding:3px 12px;font-size:13px;white-space:nowrap">📅 今日工作</span><span style="flex:1;min-width:180px"><b>即時線</b>＝聊聊＋電話　·　<b>案件線</b>＝後送＋回電</span><span style="color:#8f1319;font-weight:800;white-space:nowrap">看完整分工（2人／3人）›</span></a>
@@ -386,6 +387,11 @@ const LINKS = [
   "cat": "後台"
  },
  {
+  "name": "新竹收退叫號",
+  "url": "hsinchu-call.html",
+  "cat": "後台"
+ },
+ {
   "name": "➕ 追加QA",
   "url": "https://docs.google.com/spreadsheets/d/1tmRC1kBFVu-lcKhtS4sZ9bIO2dTJETcD0yHox5UiYlw/edit?gid=1767697263#gid=1767697263",
   "note": "追加知識庫 QA 登記用。",
@@ -450,7 +456,7 @@ const LINKS = [
   "cat": "後台"
  },
  {
-  "name": "蝦皮三方共用客服件表格 (202608)",
+  "name": "蝦皮三方共用客服件表格",
   "url": "https://twmuji.sharepoint.com/sites/EC/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FEC%2FShared%20Documents%2FGeneral%2F%E2%97%86%E8%9D%A6%E7%9A%AE%E9%96%80%E5%B8%82%E7%9B%B8%E9%97%9C%2F%E8%9D%A6%E7%9A%AE%E5%AE%A2%E6%9C%8D%E7%9B%B8%E9%97%9C&viewid=6afe4c32%2D484e%2D4cce%2Da201%2Dc8b911e0b407&sharingv2=true&fromShare=true&at=9&CID=6b0b07ab%2Dd2ac%2D48c6%2Da6c1%2Db21a07a16bd2&FolderCTID=0x01200080E1ABB8ECF5814D8CCF148612399BE8",
   "cred": "",
   "note": "需登入公司 SharePoint 帳號才能開啟",
@@ -858,10 +864,6 @@ function renderAccounts(kw){
   if(cur.length){ html += cur.map(card).join(''); }
   else if(links.length){ html += '<div class="empty">這一區沒有符合的，點上面另一顆看看 👆</div>'; }
   else { html += '<div class="empty">找不到相關網頁</div>'; }
-  if(ACC_VIEW==='後台'){
-    html += '<div class="acc-section">🔑 帳號密碼</div>';
-    html += '<div style="padding:14px 16px;background:#FBEDED;border:1px solid #E4B7B7;border-radius:8px;color:#7B1A1F;line-height:1.8;margin-top:6px;font-size:14px;">🔒 為保護客戶資料安全，各系統的帳號密碼<b>已不再放在本查詢工具</b>。<br>請洽主管，或查詢團隊內部文件（限團隊權限的 Google 試算表）。</div>';
-  }
   document.getElementById('acc-results').innerHTML = html;
 }
 function searchAccounts(){
