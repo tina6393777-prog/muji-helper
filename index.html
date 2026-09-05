@@ -12,9 +12,10 @@ header{background:#B81C22;color:#fff;padding:13px 20px;display:flex;align-items:
 .hinfo h1{font-size:15px;font-weight:bold}
 .hinfo small{font-size:11px;opacity:.75}
 .badge{background:rgba(255,255,255,.2);border-radius:10px;padding:2px 10px;font-size:11px;margin-left:auto}
-.tabs{display:flex;background:#fff;border-bottom:2px solid #e8e8e8;overflow-x:auto;position:sticky;top:0;z-index:10;box-shadow:0 2px 6px rgba(0,0,0,.08)}
-.tab{padding:11px 15px;cursor:pointer;white-space:nowrap;font-size:12px;border-bottom:3px solid transparent;margin-bottom:-2px;color:#666;transition:.15s}
-.tab.active{border-bottom-color:#B81C22;color:#B81C22;font-weight:bold}
+.tabs{display:flex;background:#B81C22;border-bottom:2px solid #8f1319;overflow-x:auto;position:sticky;top:0;z-index:10;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.tab{padding:11px 15px;cursor:pointer;white-space:nowrap;font-size:12px;border-bottom:3px solid transparent;margin-bottom:-2px;color:rgba(255,255,255,.82);transition:.15s}
+.tab:hover{color:#fff}
+.tab.active{border-bottom-color:#fff;color:#fff;font-weight:bold;background:rgba(0,0,0,.12)}
 .tab:hover:not(.active){background:#fef5f5;color:#B81C22}
 .panel{display:none;padding:14px 16px;max-width:860px;margin:0 auto}
 .panel.active{display:block}
