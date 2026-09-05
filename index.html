@@ -221,6 +221,8 @@ mark.hl{background:#fff176;color:#333;padding:1px 3px;border-radius:3px;font-wei
 
 <a href="daily-plan.html" target="_blank" rel="noopener" style="display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;background:#FBF3D9;border-bottom:1px solid #e6ded0;border-left:5px solid #B81C22;padding:10px 16px;text-decoration:none;color:#33302c;font-size:14px;line-height:1.5"><span style="background:#B81C22;color:#fff;font-weight:800;border-radius:20px;padding:3px 12px;font-size:13px;white-space:nowrap">📅 今日工作</span><span style="flex:1;min-width:180px"><b>即時線</b>＝聊聊＋電話　·　<b>案件線</b>＝後送＋回電</span><span style="color:#8f1319;font-weight:800;white-space:nowrap">看完整分工（2人／3人）›</span></a>
 
+<div id="notice-bar" style="display:none"></div>
+
 <div class="tabs">
 
 
@@ -953,5 +955,53 @@ document.getElementById('smart-input').addEventListener('keydown',e=>{if(e.key==
 
 </script>
 <div class="imgmodal" id="imgmodal" onclick="this.classList.remove('on')"><span class="imgclose">×</span><img id="imgmodal-img" src=""></div>
+<script>
+/* 📢 最新公告：讀 Google 試算表(發布CSV)，抓不到或沒公告就自動隱藏 */
+(function(){
+  var CSV_URL="https://docs.google.com/spreadsheets/d/e/2PACX-1vSXGd6fUQR2z48qFwVC8D4bIT7Ut_rpsm2K7tGBDiZCc2SMEGJIjmPUFYCfUdGh5FKYeIrrM53f7UmO/pub?gid=0&single=true&output=csv";
+  function parseCSV(text){
+    text=text.replace(/^\uFEFF/,'');
+    var rows=[],row=[],cur='',q=false,i,c;
+    for(i=0;i<text.length;i++){c=text[i];
+      if(q){ if(c=='"'){ if(text[i+1]=='"'){cur+='"';i++;} else q=false; } else cur+=c; }
+      else { if(c=='"')q=true; else if(c==',')  {row.push(cur);cur='';}
+             else if(c=='\n'){row.push(cur);rows.push(row);row=[];cur='';}
+             else if(c=='\r'){} else cur+=c; }
+    }
+    if(cur!==''||row.length){row.push(cur);rows.push(row);}
+    return rows;
+  }
+  function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  try{
+    fetch(CSV_URL,{cache:'no-store'}).then(function(r){return r.text();}).then(function(txt){
+      var rows=parseCSV(txt).filter(function(r){return r.some(function(c){return (c||'').trim()!=='';});});
+      if(rows.length<2) return;
+      var head=rows[0].map(function(s){return (s||'').trim();});
+      var iShow=head.indexOf('顯示'), iDate=head.indexOf('日期'), iCat=head.indexOf('分類'), iTxt=head.indexOf('內容');
+      var items=[],k,r,show,t;
+      for(k=1;k<rows.length;k++){ r=rows[k];
+        show=(iShow>=0?(r[iShow]||''):'').trim();
+        if(show!=='是') continue;
+        t=(iTxt>=0?(r[iTxt]||''):'').trim(); if(!t) continue;
+        items.push({date:(iDate>=0?(r[iDate]||''):'').trim(),cat:(iCat>=0?(r[iCat]||''):'').trim(),txt:t});
+      }
+      if(!items.length) return;
+      var html='<div style="background:#fff;border:1px solid #e6ded0;border-left:5px solid #B81C22;padding:9px 16px 10px">'
+             +'<div style="font-weight:800;color:#B81C22;font-size:14px;margin-bottom:5px">📢 最新公告</div>';
+      items.forEach(function(it){
+        var imp=(it.cat==='重要');
+        html+='<div style="font-size:14px;line-height:1.6;margin:3px 0;'+(imp?'color:#B81C22;font-weight:700':'color:#33302c')+'">'
+           +(it.date?'<span style="display:inline-block;min-width:48px;color:#8C8578;font-weight:400;font-size:12.5px">'+esc(it.date)+'</span> ':'')
+           +(imp?'🔴 ':'')
+           +((it.cat&&!imp)?'<span style="background:#f0ece2;color:#8a6d3b;border-radius:4px;padding:0 6px;font-size:12px;margin-right:6px">'+esc(it.cat)+'</span>':'')
+           +esc(it.txt)+'</div>';
+      });
+      html+='</div>';
+      var bar=document.getElementById('notice-bar');
+      if(bar){bar.innerHTML=html;bar.style.display='block';}
+    }).catch(function(){});
+  }catch(e){}
+})();
+</script>
 </body>
 </html>
