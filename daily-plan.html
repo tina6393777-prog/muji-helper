@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MUJI 客服｜每日工作分配</title>
+<style>
+ :root{--red:#B81C22;--red-d:#8f1319;--ink:#33302c;--muted:#8C8578;--line:#e6ded0;--beige:#F5F2EC;--paper:#fff;--tip:#FBF3D9;--green:#5a7d4f;--blue:#3f6f8f;--gold:#8a6d3b;}
+ *{box-sizing:border-box;}
+ body{margin:0;font-family:"PingFang TC","Microsoft JhengHei","Noto Sans TC",sans-serif;color:var(--ink);background:var(--beige);line-height:1.7;font-size:16px;}
+ header.top{background:var(--red);color:#fff;padding:22px 18px 20px;}
+ .inner{max-width:860px;margin:0 auto;}
+ .brand{font-weight:800;letter-spacing:3px;font-size:13px;opacity:.9;}
+ header.top h1{margin:5px 0 3px;font-size:23px;font-weight:800;letter-spacing:1px;}
+ header.top .sub{font-size:12px;letter-spacing:2px;opacity:.85;}
+ .wrap{max-width:860px;margin:0 auto;padding:0 16px 70px;}
+ .principle{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:15px 18px;margin:18px 0;}
+ .principle b{color:var(--red-d);}
+ .pill{display:inline-block;border-radius:20px;padding:2px 11px;font-size:13px;font-weight:700;color:#fff;margin:0 2px;}
+ .pill.live{background:var(--red);} .pill.case{background:var(--blue);}
+ .switch{display:flex;gap:10px;margin:20px 0 6px;}
+ .switch button{flex:1;padding:12px;border:2px solid var(--red);background:var(--paper);color:var(--red);font-size:17px;font-weight:800;border-radius:10px;cursor:pointer;transition:.15s;}
+ .switch button.on{background:var(--red);color:#fff;}
+ .mode-hint{font-size:13px;color:var(--muted);margin:0 0 14px;}
+ .card{background:var(--paper);border:1px solid var(--line);border-radius:14px;margin:14px 0;overflow:hidden;}
+ .card .head{padding:12px 18px;color:#fff;font-weight:800;font-size:18px;display:flex;align-items:center;gap:8px;}
+ .card.a .head{background:var(--red);} .card.b .head{background:var(--blue);} .card.c .head{background:var(--gold);}
+ .card .body{padding:14px 18px;}
+ .card .body .kline{margin:9px 0;}
+ .card .lab{display:inline-block;background:var(--beige);border:1px solid var(--line);color:var(--ink);font-size:12.5px;font-weight:700;border-radius:5px;padding:1px 8px;margin-right:8px;}
+ .card .lab.main{background:var(--red);color:#fff;border-color:var(--red);}
+ .card .lab.sup{background:var(--green);color:#fff;border-color:var(--green);}
+ .card .lab.rule{background:var(--gold);color:#fff;border-color:var(--gold);}
+ h2.sec{font-size:18px;margin:26px 0 4px;color:var(--red-d);font-weight:800;border-bottom:2px solid var(--red);padding-bottom:7px;}
+ h2.sec .en{display:block;font-size:10.5px;letter-spacing:2px;color:var(--muted);font-weight:600;margin-top:2px;}
+ .timeline{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:6px 18px 10px;margin-top:12px;}
+ .tl{display:flex;gap:12px;padding:11px 0;border-bottom:1px dashed var(--line);}
+ .tl:last-child{border-bottom:none;}
+ .tl .t{flex:0 0 74px;font-weight:800;color:var(--red-d);font-size:14px;}
+ .tl .d{flex:1;font-size:14.5px;}
+ .tip{background:var(--tip);border:1px solid #e7d9a6;border-left:5px solid var(--red);border-radius:10px;padding:12px 18px;margin-top:14px;}
+ .tip b{color:var(--red-d);}
+ .ref{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:6px 18px 12px;margin-top:12px;font-size:14px;}
+ .ref table{width:100%;border-collapse:collapse;}
+ .ref td{padding:7px 4px;border-top:1px solid var(--line);}
+ .ref td:last-child{text-align:right;color:var(--muted);white-space:nowrap;}
+ footer.ft{margin-top:26px;border-top:1px solid var(--line);padding-top:14px;font-size:13px;color:var(--muted);}
+ .note-box{background:#eef3ee;border:1px solid #cfe0cf;border-radius:10px;padding:12px 16px;margin-top:16px;font-size:14.5px;}
+ .note-box b{color:var(--green);}
+ @media(max-width:600px){body{font-size:15px;} header.top h1{font-size:20px;}}
+</style>
+</head>
+<body>
+<header class="top"><div class="inner">
+ <div class="brand">MUJI 無印良品 · 客服團隊</div>
+ <h1>每日工作分配</h1>
+ <div class="sub">DAILY WORK PLAN</div>
+</div></header>
+
+<div class="wrap">
+
+ <div class="principle">
+   <b>分工大原則：</b>把工作分成兩種性質——<br>
+   <span class="pill live">即時線</span>客人在等，回應速度最重要 ＝ <b>蝦皮聊聊、客服電話</b><br>
+   <span class="pill case">案件線</span>可排時段專心做的深度工作 ＝ <b>後送案件、分派回電、官網信件、後台檢查</b><br>
+   <span style="color:var(--red-d);font-weight:700;">重點：不要邊回聊聊邊做後送案件</span>——固定一人守即時線、一人專心跑案件，尖峰再互相支援。
+ </div>
+
+ <div class="switch">
+   <button id="btn2" class="on" onclick="setMode(2)">👥 今天 2 人</button>
+   <button id="btn3" onclick="setMode(3)">👥 今天 3 人</button>
+ </div>
+ <p class="mode-hint" id="hint">點上方切換今天的人數，看對應分工。</p>
+
+ <!-- ===== 2人 ===== -->
+ <div id="m2">
+   <div class="card a">
+     <div class="head">🅰 同仁 A｜即時前線</div>
+     <div class="body">
+       <div class="kline"><span class="lab main">主責</span>蝦皮聊聊（全天在線）、客服電話（主接）</div>
+       <div class="kline"><span class="lab">空檔</span>批次清官網信件</div>
+       <div class="kline"><span class="lab rule">原則</span>客人在等的（聊聊／電話）最優先回，信件利用離峰批次處理</div>
+     </div>
+   </div>
+   <div class="card b">
+     <div class="head">🅱 同仁 B｜案件後線</div>
+     <div class="body">
+       <div class="kline"><span class="lab main">主責</span>後送案件（含外撥客戶）、各單位分派回電</div>
+       <div class="kline"><span class="lab">開工先做</span>後台檢查（官網＋蝦皮）0.5–1hr</div>
+       <div class="kline"><span class="lab sup">支援</span>聊聊／電話尖峰時當第二線</div>
+       <div class="kline"><span class="lab rule">原則</span>外撥和要查資料的案件，排整塊時段專心做，不要邊接聊聊邊做</div>
+     </div>
+   </div>
+
+   <h2 class="sec">一天怎麼跑（2人版）<span class="en">DAILY RHYTHM</span></h2>
+   <div class="timeline">
+     <div class="tl"><div class="t">09:00</div><div class="d">A 上線即時線（聊聊＋電話）；B 做後台檢查</div></div>
+     <div class="tl"><div class="t">上午</div><div class="d">A 顧即時線；B 趁客人好找，先做需外撥的後送案件＋分派回電</div></div>
+     <div class="tl"><div class="t">午休</div><div class="d">輪流休息；休息時另一人只顧即時線＋接電話，深度案件先暫停</div></div>
+     <div class="tl"><div class="t">下午</div><div class="d">聊聊尖峰：A 主守、B 支援聊聊；其餘時間 B 續跑案件</div></div>
+     <div class="tl"><div class="t">16:30後</div><div class="d">收尾：A 清官網信件；B 結案件＋更新後送主控台＋隔日交辦</div></div>
+   </div>
+ </div>
+
+ <!-- ===== 3人 ===== -->
+ <div id="m3" style="display:none">
+   <div class="card a">
+     <div class="head">🅰 同仁 A｜即時前線</div>
+     <div class="body">
+       <div class="kline"><span class="lab main">主責</span>蝦皮聊聊（主）、客服電話（主接）</div>
+       <div class="kline"><span class="lab rule">原則</span>專心顧即時線，維持回應速度</div>
+     </div>
+   </div>
+   <div class="card b">
+     <div class="head">🅱 同仁 B｜案件後線</div>
+     <div class="body">
+       <div class="kline"><span class="lab main">主責</span>後送案件（主，含外撥客戶）</div>
+       <div class="kline"><span class="lab">固定</span>後台檢查（官網＋蝦皮）</div>
+       <div class="kline"><span class="lab rule">原則</span>整塊時段專心結案件</div>
+     </div>
+   </div>
+   <div class="card c">
+     <div class="head">🆑 同仁 C｜機動支援</div>
+     <div class="body">
+       <div class="kline"><span class="lab main">預設</span>壓在蝦皮聊聊，分擔一半筆數（活動檔期更要顧這裡）</div>
+       <div class="kline"><span class="lab">分擔</span>各單位分派回電；後送案件多時接手幾件；官網信件</div>
+       <div class="kline"><span class="lab sup">午休頂替</span>A/B 休息時頂上即時線，讓聊聊／電話不斷線</div>
+       <div class="kline"><span class="lab rule">原則</span>哪邊塞車就往哪補；活動檔期固定顧聊聊</div>
+     </div>
+   </div>
+
+   <h2 class="sec">一天怎麼跑（3人版）<span class="en">DAILY RHYTHM</span></h2>
+   <div class="timeline">
+     <div class="tl"><div class="t">09:00</div><div class="d">A 上線即時線；B 後台檢查；C 一起顧聊聊、清昨日殘留</div></div>
+     <div class="tl"><div class="t">上午</div><div class="d">A 即時線；B 跑外撥後送案件；C 分擔聊聊＋分派回電</div></div>
+     <div class="tl"><div class="t">午休</div><div class="d">C 頂替讓 A、B 輪流休息，即時線全程不斷</div></div>
+     <div class="tl"><div class="t">下午</div><div class="d">聊聊尖峰：A＋C 一起壓聊聊；B 續案件（量大時 C 接手幾件）</div></div>
+     <div class="tl"><div class="t">16:30後</div><div class="d">收尾：C 清信件＋分派回電；A 收聊聊/電話；B 結案件＋更新主控台＋隔日交辦</div></div>
+   </div>
+ </div>
+
+ <div class="tip">
+   ⚡ <b>活動檔期／尖峰提醒：</b>檔期時蝦皮聊聊會爆量。<b>盡量排到 3 人</b>（C 固定顧聊聊）；<b>若只有 2 人</b>，就把「後台檢查、非急件官網信件」往後延，B 先放下案件跟 A 一起壓聊聊。
+ </div>
+
+ <h2 class="sec">每日工作量參考<span class="en">WORKLOAD</span></h2>
+ <div class="ref"><table>
+   <tr><td>蝦皮聊聊</td><td>30–40筆（全天在線）</td></tr>
+   <tr><td>客服電話</td><td>≤15通（＋隨時待接）</td></tr>
+   <tr><td>後送案件（含外撥）</td><td>約15件 · 最重</td></tr>
+   <tr><td>各單位分派回電</td><td>≤10筆</td></tr>
+   <tr><td>官網信件</td><td>&lt;10封</td></tr>
+   <tr><td>後台檢查（官網＋蝦皮）</td><td>0.5–1hr</td></tr>
+ </table></div>
+
+ <div class="note-box">
+   📌 <b>怎麼用這頁：</b>這頁說明的是「A／B／C 各自要做什麼」。<b>今天是 2 人還是 3 人、誰是 A/B/C，由督導當日指定</b>（口頭或 LINE 群公告）；同仁知道自己是哪個角色後，點開這頁就知道今天要做什麼、一天怎麼跑。
+ </div>
+
+ <footer class="ft">
+   <p>MUJI 客服團隊 · 每日工作分配　·　時段以 09:00–18:00、午休輪流為例，實際依當日服務時間調整。</p>
+   <p>更新：2026.09.04</p>
+ </footer>
+</div>
+
+<script>
+ function setMode(n){
+   document.getElementById('m2').style.display = n===2 ? 'block':'none';
+   document.getElementById('m3').style.display = n===3 ? 'block':'none';
+   document.getElementById('btn2').className = n===2 ? 'on':'';
+   document.getElementById('btn3').className = n===3 ? 'on':'';
+   document.getElementById('hint').textContent = n===2
+     ? '2 人日：一人守即時線、一人跑案件，尖峰互援。'
+     : '3 人日：A 即時線、B 案件線，第三人機動補塞車處與午休頂替。';
+ }
+</script>
+</body></html>

@@ -246,7 +246,11 @@
     const rows = allRows.filter(r=>{
       const st = r.status || "待處理";
       if(st === "已完成") return false;   // 完成就消失
-      if(!r.question || !String(r.question).trim()) return false;   // 空白列不顯示
+      const _q = String(r.question||"").trim();
+      const _src = String(r.source||"").trim();
+      if(!_q) return false;                                   // 完全空白不顯示
+      if(_src && _q === _src) return false;                   // 問題只填了來源(等於「來源」)視為空白,不顯示
+      if(_q==="官網" || _q==="蝦皮" || _q==="通用") return false;   // 保險:只有來源字樣視為空白
       if(kw){
         const hay = ((r.question||"")+" "+(r.answer||"")+" "+(r.reporter||"")+" "+(r.source||"")+" "+(r.category||"")+" "+(r.note||"")+" "+(r.handler||"")).toLowerCase();
         if(!hay.includes(kw)) return false;
