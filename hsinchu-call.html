@@ -2,8 +2,9 @@
 <html lang="zh-Hant"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>新竹收退叫號</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
- :root{--red:#7A171C;--red-d:#5F1216;--ink:#2B2A28;--muted:#8A8781;--line:#E7E4DD;--bg:#F0EEE8;--paper:#fff;--green:#3F6B45;}
+ :root{--red:#7A171C;--red-d:#5F1216;--ink:#2B2A28;--muted:#8A8781;--line:#E7E4DD;--bg:#F0EEE8;--paper:#fff;--green:#3F6B45;--upbg:#FBF6EA;}
  *{box-sizing:border-box;}
  body{margin:0;font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei","Segoe UI",sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;font-size:16px;}
  header{background:var(--red);color:#fff;padding:18px 16px;}
@@ -13,21 +14,27 @@
  header a.back{color:#fff;opacity:.9;font-size:13px;text-decoration:none;display:inline-block;margin-bottom:6px;}
  .wrap{max-width:760px;margin:0 auto;padding:16px 14px 70px;}
  .card{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:16px 16px 18px;margin:14px 0;}
- .card h2{margin:0 0 10px;font-size:17px;color:var(--red-d);font-weight:800;}
+ .card h2{margin:0 0 4px;font-size:17px;color:var(--red-d);font-weight:800;}
  label{display:block;font-size:13.5px;color:var(--muted);margin:10px 0 4px;font-weight:700;}
  input[type=text],textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:15px;font-family:inherit;color:var(--ink);}
  input[type=text]:focus,textarea:focus{outline:none;border-color:var(--red);}
- textarea{min-height:140px;resize:vertical;white-space:pre;overflow:auto;line-height:1.5;}
+ textarea{min-height:110px;resize:vertical;white-space:pre;overflow:auto;line-height:1.5;}
  .hint{font-size:12.5px;color:var(--muted);margin:6px 0 0;}
  .row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:12px;}
  .btn{background:var(--red);color:#fff;border:none;border-radius:8px;padding:11px 22px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;}
  .btn:disabled{background:#c4a9aa;cursor:default;}
+ .btn.ghost{background:#fff;color:var(--red);border:1px solid var(--red);}
  .name-in{max-width:220px;}
  .status{font-size:14px;margin-top:10px;min-height:20px;}
  .status.ok{color:var(--green);font-weight:700;}
  .status.err{color:var(--red-d);font-weight:700;}
  .count{font-size:13px;color:var(--muted);margin:2px 0 6px;}
- /* 精簡：一行一筆 */
+ .uploadbox{border:2px dashed #d8b24b;background:var(--upbg);border-radius:10px;padding:18px 16px;text-align:center;margin-top:8px;}
+ .uploadbox .big{font-size:16px;font-weight:800;color:var(--red-d);}
+ .uploadbox input[type=file]{display:block;margin:12px auto 0;font-size:14px;}
+ .preview{margin-top:12px;font-size:14px;}
+ .paste-toggle{margin-top:14px;font-size:13.5px;color:var(--red-d);cursor:pointer;font-weight:700;user-select:none;}
+ #pastewrap{display:none;margin-top:8px;border-top:1px dashed var(--line);padding-top:10px;}
  .result{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;border-bottom:1px solid var(--line);padding:8px 4px;}
  .result:last-child{border-bottom:none;}
  .result .tm{font-weight:800;font-size:15px;color:var(--ink);}
@@ -41,24 +48,29 @@
 <header><div class="in">
   <a class="back" href="index.html">‹ 回小幫手</a>
   <h1>🚚 新竹收退叫號</h1>
-  <div class="sub">貼上 TM單號＋叫件編號存檔　·　可用單號搜尋</div>
+  <div class="sub">上傳新竹的 Excel 匯入　·　可用單號搜尋</div>
 </div></header>
 
 <div class="wrap">
 
   <div class="card">
-    <h2>批次新增</h2>
+    <h2>匯入資料</h2>
     <label>建立人（選填）</label>
     <input type="text" id="by" class="name-in" placeholder="你的姓名或工號">
-    <label>貼上資料（從 Excel 選「TM單號、叫件編號」兩欄，複製貼進來）</label>
-    <textarea id="paste" placeholder="TM260829XA0079&#9;2114974374
-260818KTWD7MXV&#9;2114974352
-…一行一筆，中間用 Tab 或空白隔開"></textarea>
-    <p class="hint">✅ 直接從 Excel 選兩欄複製、貼上即可（會自動以 Tab／空白／逗號分欄）。空行自動略過。</p>
-    <div class="row">
-      <button class="btn" id="addbtn" onclick="addBatch()">新增</button>
-      <span id="detect" class="hint"></span>
+
+    <div class="uploadbox">
+      <div class="big">📤 上傳新竹給的 Excel</div>
+      <div class="hint">選擇 .xlsx 檔，會自動讀「TM單號、叫件編號」兩欄（唯讀檔也可以上傳）</div>
+      <input type="file" id="file" accept=".xlsx,.xls,.csv" onchange="onFile(event)">
+      <div class="preview" id="preview"></div>
     </div>
+
+    <div class="paste-toggle" id="ptoggle" onclick="togglePaste()">▸ 或手動貼上（備援）</div>
+    <div id="pastewrap">
+      <textarea id="paste" placeholder="TM260829XA0079&#9;2114974374（一行一筆，Tab／空白／逗號分欄）"></textarea>
+      <div class="row"><button class="btn ghost" id="addbtn" onclick="addBatch()">貼上新增</button><span id="detect" class="hint"></span></div>
+    </div>
+
     <div class="status" id="addstatus"></div>
   </div>
 
@@ -73,87 +85,120 @@
 
 <script>
 var SCRIPT_URL="https://script.google.com/macros/s/AKfycbwquKMjumjeilJS7QE2S7JjiFuHW7ABAtbTglrZY10xWooIBArT6v0V5niIpxyoSeGmrQ/exec";
-var ALL=[];
+var ALL=[], PENDING=null;
 function esc(s){return (s||'').toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function setStatus(msg,cls){var e=document.getElementById('addstatus');e.textContent=msg;e.className='status'+(cls?(' '+cls):'');}
 
 function fmtTime(t){
   if(!t) return '';
   var d=new Date(t);
   if(isNaN(d.getTime())) return (''+t).slice(0,16);
-  var mm=d.getMonth()+1, dd=d.getDate();
   var hh=('0'+d.getHours()).slice(-2), mi=('0'+d.getMinutes()).slice(-2);
-  return mm+'/'+dd+' '+hh+':'+mi;
+  return (d.getMonth()+1)+'/'+d.getDate()+' '+hh+':'+mi;
 }
-function parsePaste(t){
+
+// 從二維陣列抓出 [TM, 叫件編號] 各列
+function rowsToPairs(rows){
+  if(!rows||!rows.length) return [];
+  var H=(rows[0]||[]).map(function(x){return (''+x).trim();});
+  var iTM=-1,iCall=-1,i;
+  for(i=0;i<H.length;i++){ if(iTM<0 && /TM|單號/i.test(H[i])) iTM=i; if(iCall<0 && /(叫件|編號)/.test(H[i])) iCall=i; }
+  var hasHeader = (iTM>=0 || iCall>=0);
+  if(iTM<0) iTM=0; if(iCall<0) iCall=(iTM===0?1:0);
+  var start = hasHeader?1:0;
   var out=[];
-  (t||'').split(/\r?\n/).forEach(function(line){
-    if(!line.trim()) return;
-    var parts=line.split('\t');
-    if(parts.length<2) parts=line.trim().split(/[\s,]+/);
-    var tm=(parts[0]||'').trim(), call=(parts[1]||'').trim();
-    if(!tm && !call) return;
+  for(i=start;i<rows.length;i++){
+    var tm=(''+((rows[i]||[])[iTM]||'')).trim();
+    var call=(''+((rows[i]||[])[iCall]||'')).trim();
+    if(!tm && !call) continue;
     out.push([tm,call]);
-  });
+  }
   return out;
 }
-function updateDetect(){
-  var n=parsePaste(document.getElementById('paste').value).length;
-  document.getElementById('detect').textContent = n? ('偵測到 '+n+' 筆'):'';
-  document.getElementById('addbtn').textContent = n? ('新增 '+n+' 筆'):'新增';
-}
-document.getElementById('paste').addEventListener('input',updateDetect);
-function setStatus(id,msg,cls){var e=document.getElementById(id);e.textContent=msg;e.className='status'+(cls?(' '+cls):'');}
 
-function loadAll(cb){
-  fetch(SCRIPT_URL,{method:"GET"}).then(function(r){return r.json();}).then(function(d){
-    ALL=(d&&d.rows)?d.rows:[];
-    document.getElementById('count').textContent='目前共 '+ALL.length+' 筆';
-    doSearch();
-    if(cb)cb();
-  }).catch(function(){
-    document.getElementById('count').textContent='（目前無法連線讀取，稍後再試；新增仍可使用）';
+function onFile(ev){
+  var f=ev.target.files && ev.target.files[0];
+  document.getElementById('preview').innerHTML='';
+  if(!f) return;
+  if(typeof XLSX==='undefined'){ setStatus('Excel 讀取元件沒載入成功，請改用下面「手動貼上」','err'); togglePaste(true); return; }
+  var reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      var wb=XLSX.read(e.target.result,{type:'array'});
+      var ws=wb.Sheets[wb.SheetNames[0]];
+      var rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+      PENDING=rowsToPairs(rows);
+      if(!PENDING.length){ document.getElementById('preview').innerHTML='<span style="color:var(--red-d)">讀不到資料，請確認檔案有「TM單號、叫件編號」兩欄</span>'; return; }
+      var samp=PENDING.slice(0,3).map(function(r){return esc(r[0])+' → '+esc(r[1]);}).join('<br>');
+      document.getElementById('preview').innerHTML=
+        '<div style="margin-bottom:8px">讀到 <b>'+PENDING.length+'</b> 筆，例如：<br><span style="color:var(--muted)">'+samp+(PENDING.length>3?'<br>…':'')+'</span></div>'
+        +'<button class="btn" id="impbtn" onclick="doImport()">確認匯入 '+PENDING.length+' 筆</button>';
+    }catch(err){
+      document.getElementById('preview').innerHTML='<span style="color:var(--red-d)">讀取失敗：'+esc(String(err))+'，可改用手動貼上</span>';
+    }
+  };
+  reader.readAsArrayBuffer(f);
+}
+
+function doImport(){
+  if(!PENDING||!PENDING.length) return;
+  var btn=document.getElementById('impbtn'); if(btn) btn.disabled=true;
+  sendRows(PENDING, function(n){
+    setStatus('✅ 已匯入 '+n+' 筆','ok');
+    document.getElementById('preview').innerHTML='';
+    document.getElementById('file').value=''; PENDING=null;
   });
 }
-function hiFactory(q){return function(s){ s=(s||'')+''; if(!q) return esc(s);
-  var i=s.toLowerCase().indexOf(q.toLowerCase()); if(i<0) return esc(s);
-  return esc(s.slice(0,i))+'<mark>'+esc(s.slice(i,i+q.length))+'</mark>'+esc(s.slice(i+q.length)); };}
-function render(list,q){
-  var box=document.getElementById('results');
-  if(!list.length){ box.innerHTML='<div class="empty">找不到符合「'+esc(q)+'」的單號</div>'; return; }
-  var hi=hiFactory(q);
-  box.innerHTML=list.map(function(r){
-    return '<div class="result"><span class="tm">'+hi(r.tm)+'</span>'
-      +'<span class="arrow">→</span><span class="call">'+hi(r.call)+'</span>'
-      +'<span class="meta">'+esc(fmtTime(r.time))+(r.by?' · '+esc(r.by):'')+'</span></div>';
-  }).join('');
-}
-function doSearch(){
-  var q=document.getElementById('q').value.trim();
-  var box=document.getElementById('results');
-  if(!q){ box.innerHTML='<div class="empty">輸入單號開始搜尋（目前共 '+ALL.length+' 筆）</div>'; return; }
-  var ql=q.toLowerCase();
-  var m=ALL.filter(function(r){return (r.tm||'').toLowerCase().indexOf(ql)>=0 || (r.call||'').toLowerCase().indexOf(ql)>=0;});
-  render(m,q);
-}
-function addBatch(){
-  var rows=parsePaste(document.getElementById('paste').value);
-  if(!rows.length){ setStatus('addstatus','沒有偵測到資料，請貼上兩欄（TM單號、叫件編號）','err'); return; }
+
+// 共用送出
+function sendRows(rows, done){
   var by=document.getElementById('by').value.trim();
-  var btn=document.getElementById('addbtn'); btn.disabled=true;
-  setStatus('addstatus','新增中…','');
+  setStatus('處理中…','');
   fetch(SCRIPT_URL,{method:"POST",body:JSON.stringify({rows:rows,by:by})})
     .then(function(r){return r.json();})
-    .then(function(d){
-      var n=(d&&typeof d.added==='number')?d.added:rows.length;
-      setStatus('addstatus','✅ 已新增 '+n+' 筆','ok');
-      document.getElementById('paste').value=''; updateDetect(); loadAll();
-    })
-    .catch(function(){
-      setStatus('addstatus','✅ 已送出，正在更新清單…','ok');
-      document.getElementById('paste').value=''; updateDetect(); loadAll();
-    })
-    .then(function(){ btn.disabled=false; });
+    .then(function(d){ var n=(d&&typeof d.added==='number')?d.added:rows.length; done(n); loadAll(); })
+    .catch(function(){ setStatus('✅ 已送出，正在更新清單…','ok'); done(rows.length); loadAll(); });
 }
+
+// ---- 手動貼上（備援）----
+function togglePaste(force){
+  var w=document.getElementById('pastewrap'), t=document.getElementById('ptoggle');
+  var show = force===true ? true : (w.style.display==='none'||!w.style.display);
+  w.style.display=show?'block':'none';
+  t.textContent=(show?'▾':'▸')+' 或手動貼上（備援）';
+}
+function parsePaste(t){
+  var out=[];(t||'').split(/\r?\n/).forEach(function(line){
+    if(!line.trim())return; var p=line.split('\t'); if(p.length<2)p=line.trim().split(/[\s,]+/);
+    var tm=(p[0]||'').trim(),call=(p[1]||'').trim(); if(!tm&&!call)return; out.push([tm,call]);});
+  return out;
+}
+function updateDetect(){var n=parsePaste(document.getElementById('paste').value).length;
+  document.getElementById('detect').textContent=n?('偵測到 '+n+' 筆'):'';
+  document.getElementById('addbtn').textContent=n?('貼上新增 '+n+' 筆'):'貼上新增';}
+document.getElementById('paste').addEventListener('input',updateDetect);
+function addBatch(){var rows=parsePaste(document.getElementById('paste').value);
+  if(!rows.length){setStatus('沒有偵測到資料','err');return;}
+  var btn=document.getElementById('addbtn');btn.disabled=true;
+  sendRows(rows,function(n){setStatus('✅ 已新增 '+n+' 筆','ok');document.getElementById('paste').value='';updateDetect();btn.disabled=false;});
+}
+
+// ---- 搜尋 ----
+function loadAll(){
+  fetch(SCRIPT_URL,{method:"GET"}).then(function(r){return r.json();}).then(function(d){
+    ALL=(d&&d.rows)?d.rows:[]; document.getElementById('count').textContent='目前共 '+ALL.length+' 筆'; doSearch();
+  }).catch(function(){ document.getElementById('count').textContent='（目前無法連線讀取，稍後再試）'; });
+}
+function hiFactory(q){return function(s){s=(s||'')+'';if(!q)return esc(s);var i=s.toLowerCase().indexOf(q.toLowerCase());if(i<0)return esc(s);
+  return esc(s.slice(0,i))+'<mark>'+esc(s.slice(i,i+q.length))+'</mark>'+esc(s.slice(i+q.length));};}
+function render(list,q){var box=document.getElementById('results');
+  if(!list.length){box.innerHTML='<div class="empty">找不到符合「'+esc(q)+'」的單號</div>';return;}
+  var hi=hiFactory(q);
+  box.innerHTML=list.map(function(r){return '<div class="result"><span class="tm">'+hi(r.tm)+'</span><span class="arrow">→</span><span class="call">'+hi(r.call)+'</span><span class="meta">'+esc(fmtTime(r.time))+(r.by?' · '+esc(r.by):'')+'</span></div>';}).join('');}
+function doSearch(){var q=document.getElementById('q').value.trim();var box=document.getElementById('results');
+  if(!q){box.innerHTML='<div class="empty">輸入單號開始搜尋（目前共 '+ALL.length+' 筆）</div>';return;}
+  var ql=q.toLowerCase();var m=ALL.filter(function(r){return (r.tm||'').toLowerCase().indexOf(ql)>=0||(r.call||'').toLowerCase().indexOf(ql)>=0;});render(m,q);}
+
 loadAll();
 </script>
 </body></html>
