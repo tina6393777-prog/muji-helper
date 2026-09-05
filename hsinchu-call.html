@@ -3,7 +3,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>新竹收退叫號</title>
 <style>
- :root{--red:#7A171C;--red-d:#5F1216;--ink:#2B2A28;--muted:#8A8781;--line:#E7E4DD;--bg:#F0EEE8;--paper:#fff;--green:#3F6B45;--greenbg:#E7F0E7;}
+ :root{--red:#7A171C;--red-d:#5F1216;--ink:#2B2A28;--muted:#8A8781;--line:#E7E4DD;--bg:#F0EEE8;--paper:#fff;--green:#3F6B45;}
  *{box-sizing:border-box;}
  body{margin:0;font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei","Segoe UI",sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;font-size:16px;}
  header{background:var(--red);color:#fff;padding:18px 16px;}
@@ -17,7 +17,7 @@
  label{display:block;font-size:13.5px;color:var(--muted);margin:10px 0 4px;font-weight:700;}
  input[type=text],textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:15px;font-family:inherit;color:var(--ink);}
  input[type=text]:focus,textarea:focus{outline:none;border-color:var(--red);}
- textarea{min-height:150px;resize:vertical;white-space:pre;overflow:auto;line-height:1.5;}
+ textarea{min-height:140px;resize:vertical;white-space:pre;overflow:auto;line-height:1.5;}
  .hint{font-size:12.5px;color:var(--muted);margin:6px 0 0;}
  .row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:12px;}
  .btn{background:var(--red);color:#fff;border:none;border-radius:8px;padding:11px 22px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;}
@@ -26,12 +26,15 @@
  .status{font-size:14px;margin-top:10px;min-height:20px;}
  .status.ok{color:var(--green);font-weight:700;}
  .status.err{color:var(--red-d);font-weight:700;}
- .count{font-size:13px;color:var(--muted);margin:2px 0 10px;}
- .result{border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:8px 0;}
- .result .tm{font-size:16px;font-weight:800;color:var(--ink);}
- .result .call{font-size:15px;color:var(--red-d);font-weight:700;margin-top:2px;}
- .result .meta{font-size:12px;color:var(--muted);margin-top:3px;}
- .empty{color:var(--muted);font-size:14px;padding:10px 2px;}
+ .count{font-size:13px;color:var(--muted);margin:2px 0 6px;}
+ /* 精簡：一行一筆 */
+ .result{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;border-bottom:1px solid var(--line);padding:8px 4px;}
+ .result:last-child{border-bottom:none;}
+ .result .tm{font-weight:800;font-size:15px;color:var(--ink);}
+ .result .arrow{color:var(--muted);font-size:13px;}
+ .result .call{font-weight:700;font-size:15px;color:var(--red-d);}
+ .result .meta{margin-left:auto;color:var(--muted);font-size:12px;white-space:nowrap;}
+ .empty{color:var(--muted);font-size:14px;padding:12px 2px;}
  mark{background:#fff1a8;padding:0 1px;}
 </style></head>
 <body>
@@ -47,11 +50,11 @@
     <h2>批次新增</h2>
     <label>建立人（選填）</label>
     <input type="text" id="by" class="name-in" placeholder="你的姓名或工號">
-    <label>貼上資料（從 Excel 直接複製「TM單號、叫件編號」兩欄貼進來）</label>
+    <label>貼上資料（從 Excel 選「TM單號、叫件編號」兩欄，複製貼進來）</label>
     <textarea id="paste" placeholder="TM260829XA0079&#9;2114974374
 260818KTWD7MXV&#9;2114974352
 …一行一筆，中間用 Tab 或空白隔開"></textarea>
-    <p class="hint">✅ 直接從 Excel 選兩欄複製、貼上即可（會自動以 Tab／空白分欄）。空行會自動略過。</p>
+    <p class="hint">✅ 直接從 Excel 選兩欄複製、貼上即可（會自動以 Tab／空白／逗號分欄）。空行自動略過。</p>
     <div class="row">
       <button class="btn" id="addbtn" onclick="addBatch()">新增</button>
       <span id="detect" class="hint"></span>
@@ -61,7 +64,7 @@
 
   <div class="card">
     <h2>搜尋單號</h2>
-    <input type="text" id="q" placeholder="輸入 TM單號 或 叫件編號（會即時篩選）" oninput="doSearch()">
+    <input type="text" id="q" placeholder="輸入 TM單號 或 叫件編號" oninput="doSearch()">
     <div class="count" id="count">載入中…</div>
     <div id="results"></div>
   </div>
@@ -71,9 +74,16 @@
 <script>
 var SCRIPT_URL="https://script.google.com/macros/s/AKfycbwquKMjumjeilJS7QE2S7JjiFuHW7ABAtbTglrZY10xWooIBArT6v0V5niIpxyoSeGmrQ/exec";
 var ALL=[];
-
 function esc(s){return (s||'').toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
+function fmtTime(t){
+  if(!t) return '';
+  var d=new Date(t);
+  if(isNaN(d.getTime())) return (''+t).slice(0,16);
+  var mm=d.getMonth()+1, dd=d.getDate();
+  var hh=('0'+d.getHours()).slice(-2), mi=('0'+d.getMinutes()).slice(-2);
+  return mm+'/'+dd+' '+hh+':'+mi;
+}
 function parsePaste(t){
   var out=[];
   (t||'').split(/\r?\n/).forEach(function(line){
@@ -86,14 +96,12 @@ function parsePaste(t){
   });
   return out;
 }
-
 function updateDetect(){
   var n=parsePaste(document.getElementById('paste').value).length;
   document.getElementById('detect').textContent = n? ('偵測到 '+n+' 筆'):'';
   document.getElementById('addbtn').textContent = n? ('新增 '+n+' 筆'):'新增';
 }
 document.getElementById('paste').addEventListener('input',updateDetect);
-
 function setStatus(id,msg,cls){var e=document.getElementById(id);e.textContent=msg;e.className='status'+(cls?(' '+cls):'');}
 
 function loadAll(cb){
@@ -106,29 +114,27 @@ function loadAll(cb){
     document.getElementById('count').textContent='（目前無法連線讀取，稍後再試；新增仍可使用）';
   });
 }
-
+function hiFactory(q){return function(s){ s=(s||'')+''; if(!q) return esc(s);
+  var i=s.toLowerCase().indexOf(q.toLowerCase()); if(i<0) return esc(s);
+  return esc(s.slice(0,i))+'<mark>'+esc(s.slice(i,i+q.length))+'</mark>'+esc(s.slice(i+q.length)); };}
 function render(list,q){
   var box=document.getElementById('results');
-  if(!list.length){ box.innerHTML='<div class="empty">'+(q?'找不到符合「'+esc(q)+'」的單號':'還沒有資料')+'</div>'; return; }
-  function hi(s){ if(!q) return esc(s); var i=(s||'').toLowerCase().indexOf(q.toLowerCase()); if(i<0) return esc(s);
-    return esc(s.slice(0,i))+'<mark>'+esc(s.slice(i,i+q.length))+'</mark>'+esc(s.slice(i+q.length)); }
+  if(!list.length){ box.innerHTML='<div class="empty">找不到符合「'+esc(q)+'」的單號</div>'; return; }
+  var hi=hiFactory(q);
   box.innerHTML=list.map(function(r){
-    return '<div class="result"><div class="tm">'+hi(r.tm)+'</div>'
-      +'<div class="call">叫件編號：'+hi(r.call)+'</div>'
-      +'<div class="meta">'+esc(r.time||'')+(r.by?'　·　'+esc(r.by):'')+'</div></div>';
+    return '<div class="result"><span class="tm">'+hi(r.tm)+'</span>'
+      +'<span class="arrow">→</span><span class="call">'+hi(r.call)+'</span>'
+      +'<span class="meta">'+esc(fmtTime(r.time))+(r.by?' · '+esc(r.by):'')+'</span></div>';
   }).join('');
 }
-
 function doSearch(){
   var q=document.getElementById('q').value.trim();
-  if(!q){ render(ALL.slice().reverse().slice(0,10),''); 
-    if(ALL.length>10) document.getElementById('results').insertAdjacentHTML('afterbegin','<div class="hint" style="margin:2px 0 8px">顯示最近新增 10 筆，輸入單號可搜尋全部</div>');
-    return; }
+  var box=document.getElementById('results');
+  if(!q){ box.innerHTML='<div class="empty">輸入單號開始搜尋（目前共 '+ALL.length+' 筆）</div>'; return; }
   var ql=q.toLowerCase();
   var m=ALL.filter(function(r){return (r.tm||'').toLowerCase().indexOf(ql)>=0 || (r.call||'').toLowerCase().indexOf(ql)>=0;});
   render(m,q);
 }
-
 function addBatch(){
   var rows=parsePaste(document.getElementById('paste').value);
   if(!rows.length){ setStatus('addstatus','沒有偵測到資料，請貼上兩欄（TM單號、叫件編號）','err'); return; }
@@ -140,18 +146,14 @@ function addBatch(){
     .then(function(d){
       var n=(d&&typeof d.added==='number')?d.added:rows.length;
       setStatus('addstatus','✅ 已新增 '+n+' 筆','ok');
-      document.getElementById('paste').value=''; updateDetect();
-      loadAll();
+      document.getElementById('paste').value=''; updateDetect(); loadAll();
     })
     .catch(function(){
-      // 有些情況讀不到回應，仍重新載入確認
       setStatus('addstatus','✅ 已送出，正在更新清單…','ok');
-      document.getElementById('paste').value=''; updateDetect();
-      loadAll();
+      document.getElementById('paste').value=''; updateDetect(); loadAll();
     })
     .then(function(){ btn.disabled=false; });
 }
-
 loadAll();
 </script>
 </body></html>
