@@ -132,6 +132,14 @@
   <section class="panel" aria-labelledby="newTitle">
     <h2 id="newTitle">新增交辦</h2>
     <p class="hint">帶*的是必填。送出後狀態自動為「待外撥」,會出現在下方清單。</p>
+    <div style="background:#FBF6EA;border:1px dashed #d8b24b;border-radius:10px;padding:12px 14px;margin:6px 0 16px">
+      <div style="font-weight:800;color:#7A171C;margin-bottom:6px">📋 貼上訊息快速帶入</div>
+      <textarea id="msgPaste" rows="3" style="width:100%;box-sizing:border-box;border:1px solid #E7E4DD;border-radius:8px;padding:8px 10px;font-family:inherit;font-size:14px" placeholder="把新竹物流的訊息整段貼進來，例如：&#10;TM260831BA00M2-2114974256 站所回報無貨可退，9/8未回取消取件，謝謝"></textarea>
+      <div style="margin-top:8px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <button class="btn" type="button" onclick="fillFromMsg()">解析並帶入</button>
+        <span id="msgHint" style="font-size:12.5px;color:#8A8781"></span>
+      </div>
+    </div>
 
     <div class="two">
       <div class="field">
@@ -401,6 +409,24 @@
 
     loadBoard();
   });
+</script>
+<script>
+function fillFromMsg(){
+  var t=(document.getElementById('msgPaste').value||'').trim();
+  var hint=document.getElementById('msgHint');
+  if(!t){ hint.textContent='請先貼上訊息'; return; }
+  var order=(t.match(/TM[0-9A-Za-z]{4,}/)||[''])[0];
+  var phone=(t.match(/09\d{8}/)||[''])[0];
+  var tracking='', tens=t.match(/\d{10}/g)||[], i;
+  for(i=0;i<tens.length;i++){ if(tens[i]!==phone && tens[i].slice(0,2)!=='09'){ tracking=tens[i]; break; } }
+  document.getElementById('order').value=order;
+  document.getElementById('tracking').value=tracking;
+  document.getElementById('phone').value=phone;
+  document.getElementById('task').value=t;
+  var got=[]; if(order)got.push('訂單編號'); if(tracking)got.push('物流單號'); if(phone)got.push('電話');
+  hint.innerHTML='✅ 已帶入：'+(got.length?got.join('、'):'（僅帶入事項）')+'　·　請補「客戶姓名」後按下方「新增交辦」';
+  var c=document.getElementById('customer'); if(c) c.focus();
+}
 </script>
 </body>
 </html>
