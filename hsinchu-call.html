@@ -119,7 +119,7 @@ function rowsToPairs(rows){
 function processRows(rows){
   PENDING=rowsToPairs(rows);
   var pv=document.getElementById('preview');
-  if(!PENDING.length){ pv.innerHTML='<span style="color:var(--red-d)">讀不到資料，請確認檔案有「TM單號、叫件編號」兩欄</span>'; return; }
+  if(!PENDING.length){ pv.innerHTML='<span style="color:var(--red-d)">這個檔案沒有資料（只有標題），今天可能是 0 筆</span>'; return; }
   var samp=PENDING.slice(0,3).map(function(r){return esc(r[0])+' → '+esc(r[1]);}).join('<br>');
   pv.innerHTML='<div style="margin-bottom:8px">讀到 <b>'+PENDING.length+'</b> 筆，例如：<br><span style="color:var(--muted)">'+samp+(PENDING.length>3?'<br>…':'')+'</span></div>'
     +'<button class="btn" id="impbtn" onclick="doImport()">確認匯入 '+PENDING.length+' 筆</button>';
