@@ -141,6 +141,17 @@
       </div>
     </div>
 
+    <div class="field">
+      <label for="source">案件來源<span class="req">*</span></label>
+      <select id="source" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid #d9d4cc;border-radius:8px;font-family:inherit;font-size:15px;background:#fff">
+        <option value="">請選擇…</option>
+        <option>客服室</option>
+        <option>新竹物流</option>
+        <option>總部</option>
+        <option>倉庫</option>
+      </select>
+    </div>
+
     <div class="two">
       <div class="field">
         <label for="order">訂單編號<span class="req">*</span></label>
@@ -244,7 +255,7 @@
         return false;
       }
       if(kw){
-        const hay = ((r.customer||"")+" "+(r.order||"")+" "+(r.tracking||"")+" "+(r.task||"")+" "+(r.result||"")+" "+(r.handler||"")).toLowerCase();
+        const hay = ((r.customer||"")+" "+(r.order||"")+" "+(r.tracking||"")+" "+(r.task||"")+" "+(r.result||"")+" "+(r.handler||"")+" "+(r.source||"")).toLowerCase();
         if(!hay.includes(kw)) return false;
       }
       return true;
@@ -286,6 +297,7 @@
             (r.time ? '<span class="time">建立 '+esc(r.time)+'</span>' : '')+
           '</div>'+
           '<div class="kv">'+
+            '<span class="k">案件來源</span><span class="v">'+esc(r.source||"—")+'</span>'+
             '<span class="k">訂單編號</span><span class="v">'+esc(r.order||"—")+'</span>'+
             '<span class="k">物流單號</span><span class="v">'+esc(r.tracking||"—")+'</span>'+
             (r.caseNo ? '<span class="k">案件編號</span><span class="v">'+esc(r.caseNo)+'</span>' : '')+
@@ -322,6 +334,7 @@
     const task = $("task").value.trim();
     const phone = $("phone").value.trim();
     const caseNo = $("caseNo").value.trim();
+    const source = $("source").value.trim();
     const msg = $("formMsg");
     msg.className = "form-msg";
 
@@ -329,15 +342,16 @@
     if(!tracking){ msg.className="form-msg err"; msg.textContent="請填寫物流單號。"; return; }
     if(!customer){ msg.className="form-msg err"; msg.textContent="請填寫客戶姓名。"; return; }
     if(!task){ msg.className="form-msg err"; msg.textContent="請填寫待聯絡事項。"; return; }
+    if(!source){ msg.className="form-msg err"; msg.textContent="請選擇案件來源。"; return; }
 
     const btn = $("submitBtn");
     btn.disabled = true; btn.textContent = "送出中…";
     try{
-      const res = await fetch(SCRIPT_URL, { method:"POST", body: JSON.stringify({ order, tracking, customer, task, phone, caseNo }) });
+      const res = await fetch(SCRIPT_URL, { method:"POST", body: JSON.stringify({ order, tracking, customer, task, phone, caseNo, source }) });
       const json = await res.json();
       if(!json.ok) throw new Error(json.error || "送出失敗");
       msg.className="form-msg ok"; msg.textContent="已新增!狀態為「待外撥」,顯示於下方清單。";
-      $("order").value=""; $("tracking").value=""; $("customer").value=""; $("task").value=""; $("phone").value=""; $("caseNo").value="";
+      $("order").value=""; $("tracking").value=""; $("customer").value=""; $("task").value=""; $("phone").value=""; $("caseNo").value=""; $("source").value="";
       await loadBoard();
     }catch(err){
       msg.className="form-msg err"; msg.textContent="送出失敗,請稍後再試一次。";
@@ -423,6 +437,7 @@ function fillFromMsg(){
   document.getElementById('tracking').value=tracking;
   document.getElementById('phone').value=phone;
   document.getElementById('task').value=t;
+  var _s=document.getElementById('source'); if(_s) _s.value='新竹物流';
   var got=[]; if(order)got.push('訂單編號'); if(tracking)got.push('物流單號'); if(phone)got.push('電話');
   hint.innerHTML='✅ 已帶入：'+(got.length?got.join('、'):'（僅帶入事項）')+'　·　請補「客戶姓名」後按下方「新增交辦」';
   var c=document.getElementById('customer'); if(c) c.focus();
