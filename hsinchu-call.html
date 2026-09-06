@@ -60,7 +60,7 @@
 
     <div class="uploadbox">
       <div class="big">📤 上傳新竹給的 Excel</div>
-      <div class="hint">選擇 .xlsx 檔，會自動讀「TM單號、叫件編號」兩欄（唯讀檔也可以上傳）</div>
+      <div class="hint">選擇 .xlsx 或 .csv 檔，會自動讀「TM單號、叫件編號」兩欄（唯讀檔也可以上傳）</div>
       <input type="file" id="file" accept=".xlsx,.xls,.csv" onchange="onFile(event)">
       <div class="preview" id="preview"></div>
     </div>
@@ -116,28 +116,42 @@ function rowsToPairs(rows){
   return out;
 }
 
+function processRows(rows){
+  PENDING=rowsToPairs(rows);
+  var pv=document.getElementById('preview');
+  if(!PENDING.length){ pv.innerHTML='<span style="color:var(--red-d)">讀不到資料，請確認檔案有「TM單號、叫件編號」兩欄</span>'; return; }
+  var samp=PENDING.slice(0,3).map(function(r){return esc(r[0])+' → '+esc(r[1]);}).join('<br>');
+  pv.innerHTML='<div style="margin-bottom:8px">讀到 <b>'+PENDING.length+'</b> 筆，例如：<br><span style="color:var(--muted)">'+samp+(PENDING.length>3?'<br>…':'')+'</span></div>'
+    +'<button class="btn" id="impbtn" onclick="doImport()">確認匯入 '+PENDING.length+' 筆</button>';
+}
+function csvToRows(text){
+  text=(text||'').replace(/^\uFEFF/,'');
+  var rows=[],row=[],cur='',q=false,i,c;
+  for(i=0;i<text.length;i++){c=text[i];
+    if(q){ if(c=='"'){ if(text[i+1]=='"'){cur+='"';i++;} else q=false; } else cur+=c; }
+    else { if(c=='"')q=true; else if(c==',')  {row.push(cur);cur='';}
+           else if(c=='\n'){row.push(cur);rows.push(row);row=[];cur='';}
+           else if(c=='\r'){} else cur+=c; }
+  }
+  if(cur!==''||row.length){row.push(cur);rows.push(row);}
+  return rows;
+}
 function onFile(ev){
   var f=ev.target.files && ev.target.files[0];
   document.getElementById('preview').innerHTML='';
   if(!f) return;
-  if(typeof XLSX==='undefined'){ setStatus('Excel 讀取元件沒載入成功，請改用下面「手動貼上」','err'); togglePaste(true); return; }
+  var name=(f.name||'').toLowerCase();
+  var isCsv = name.slice(-4)==='.csv' || f.type==='text/csv';
   var reader=new FileReader();
-  reader.onload=function(e){
-    try{
-      var wb=XLSX.read(e.target.result,{type:'array'});
-      var ws=wb.Sheets[wb.SheetNames[0]];
-      var rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
-      PENDING=rowsToPairs(rows);
-      if(!PENDING.length){ document.getElementById('preview').innerHTML='<span style="color:var(--red-d)">讀不到資料，請確認檔案有「TM單號、叫件編號」兩欄</span>'; return; }
-      var samp=PENDING.slice(0,3).map(function(r){return esc(r[0])+' → '+esc(r[1]);}).join('<br>');
-      document.getElementById('preview').innerHTML=
-        '<div style="margin-bottom:8px">讀到 <b>'+PENDING.length+'</b> 筆，例如：<br><span style="color:var(--muted)">'+samp+(PENDING.length>3?'<br>…':'')+'</span></div>'
-        +'<button class="btn" id="impbtn" onclick="doImport()">確認匯入 '+PENDING.length+' 筆</button>';
-    }catch(err){
-      document.getElementById('preview').innerHTML='<span style="color:var(--red-d)">讀取失敗：'+esc(String(err))+'，可改用手動貼上</span>';
-    }
-  };
-  reader.readAsArrayBuffer(f);
+  reader.onerror=function(){ document.getElementById('preview').innerHTML='<span style="color:var(--red-d)">讀取失敗，可改用下面「手動貼上」</span>'; };
+  if(isCsv){
+    reader.onload=function(e){ try{ processRows(csvToRows(e.target.result)); }catch(err){ document.getElementById('preview').innerHTML='<span style="color:var(--red-d)">讀取失敗：'+esc(String(err))+'</span>'; } };
+    reader.readAsText(f);
+  } else {
+    if(typeof XLSX==='undefined'){ setStatus('Excel 讀取元件沒載入成功，請改「下載成 CSV」再上傳，或用下面「手動貼上」','err'); togglePaste(true); return; }
+    reader.onload=function(e){ try{ var wb=XLSX.read(e.target.result,{type:'array'}); var ws=wb.Sheets[wb.SheetNames[0]]; processRows(XLSX.utils.sheet_to_json(ws,{header:1,defval:''})); }catch(err){ document.getElementById('preview').innerHTML='<span style="color:var(--red-d)">讀取失敗：'+esc(String(err))+'，可改用手動貼上</span>'; } };
+    reader.readAsArrayBuffer(f);
+  }
 }
 
 function doImport(){
