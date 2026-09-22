@@ -362,7 +362,10 @@ mark.hl{background:#fff176;color:#333;padding:1px 3px;border-radius:3px;font-wei
         <button type="button" data-v="官網" class="on">官網信件</button>
         <button type="button" data-v="蝦皮">蝦皮</button>
       </div>
-      <button type="button" class="gen-go" id="gen-go">🔍 產生回應</button>
+      <div style="display:flex;gap:8px;align-items:stretch">
+        <button type="button" class="gen-go" id="gen-go" style="flex:1">🔍 產生回應</button>
+        <button type="button" id="gen-clear" style="flex:0 0 auto;background:#fff;color:#B81C22;border:1.5px solid #B81C22;border-radius:8px;padding:0 20px;font-size:15px;font-weight:800;cursor:pointer">🧹 清空</button>
+      </div>
       <div class="gen-hint">＊草稿僅供參考，請確認、修改後再送出給客戶。政策細節（退貨天數、效期等）以官方公告為準。</div>
     </div>
     <div class="gen-outwrap"><div id="gen-out"><div class="gen-empty">← 左邊填好客戶問題後，按「產生回應」</div></div></div>
@@ -1291,6 +1294,21 @@ const GEN_QUICK=[
 const gQbox=document.getElementById("gen-quick");
 if(gQbox){GEN_QUICK.forEach(p=>{const btn=document.createElement("button");btn.type="button";btn.className="gen-qbtn";btn.textContent=p.label;btn.addEventListener("click",()=>{document.getElementById("gen-q").value=p.q;gRender();});gQbox.appendChild(btn);});}
 document.getElementById("gen-q").addEventListener("keydown",e=>{if(e.ctrlKey&&e.key==="Enter")gRender();});
+})();
+</script>
+<script>
+/* 回應產生器：清空按鈕 */
+(function(){
+  var b=document.getElementById('gen-clear');
+  if(!b)return;
+  b.addEventListener('click',function(){
+    ['gen-name','gen-order','gen-prod','gen-code','gen-q'].forEach(function(id){
+      var el=document.getElementById(id); if(el) el.value='';
+    });
+    var out=document.getElementById('gen-out');
+    if(out) out.innerHTML='<div class="gen-empty">← 左邊填好客戶問題後，按「產生回應」</div>';
+    var f=document.getElementById('gen-name'); if(f) f.focus();
+  });
 })();
 </script>
 </body>
