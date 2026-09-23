@@ -210,6 +210,8 @@ mark.hl{background:#fff176;color:#333;padding:1px 3px;border-radius:3px;font-wei
 .smart-tabbtn.on{background:#B81C22;color:#fff;border-color:#B81C22}
 
 .smart-noresult{background:#FFF4E5;border:1px solid #F0C98A;border-left:4px solid #E8951E;border-radius:8px;padding:14px 16px;font-size:14px;line-height:1.9;color:#7a5a1e;margin-top:12px}
+#tab-gen .gen-mode{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+#tab-gen .gen-internal{background:#e7f1f4;border:1px solid #a9cdd8;color:#1c5568;border-radius:8px;padding:8px 12px;font-size:13px;font-weight:800;margin-bottom:8px}
 </style>
 </head>
 <body>
@@ -351,13 +353,53 @@ mark.hl{background:#fff176;color:#333;padding:1px 3px;border-radius:3px;font-wei
   <div class="gen-quick" id="gen-quick"></div>
   <div class="gen-grid">
     <div class="gen-form">
-      <label class="gen-lb">1. 客戶姓名／帳號</label><input id="gen-name" type="text" placeholder="例：王小姐 / muji123">
-      <label class="gen-lb">2. 訂單編號</label><input id="gen-order" type="text" placeholder="例：M20260921001">
-      <label class="gen-lb">3. 商品名稱</label><input id="gen-prod" type="text" placeholder="例：檜木擴香器">
-      <label class="gen-lb">4. 商品條碼</label><input id="gen-code" type="text" placeholder="例：4550344123456">
-      <label class="gen-lb">5. 客戶問題 <span style="color:#B81C22">＊必填</span></label>
-      <textarea id="gen-q" placeholder="把客戶問的內容貼進來…例：我三天前在官網買的擴香器想退貨可以嗎"></textarea>
-      <label class="gen-lb">服務管道</label>
+      <label class="gen-lb">產出類型</label>
+      <div class="gen-seg gen-mode" id="gen-mode">
+        <button type="button" data-m="reply" class="on">✉️ 客戶回信</button>
+        <button type="button" data-m="furn">🚚 大型家具約配</button>
+        <button type="button" data-m="shopee">📦 蝦皮訂單查件</button>
+        <button type="button" data-m="pickup">🚛 新竹物流取件</button>
+      </div>
+      <div id="genm-reply">
+        <label class="gen-lb">1. 客戶姓名／帳號</label><input id="gen-name" type="text" placeholder="例：王小姐 / muji123">
+        <label class="gen-lb">2. 訂單編號</label><input id="gen-order" type="text" placeholder="例：M20260921001">
+        <label class="gen-lb">3. 商品名稱</label><input id="gen-prod" type="text" placeholder="例：檜木擴香器">
+        <label class="gen-lb">4. 商品條碼</label><input id="gen-code" type="text" placeholder="例：4550344123456">
+        <label class="gen-lb">5. 客戶問題 <span style="color:#B81C22">＊必填</span></label>
+        <textarea id="gen-q" placeholder="把客戶問的內容貼進來…例：我三天前在官網買的擴香器想退貨可以嗎"></textarea>
+      </div>
+      <div id="genm-furn" style="display:none">
+        <label class="gen-lb">動作</label>
+        <div class="gen-seg" id="furn-act">
+          <button type="button" data-v="變更" class="on">變更配送</button>
+          <button type="button" data-v="預約">預約配送</button>
+          <button type="button" data-v="取消">取消配送</button>
+        </div>
+        <label class="gen-lb">客戶姓名</label><input id="furn-name" type="text" placeholder="例：陳子揚">
+        <label class="gen-lb">TG編號</label><input id="furn-tg" type="text" placeholder="例：TG260813UA00LK">
+        <label class="gen-lb">TM編號</label><input id="furn-tm" type="text" placeholder="例：TM260813UA00LV">
+        <label class="gen-lb" id="furn-sp-lb">蝦皮訂單編號（蝦皮案件才需要）</label><input id="furn-sp" type="text" placeholder="蝦皮案件才填">
+        <label class="gen-lb">狀況描述</label><textarea id="furn-desc" placeholder="例：客戶原本預約9/15下午時段配送，因有事改約9/22下午時段。已協助取消9/15配送，並改約9/22下午時段。"></textarea>
+        <label class="gen-lb">發信日期</label><input id="furn-date" type="text" placeholder="MM/DD">
+      </div>
+      <div id="genm-shopee" style="display:none">
+        <label class="gen-lb">收件人</label><input id="sq-to" type="text" value="心慧、靜怡">
+        <label class="gen-lb">訂單編號</label><input id="sq-order" type="text" placeholder="例：260910MCHVSAGK">
+        <label class="gen-lb">配送單號（物流單號）</label><input id="sq-track" type="text" placeholder="例：7271866586875">
+        <label class="gen-lb">取貨方式</label><input id="sq-ship" type="text" placeholder="例：全家配送 / 7-11 取貨 / 宅配">
+        <label class="gen-lb">訂單狀態</label><input id="sq-status" type="text" placeholder="例：不成立 / 成立 / 查無">
+      </div>
+      <div id="genm-pickup" style="display:none">
+        <label class="gen-lb">TM單號（官網用）</label><input id="pk-tm" type="text" placeholder="例：TM260901BA00FG">
+        <label class="gen-lb">配送單號 10碼（官網用）</label><input id="pk-track" type="text" placeholder="例：2114974702">
+        <label class="gen-lb">蝦皮訂單編號（蝦皮用）</label><input id="pk-sp" type="text" placeholder="蝦皮案件才填">
+        <label class="gen-lb">客戶姓名</label><input id="pk-name" type="text" placeholder="例：楊怡真">
+        <label class="gen-lb">商品名稱／數量</label><input id="pk-prod" type="text" placeholder="例：PP收納盒/小/2入 *1">
+        <label class="gen-lb">手機號碼</label><input id="pk-phone" type="text" placeholder="例：0939513196">
+        <label class="gen-lb">取件地址</label><input id="pk-addr" type="text" placeholder="例：新北市板橋區藝文街106號9樓">
+        <label class="gen-lb">說明</label><textarea id="pk-note" placeholder="例：客來電表示明日商品就會在管理室，再請人員協助，謝謝。"></textarea>
+      </div>
+      <label class="gen-lb" id="gen-ch-lb">服務管道</label>
       <div class="gen-seg" id="gen-seg-ch">
         <button type="button" data-v="官網" class="on">官網信件</button>
         <button type="button" data-v="蝦皮">蝦皮</button>
@@ -366,7 +408,7 @@ mark.hl{background:#fff176;color:#333;padding:1px 3px;border-radius:3px;font-wei
         <button type="button" class="gen-go" id="gen-go" style="flex:1">🔍 產生回應</button>
         <button type="button" id="gen-clear" style="flex:0 0 auto;background:#fff;color:#B81C22;border:1.5px solid #B81C22;border-radius:8px;padding:0 20px;font-size:15px;font-weight:800;cursor:pointer">🧹 清空</button>
       </div>
-      <div class="gen-hint">＊草稿僅供參考，請確認、修改後再送出給客戶。政策細節（退貨天數、效期等）以官方公告為準。</div>
+      <div class="gen-hint">＊草稿僅供參考，請確認、修改後再送出。客戶回信寄客戶；大型家具約配／蝦皮訂單查件為內部後送，請勿寄客戶。</div>
     </div>
     <div class="gen-outwrap"><div id="gen-out"><div class="gen-empty">← 左邊填好客戶問題後，按「產生回應」</div></div></div>
   </div>
@@ -1308,9 +1350,14 @@ function gMakeReply(i){
   const rr=window.__genRR,x=rr[i],best=x.r;
   const name=gv("gen-name"),order=gv("gen-order"),prod=gv("gen-prod"),code=gv("gen-code");
   const bodyRaw=(best.variants&&best.variants[0])||"";
-  const pl=prod?("關於您詢問的「"+prod+"」"+(code?("（商品條碼："+code+"）"):"")+"，"):"";
-  const filled=gFill(bodyRaw,name,order,prod,code);
-  const full=gGreet(name)+"\n\n"+(pl?pl+"\n":"")+filled+"\n\n"+gClose();
+  let filled=gFill(bodyRaw,name,order,prod,code);
+  const hasGreet=/您好|親愛的顧客/.test(filled.slice(0,40));
+  const hasClose=/敬上|客服中心|muji4you|台灣無印良品/.test(filled.slice(-140));
+  if(hasGreet&&name){filled=filled.replace("親愛的顧客","親愛的 "+name+" 顧客");}
+  let head="",pl="",tail="";
+  if(!hasGreet){head=gGreet(name)+"\n\n";if(prod){pl="關於您詢問的「"+prod+"」"+(code?("（商品條碼："+code+"）"):"")+"，\n";}}
+  if(!hasClose){tail="\n\n"+gClose();}
+  const full=head+pl+filled+tail;
   GEN_COPY=full;
   let h='<h3 class="gen-rt">✉️ '+genCH+'回信草稿'+gBadge(gConf(x))+'</h3>';
   h+='<div class="gen-reply">'+gMark(gEsc(full))+'</div>';
@@ -1323,7 +1370,62 @@ function gMakeReply(i){
 }
 document.getElementById("gen-seg-ch").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
   [...b.parentNode.children].forEach(x=>x.classList.remove("on"));b.classList.add("on");genCH=b.dataset.v;});
-document.getElementById("gen-go").addEventListener("click",gRender);
+let genMODE="reply";
+function gToggle(el,show){if(el)el.style.display=show?"":"none";}
+function gSetMode(m){genMODE=m;
+  [...document.querySelectorAll("#gen-mode button")].forEach(b=>b.classList.toggle("on",b.dataset.m===m));
+  gToggle(document.getElementById("genm-reply"),m==="reply");
+  gToggle(document.getElementById("genm-furn"),m==="furn");
+  gToggle(document.getElementById("genm-shopee"),m==="shopee");
+  gToggle(document.getElementById("genm-pickup"),m==="pickup");
+  gToggle(document.querySelector("#tab-gen .gen-intro"),m==="reply");
+  gToggle(document.getElementById("gen-quick"),m==="reply");
+  const showCh=(m!=="shopee");
+  gToggle(document.getElementById("gen-ch-lb"),showCh);
+  gToggle(document.getElementById("gen-seg-ch"),showCh);
+  document.getElementById("gen-go").textContent=(m==="reply"?"🔍 產生回應":"🧾 產生案件內容");
+  document.getElementById("gen-out").innerHTML='<div class="gen-empty">← 左邊填好後，按上方按鈕產生</div>';
+}
+document.getElementById("gen-mode").addEventListener("click",e=>{const b=e.target.closest("button");if(b)gSetMode(b.dataset.m);});
+let furnACT="變更";
+document.getElementById("furn-act").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;[...b.parentNode.children].forEach(x=>x.classList.remove("on"));b.classList.add("on");furnACT=b.dataset.v;});
+(function(){const d=new Date();const md=("0"+(d.getMonth()+1)).slice(-2)+"/"+("0"+d.getDate()).slice(-2);const f=document.getElementById("furn-date");if(f&&!f.value)f.value=md;})();
+function gBindCopy(id,getText){const el=document.getElementById(id);if(!el)return;el.addEventListener("click",function(){navigator.clipboard.writeText(getText()).then(()=>{const o=this.textContent;this.textContent="✅ 已複製";this.classList.add("done");setTimeout(()=>{this.textContent=o;this.classList.remove("done");},1600);});});}
+function gOutBlock(subj,body,warn){
+  let h='<div class="gen-internal">🔒 內部後送格式・請勿直接寄給客戶</div>';
+  if(subj){h+='<div class="gen-src">主旨</div><div class="gen-reply">'+gEsc(subj)+'</div><button type="button" class="gen-copy" id="gen-copy-subj">📋 複製主旨</button>';}
+  h+='<div class="gen-src">內文</div><div class="gen-reply">'+gEsc(body)+'</div><button type="button" class="gen-copy" id="gen-copy-body">📋 複製內文</button>';
+  if(warn)h+='<div class="gen-warn">'+warn+'</div>';
+  document.getElementById("gen-out").innerHTML=h;
+  gBindCopy("gen-copy-subj",()=>subj);gBindCopy("gen-copy-body",()=>body);
+}
+function gFurn(){
+  const name=gv("furn-name"),tg=gv("furn-tg"),tm=gv("furn-tm"),sp=gv("furn-sp"),desc=gv("furn-desc"),date=gv("furn-date");
+  const chLabel=genCH==="蝦皮"?"蝦皮":"官網";
+  const actTitle={"變更":"大型家俱變更配送時間","預約":"大型家俱預約配送時間","取消":"大型家俱取消配送"}[furnACT];
+  const idForTitle=tm||tg||sp||"（訂單編號）";
+  const subj="[外部]【"+chLabel+"案件協助】"+idForTitle+" - "+actTitle+" - "+(date||"");
+  let orderLine="【訂單編號】"+(tg||"")+(tm?(" / "+tm):"");
+  if(genCH==="蝦皮"&&sp)orderLine+="\n【蝦皮訂單編號】"+sp;
+  const body="您好！\n\n"+orderLine+"\n\n【客戶】"+(name||"")+"\n\n【狀況描述】"+(desc||"")+"\n\n再請協助連動～謝謝～";
+  gOutBlock(subj,body,"⚠️ 送出前別忘了附上「預約畫面」截圖。");
+}
+function gShopee(){
+  const to=gv("sq-to")||"公用信箱",order=gv("sq-order"),track=gv("sq-track"),ship=gv("sq-ship"),status=gv("sq-status");
+  const subj="[外部]【蝦皮訂單查件需求】訂單 "+(order||"")+" # "+(track||"");
+  const body="DEAR "+to+"好～\n\n再請協助確認\n\n訂單單號 "+(order||"")+"\n配送單號 # "+(track||"")+"\n"+(ship||"")+"\n訂單狀態："+(status||"");
+  gOutBlock(subj,body,"");
+}
+function gPickup(){
+  const chLabel=genCH==="蝦皮"?"蝦皮":"官網";
+  const name=gv("pk-name"),tm=gv("pk-tm"),track=gv("pk-track"),sp=gv("pk-sp"),prod=gv("pk-prod"),phone=gv("pk-phone"),addr=gv("pk-addr"),note=gv("pk-note");
+  const header=chLabel==="蝦皮"?((sp||"")+"-"+(name||"")):((tm||"")+"-"+(name||"")+"-"+(track||""));
+  const fixed="【請用"+chLabel+"客代，備註原訂單編號，請回饋收件單號】";
+  const fieldLines=[name,prod,phone,addr,note].filter(x=>x&&x.trim()!=="");
+  const body=[header,fixed].concat(fieldLines).join("\n");
+  gOutBlock(null,body,"⚠️ 這是給新竹物流的派車取件訊息，貼到對應派車管道即可。");
+}
+document.getElementById("gen-go").addEventListener("click",function(){if(genMODE==="furn")gFurn();else if(genMODE==="shopee")gShopee();else if(genMODE==="pickup")gPickup();else gRender();});
 const GEN_QUICK=[
  {label:"退貨/鑑賞期",q:"客戶想退貨，詢問鑑賞期和退貨方式"},
  {label:"商品瑕疵/破損",q:"商品收到有瑕疵破損，要如何退換貨"},
@@ -1345,7 +1447,7 @@ document.getElementById("gen-q").addEventListener("keydown",e=>{if(e.ctrlKey&&e.
   var b=document.getElementById('gen-clear');
   if(!b)return;
   b.addEventListener('click',function(){
-    ['gen-name','gen-order','gen-prod','gen-code','gen-q'].forEach(function(id){
+    ['gen-name','gen-order','gen-prod','gen-code','gen-q','furn-name','furn-tg','furn-tm','furn-sp','furn-desc','sq-order','sq-track','sq-ship','sq-status','pk-tm','pk-track','pk-sp','pk-name','pk-prod','pk-phone','pk-addr','pk-note'].forEach(function(id){
       var el=document.getElementById(id); if(el) el.value='';
     });
     var out=document.getElementById('gen-out');
