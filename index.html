@@ -394,7 +394,7 @@ mark.hl{background:#fff176;color:#333;padding:1px 3px;border-radius:3px;font-wei
         <label class="gen-lb">配送單號 10碼（官網用）</label><input id="pk-track" type="text" placeholder="例：2114974702">
         <label class="gen-lb">蝦皮訂單編號（蝦皮用）</label><input id="pk-sp" type="text" placeholder="蝦皮案件才填">
         <label class="gen-lb">客戶姓名</label><input id="pk-name" type="text" placeholder="例：楊怡真">
-        <label class="gen-lb">商品名稱／數量</label><input id="pk-prod" type="text" placeholder="例：PP收納盒/小/2入 *1">
+        <label class="gen-lb">商品名稱／數量（蝦皮取件用）</label><input id="pk-prod" type="text" placeholder="例：PP收納盒/小/2入 *1">
         <label class="gen-lb">手機號碼</label><input id="pk-phone" type="text" placeholder="例：0939513196">
         <label class="gen-lb">取件地址</label><input id="pk-addr" type="text" placeholder="例：新北市板橋區藝文街106號9樓">
         <label class="gen-lb">說明</label><textarea id="pk-note" placeholder="例：客來電表示明日商品就會在管理室，再請人員協助，謝謝。"></textarea>
@@ -1421,8 +1421,10 @@ function gPickup(){
   const name=gv("pk-name"),tm=gv("pk-tm"),track=gv("pk-track"),sp=gv("pk-sp"),prod=gv("pk-prod"),phone=gv("pk-phone"),addr=gv("pk-addr"),note=gv("pk-note");
   const header=chLabel==="蝦皮"?((sp||"")+"-"+(name||"")):((tm||"")+"-"+(name||"")+"-"+(track||""));
   const fixed="【請用"+chLabel+"客代，備註原訂單編號，請回饋收件單號】";
-  const fieldLines=[name,prod,phone,addr,note].filter(x=>x&&x.trim()!=="");
-  const body=[header,fixed].concat(fieldLines).join("\n");
+  let rows=[];
+  if(chLabel==="蝦皮")rows.push("商品名稱："+prod);
+  rows.push("客戶姓名："+name,"手機號碼："+phone,"取件地址："+addr,"說明："+note);
+  const body=[header,fixed].concat(rows).join("\n");
   gOutBlock(null,body,"⚠️ 這是給新竹物流的派車取件訊息，貼到對應派車管道即可。");
 }
 document.getElementById("gen-go").addEventListener("click",function(){if(genMODE==="furn")gFurn();else if(genMODE==="shopee")gShopee();else if(genMODE==="pickup")gPickup();else gRender();});
