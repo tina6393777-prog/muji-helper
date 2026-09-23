@@ -245,6 +245,21 @@ mark.hl{background:#fff176;color:#333;padding:1px 3px;border-radius:3px;font-wei
 .fcmp-tbl tr.fc-row-d td.fc-web,.fcmp-tbl tr.fc-row-d td.fc-store{background:#FFFAF6}
 .fcmp-src{font-size:11px;color:#aaa;margin-top:8px}
 </style>
+<style>
+.pk-box{margin-bottom:12px}
+.pk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;margin:6px 0 4px}
+.pk-item{background:#faf7f2;border:1px solid #eee;border-radius:8px;padding:10px 12px;font-size:13px;line-height:1.6;color:#444}
+.pk-t{font-weight:bold;color:#B81C22;margin-bottom:2px}
+.pk-s{font-size:12px;color:#9c3d10}
+.pk-steps{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:13px;color:#B81C22}
+.pk-steps span{background:#FFF6F0;border:1px solid #F0D9CC;border-radius:16px;padding:4px 12px;color:#444}
+.pk-qa{font-size:13px;line-height:1.7}
+.pk-q{font-weight:bold;color:#333;margin-top:8px}
+.pk-a{color:#555;padding-left:14px;border-left:3px solid #F0D9CC;margin-top:2px}
+.pk-a b{color:#B81C22}
+.pk-stores{font-size:13px;line-height:1.8;color:#444}
+.pk-stores b{display:inline-block;background:#B81C22;color:#fff;border-radius:4px;padding:0 6px;margin-right:6px;font-size:12px}
+</style>
 </head>
 <body>
 <header>
@@ -286,6 +301,42 @@ mark.hl{background:#fff176;color:#333;padding:1px 3px;border-radius:3px;font-wei
 </div>
 
 <div id="tab-store" class="panel">
+  <details class="fcmp-box pk-box">
+    <summary>🏪 官網購買・門市自取 重點卡 <span class="fcmp-sub">（點此展開）</span></summary>
+    <div class="fcmp-alert">👉 門市自取＝<b>在官網買、到門市拿</b>。它是<b>官網訂單</b>，退貨、取消都要走官網，<b>門市不能處理</b>！</div>
+    <div class="pk-grid">
+      <div class="pk-item"><div class="pk-t">💰 運費</div>所有商品免運費<br><span class="pk-s">⚠️ 大型家具不適用門市自取</span></div>
+      <div class="pk-item"><div class="pk-t">📅 到貨天數</div>約 3～7 天（不含假日）<br><span class="pk-s">訂單集中或送貨擁擠時可能更久</span></div>
+      <div class="pk-item"><div class="pk-t">💳 付款方式</div>信用卡、街口支付、Line Pay、Apple Pay<br><span class="pk-s">⚠️ 不提供門市付款</span></div>
+      <div class="pk-item"><div class="pk-t">⏰ 取貨期限</div>簡訊通知日起 <b>7 天內</b>取貨<br><span class="pk-s">⚠️ 不能延長，逾期退回倉庫並退款</span></div>
+    </div>
+    <div class="fcmp-fee-title">📋 購買流程</div>
+    <div class="pk-steps"><span>① 註冊會員</span>→<span>② 官網購買商品</span>→<span>③ 簡訊通知到店</span>→<span>④ 攜證件到門市取貨</span></div>
+    <div class="fcmp-fee-title">❓ 客人常問（官網最新說法）</div>
+    <div class="pk-qa">
+      <div class="pk-q">Q：取貨忘了帶證件？</div>
+      <div class="pk-a">無法取貨。需出示實體有效證件正本之一：<b>身分證、健保卡、駕照、護照、居留證</b>。</div>
+      <div class="pk-q">Q：取貨後不滿意，可以直接在門市退嗎？</div>
+      <div class="pk-a"><b>不行。</b>購買管道不同，請到 MUJI 官網購物申請退貨，實體門市不提供退貨服務。</div>
+      <div class="pk-q">Q：收到的商品有問題怎麼辦？</div>
+      <div class="pk-a">聯繫官網客服協助；或到官網會員專區「訂單查詢」→【申請退貨】選退貨原因。</div>
+      <div class="pk-q">Q：退貨有哪些方式？</div>
+      <div class="pk-a">「全家超商退貨」或「宅配退貨」。請用紙箱或能保護商品的包材妥善包裝，自備包材請在外箱註明「<b>MUJI 退貨</b>」。</div>
+      <div class="pk-q">Q：可以延長取件天數嗎？</div>
+      <div class="pk-a">無法延長，請於簡訊通知日起 7 天內取貨；逾期商品退回倉庫。</div>
+      <div class="pk-q">Q：選錯門市想改？</div>
+      <div class="pk-a"><b>未出貨</b>：官網會員專區「訂單查詢」→【取消訂單】後重新下單。<br><b>已出貨</b>：只能到原選的門市取貨；逾期未取會退回倉庫並進行退款。</div>
+    </div>
+    <div class="fcmp-fee-title">📍 提供門市自取的門市（官網公告）</div>
+    <div class="pk-stores">
+      <div><b>北區</b>松高、松山車站、微風、崇光、南京、南港中信、館前、遠企、板中、汐止、宏匯、美麗華、裕隆城、景美</div>
+      <div><b>桃竹區</b>桃園、中壢、巨城、竹北、尚順、大全聯中壢、大全聯八德、愛買桃園</div>
+      <div><b>中區</b>中友、台中、愛買台中、豐原、文心、Lalaport台中</div>
+      <div><b>南區</b>耐斯、台南、三多、岡山、屏東</div>
+    </div>
+    <div class="fcmp-note">＊門市清單以官網結帳時可選的門市為準；下方門市卡片的「門市自取服務」標籤若與此清單不同，以官網為準。</div>
+    <div class="fcmp-src">資料來源：MUJI 官網「線上購買 門市自取」服務說明頁（2026/09 整理）</div>
+  </details>
   <div class="srow"><input id="store-input" type="text" placeholder="輸入門市名稱、縣市或服務…例如：刺繡、高雄、夢時代" oninput="searchStore()"></div>
   <p style="margin:-4px 0 10px;font-size:12px"><a class="qlink" href="https://shop.muji.tw/v2/Shop/StoreList/40820" target="_blank" rel="noopener">🔗 查看無印良品官網門市總覽（含最新地圖與即時資訊）</a></p>
   <div class="chips" id="city-chips"></div>
