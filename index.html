@@ -496,6 +496,16 @@ mark.hl{background:#fff176;color:#333;padding:1px 3px;border-radius:3px;font-wei
         <label class="gen-lb">TG編號</label><input id="furn-tg" type="text" placeholder="例：TG260813UA00LK">
         <label class="gen-lb">TM編號</label><input id="furn-tm" type="text" placeholder="例：TM260813UA00LV">
         <label class="gen-lb" id="furn-sp-lb">蝦皮訂單編號（蝦皮案件才需要）</label><input id="furn-sp" type="text" placeholder="蝦皮案件才填">
+        <label class="gen-lb">配送地址</label>
+        <select id="furn-addrmode"><option value="">—（不帶入）</option><option value="同訂單">同訂單</option><option value="地址變更為">地址變更為…</option></select>
+        <input id="furn-addr" type="text" placeholder="選「地址變更為」才填：例 新北市板橋區…" style="margin-top:6px">
+        <label class="gen-lb">電梯</label>
+        <select id="furn-elev"><option value="">—（不帶入）</option><option value="有電梯">有電梯</option><option value="無電梯">無電梯</option><option value="未確認">未確認</option></select>
+        <label class="gen-lb">搬上樓</label>
+        <select id="furn-carry"><option value="">—（不帶入）</option><option value="需搬上樓">需搬上樓</option><option value="不需搬上樓">不需搬上樓</option><option value="未確認">未確認</option></select>
+        <label class="gen-lb">預約日期/時段</label><input id="furn-slot" type="text" placeholder="例：9/22 下午時段">
+        <label class="gen-lb">包材提醒</label>
+        <select id="furn-pack"><option value="">—（不帶入）</option><option value="已提醒">已提醒客戶保留包材</option><option value="未提醒">未提醒</option></select>
         <label class="gen-lb">狀況描述</label><textarea id="furn-desc" placeholder="例：客戶原本預約9/15下午時段配送，因有事改約9/22下午時段。已協助取消9/15配送，並改約9/22下午時段。"></textarea>
         <label class="gen-lb">發信日期</label><input id="furn-date" type="text" placeholder="MM/DD">
       </div>
@@ -1351,7 +1361,7 @@ document.getElementById('smart-input').addEventListener('keydown',e=>{if(e.key==
 @media(max-width:820px){#tab-gen .gen-grid{grid-template-columns:1fr}}
 #tab-gen .gen-form{background:#fff;border:1px solid #e6e0d8;border-radius:12px;padding:14px}
 #tab-gen .gen-lb{display:block;font-size:13px;font-weight:700;margin:10px 0 4px;color:#5a534d}
-#tab-gen .gen-form input,#tab-gen .gen-form textarea{width:100%;padding:9px 11px;border:1px solid #d8d0c6;border-radius:8px;font-size:14px;font-family:inherit;background:#fdfcfa;box-sizing:border-box}
+#tab-gen .gen-form input,.gen-form select,#tab-gen .gen-form textarea{width:100%;padding:9px 11px;border:1px solid #d8d0c6;border-radius:8px;font-size:14px;font-family:inherit;background:#fdfcfa;box-sizing:border-box}
 #tab-gen .gen-form textarea{min-height:88px;resize:vertical}
 #tab-gen .gen-form input:focus,#tab-gen .gen-form textarea:focus{outline:none;border-color:#B81C22;box-shadow:0 0 0 3px rgba(184,28,34,.12)}
 #tab-gen .gen-seg{display:flex;gap:6px;margin-top:4px}
@@ -1551,13 +1561,25 @@ function gOutBlock(subj,body,warn){
 }
 function gFurn(){
   const name=gv("furn-name"),tg=gv("furn-tg"),tm=gv("furn-tm"),sp=gv("furn-sp"),desc=gv("furn-desc"),date=gv("furn-date");
+  const addrmode=gv("furn-addrmode"),addr=gv("furn-addr"),elev=gv("furn-elev"),carry=gv("furn-carry"),slot=gv("furn-slot"),pack=gv("furn-pack");
   const chLabel=genCH==="蝦皮"?"蝦皮":"官網";
   const actTitle={"變更":"大型家俱變更配送時間","預約":"大型家俱預約配送時間","取消":"大型家俱取消配送"}[furnACT];
   const idForTitle=tm||tg||sp||"（訂單編號）";
   const subj="[外部]【"+chLabel+"案件協助】"+idForTitle+" - "+actTitle+" - "+(date||"");
   let orderLine="【訂單編號】"+(tg||"")+(tm?(" / "+tm):"");
   if(genCH==="蝦皮"&&sp)orderLine+="\n【蝦皮訂單編號】"+sp;
-  const body="您好！\n\n"+orderLine+"\n\n【客戶】"+(name||"")+"\n\n【狀況描述】"+(desc||"")+"\n\n再請協助連動～謝謝～";
+  let deli=[];
+  if(addrmode==="同訂單")deli.push("【配送地址】同訂單");
+  else if(addrmode==="地址變更為")deli.push("【配送地址】地址變更為："+(addr||""));
+  if(elev)deli.push("【電梯】"+elev);
+  if(carry)deli.push("【搬上樓】"+carry);
+  if(slot)deli.push("【預約日期/時段】"+slot);
+  if(pack==="已提醒")deli.push("【包材提醒】已提醒客戶：紙箱、包材請保留10天鑑賞期，確認商品皆無問題後再行丟棄");
+  else if(pack==="未提醒")deli.push("【包材提醒】尚未提醒客戶保留包材");
+  let blocks=[orderLine,"【客戶】"+(name||"")];
+  if(deli.length)blocks.push(deli.join("\n"));
+  blocks.push("【狀況描述】"+(desc||""));
+  const body="您好！\n\n"+blocks.join("\n\n")+"\n\n再請協助連動～謝謝～";
   gOutBlock(subj,body,"⚠️ 送出前別忘了附上「預約畫面」截圖。");
 }
 function gShopee(){
@@ -1599,7 +1621,7 @@ document.getElementById("gen-q").addEventListener("keydown",e=>{if(e.ctrlKey&&e.
   var b=document.getElementById('gen-clear');
   if(!b)return;
   b.addEventListener('click',function(){
-    ['gen-name','gen-order','gen-prod','gen-code','gen-q','furn-name','furn-tg','furn-tm','furn-sp','furn-desc','sq-order','sq-track','sq-ship','sq-status','pk-tm','pk-track','pk-sp','pk-name','pk-prod','pk-phone','pk-addr','pk-note'].forEach(function(id){
+    ['gen-name','gen-order','gen-prod','gen-code','gen-q','furn-name','furn-tg','furn-tm','furn-sp','furn-desc','furn-date','furn-addrmode','furn-addr','furn-elev','furn-carry','furn-slot','furn-pack','sq-order','sq-track','sq-ship','sq-status','pk-tm','pk-track','pk-sp','pk-name','pk-prod','pk-phone','pk-addr','pk-note'].forEach(function(id){
       var el=document.getElementById(id); if(el) el.value='';
     });
     var out=document.getElementById('gen-out');
