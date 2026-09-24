@@ -549,8 +549,8 @@ mark.hl{background:#fff176;color:#333;padding:1px 3px;border-radius:3px;font-wei
 </div>
 
 <div id="tab-hist" class="panel">
-  <div class="hist-intro">🕘 <b>歷史查詢</b>：官網查不到、同仁問到答案後自己留底的資料，只顯示審核過（已上架）的內容。<br><span style="color:#8a817a;font-size:12px">要新增資料？請用「留底登記」表單填寫，經審核（狀態改成「已上架」）後就會出現在這裡。</span></div>
-  <input id="hist-q" class="hist-search" type="text" placeholder="搜尋商品名、條碼、規格或注意事項…">
+  <div class="hist-intro">🕘 <b>歷史查詢</b>：查詢過去向客服室提問過的商品案件與客服室回覆。<br><span style="color:#8a817a;font-size:12px">輸入商品名稱、條碼或問題關鍵字查詢（比對「來電事項」）。資料來自「留電表-客服室」，僅帶入來電事項與答案，不含客戶姓名、電話等個資。</span></div>
+  <input id="hist-q" class="hist-search" type="text" placeholder="搜尋商品名稱、條碼或問題關鍵字…">
   <div id="hist-count" class="hist-count"></div>
   <div id="hist-list"><div class="hist-empty">載入中…</div></div>
 </div>
@@ -583,7 +583,7 @@ const LINKS = [
  },
  {
   "name": "🕘 歷史查詢後台（商品資料留底 回覆）",
-  "url": "https://docs.google.com/spreadsheets/d/1gO-I9S3xdg61M-SyswzKr-lrHNLi9NaoflecnXS4ssc/edit?usp=sharing",
+  "url": "https://docs.google.com/spreadsheets/d/1gO-I9S3xdg61M-SyswzKr-lrHNLi9NaoflecnXS4ssc/edit?resourcekey=&gid=60962458#gid=60962458",
   "note": "同仁留底登記表單的後台。審核時把「狀態」改成「已上架」，資料就會出現在網站的歷史查詢頁。",
   "cat": "後台"
  },
@@ -1675,9 +1675,9 @@ document.getElementById("gen-q").addEventListener("keydown",e=>{if(e.ctrlKey&&e.
 </script>
 
 <script>
-/* 歷史查詢：讀同仁留底試算表（只顯示已上架），可搜尋、顯示圖片 */
+/* 歷史查詢：讀「留電表-客服室」查詢用分頁（僅來電事項＋答案，無個資）；搜尋只比對來電事項(A欄) */
 (function(){
-  const HIST_CSV="https://docs.google.com/spreadsheets/d/e/2PACX-1vSCvbA4X6L1iPkZ0RBdqH-_C1l44idVn1GGfZ-BRVhaRhG9GILclEahWFkIx1fx2bUwMDkmYHe67SIM/pub?gid=60962458&single=true&output=csv";
+  const HIST_CSV="https://docs.google.com/spreadsheets/d/e/2PACX-1vRDEjMJ1Df-As29cX-rAR7yj-bE5e1kmdYiRK4x70-TyF8qHMgBsEgPvjrIB6u5nuJ4DopsSvYXC1yR/pub?gid=835988817&single=true&output=csv";
   const box=document.getElementById("hist-list"),cntEl=document.getElementById("hist-count"),qEl=document.getElementById("hist-q");
   if(!box)return;
   let HIST=[];
@@ -1691,33 +1691,29 @@ document.getElementById("gen-q").addEventListener("keydown",e=>{if(e.ctrlKey&&e.
   const nz=s=>(s||"").trim();
   const cl=s=>(s||"").toLowerCase().replace(/\s/g,"");
   const esc=s=>(s||"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
-  function ids(cell){const out=[];(cell||"").split(/[\s,]+/).forEach(u=>{if(!u)return;const m=u.match(/[-\w]{25,}/);if(m)out.push(m[0]);});return out;}
+  const br=s=>esc(s).replace(/\n/g,"<br>");
   function load(){
     fetch(HIST_CSV,{cache:"no-store"}).then(r=>r.ok?r.text():Promise.reject()).then(txt=>{
       const rows=rowsOf(txt);if(rows.length<1){render();return;}
       const head=rows[0].map(nz),col=n=>head.indexOf(n);
-      const ci={name:col("商品名"),code:col("條碼"),spec:col("基本規格"),img:col("圖片"),note:col("注意事項"),st:col("狀態")};
-      HIST=rows.slice(1).map(r=>({
-        name:nz(r[ci.name]),code:nz(r[ci.code]),spec:nz(r[ci.spec]),img:nz(r[ci.img]),note:nz(r[ci.note]),st:nz(r[ci.st])
-      })).filter(x=>x.st==="已上架"&&(x.name||x.spec||x.note));
+      let ai=col("來電事項"),bi=col("答案");
+      if(ai<0)ai=0; if(bi<0)bi=1;
+      HIST=rows.slice(1).map(r=>({ask:nz(r[ai]),ans:nz(r[bi])})).filter(x=>x.ask||x.ans);
       render();
     }).catch(()=>{box.innerHTML='<div class="hist-empty">目前讀不到資料（可能是網路或試算表發布問題），請稍後再試。</div>';cntEl.textContent="";});
   }
   function card(x){
-    let h='<div class="hist-card"><div class="hist-name">'+esc(x.name||"（未命名）")+'</div>';
-    if(x.code)h+='<div class="hist-row"><span class="hist-k">條碼</span>'+esc(x.code)+'</div>';
-    if(x.spec)h+='<div class="hist-row"><span class="hist-k">基本規格</span><span class="hist-v">'+esc(x.spec)+'</span></div>';
-    if(x.note)h+='<div class="hist-row"><span class="hist-k">注意事項</span><span class="hist-v">'+esc(x.note)+'</span></div>';
-    const im=ids(x.img);
-    if(im.length){h+='<div class="hist-imgs">'+im.map(id=>'<a href="https://drive.google.com/file/d/'+id+'/view" target="_blank" rel="noopener"><img loading="lazy" src="https://drive.google.com/thumbnail?id='+id+'&sz=w600" onerror="this.outerHTML=\'🖼️ 開啟圖片\'"></a>').join('')+'</div>';}
+    let h='<div class="hist-card">';
+    h+='<div class="hist-row"><span class="hist-k">來電事項</span><span class="hist-v">'+br(x.ask)+'</span></div>';
+    if(x.ans)h+='<div class="hist-row"><span class="hist-k">客服室回覆</span><span class="hist-v">'+br(x.ans)+'</span></div>';
     h+='</div>';return h;
   }
   function render(){
     const kw=cl(qEl?qEl.value:"");
-    let list=HIST;
-    if(kw)list=HIST.filter(x=>cl(x.name+x.code+x.spec+x.note).includes(kw));
-    cntEl.textContent="共 "+list.length+" 筆"+(kw?"（搜尋結果）":"（已上架）");
-    if(!list.length){box.innerHTML='<div class="hist-empty">'+(HIST.length?"找不到符合的資料。":"目前沒有已上架的留底資料。")+'</div>';return;}
+    if(!kw){box.innerHTML='<div class="hist-empty">請在上方輸入商品名稱、條碼或問題關鍵字開始查詢。</div>';cntEl.textContent="";return;}
+    const list=HIST.filter(x=>cl(x.ask).includes(kw));
+    cntEl.textContent="共 "+list.length+" 筆（搜尋結果）";
+    if(!list.length){box.innerHTML='<div class="hist-empty">'+(HIST.length?"找不到符合的資料。":"目前沒有資料。")+'</div>';return;}
     box.innerHTML=list.map(card).join('');
   }
   if(qEl)qEl.addEventListener("input",render);
