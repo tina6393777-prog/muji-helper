@@ -211,7 +211,30 @@ mark.hl{background:#fff176;color:#333;padding:1px 3px;border-radius:3px;font-wei
 
 .smart-noresult{background:#FFF4E5;border:1px solid #F0C98A;border-left:4px solid #E8951E;border-radius:8px;padding:14px 16px;font-size:14px;line-height:1.9;color:#7a5a1e;margin-top:12px}
 #tab-gen .gen-mode{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+#tab-gen .gen-mode button{flex:1 1 30%;white-space:nowrap}
 #tab-gen .gen-internal{background:#e7f1f4;border:1px solid #a9cdd8;color:#1c5568;border-radius:8px;padding:8px 12px;font-size:13px;font-weight:800;margin-bottom:8px}
+/* 蝦皮客服申請 */
+/* 大型家具約配注意事項 */
+#tab-gen .furn-notice{margin-top:16px;background:#fff8e1;border:1px solid #f3e2b3;border-left:4px solid #E69B00;border-radius:10px;padding:12px 14px;font-size:13px;color:#5c4a1e;line-height:1.75}
+#tab-gen .furn-notice .fn-t{font-weight:800;font-size:14px;color:#7a5a00;margin-bottom:6px}
+#tab-gen .furn-notice .fn-row{display:grid;grid-template-columns:84px 1fr;gap:8px;padding:6px 0;border-top:1px dashed #f0dca6}
+#tab-gen .furn-notice .fn-row b{color:#B81C22}
+#tab-gen .furn-notice .fn-em{color:#9c3d10;font-weight:700}
+#tab-gen .spcs-tip{background:#fff4ef;border:1px solid #f6cdbd;border-left:4px solid #EE4D2D;border-radius:8px;padding:8px 10px;font-size:12px;color:#8a3a1c;line-height:1.7;margin-top:8px}
+#tab-gen .spcs-req{color:#B81C22;font-weight:700;font-size:12px}
+#tab-gen .spcs-sec{display:none}
+#tab-gen .spcs-sec.on{display:block}
+#tab-gen .spcs-checks{display:flex;flex-direction:column;gap:6px;margin-top:6px;font-size:13px;color:#5a534d}
+#tab-gen .spcs-checks label{display:flex;align-items:center;gap:6px;cursor:pointer}
+#tab-gen .gen-form .spcs-checks input[type=checkbox]{width:auto;margin:0}
+#tab-gen .spcs-row{display:grid;grid-template-columns:1fr 1fr 58px 30px;gap:5px;margin-top:6px}
+#tab-gen .gen-form .spcs-row input{padding:8px 8px;font-size:13px}
+#tab-gen .spcs-del{border:1px solid #d8d0c6;background:#fff;border-radius:8px;color:#999;cursor:pointer;font-size:14px}
+#tab-gen .spcs-del:hover{color:#B81C22;border-color:#B81C22}
+#tab-gen .spcs-add{margin-top:8px;padding:7px 12px;border:1.5px dashed #d8c3a0;background:#fffaf0;color:#8a5a1a;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;width:100%}
+#tab-gen .spcs-add:hover{border-color:#B81C22;color:#B81C22}
+#tab-gen .spcs-head{background:#fff4ef;border:1px solid #f6cdbd;color:#b3391c;border-radius:8px;padding:8px 12px;font-size:13px;font-weight:800;margin-bottom:8px}
+#tab-gen .spcs-miss{background:#fbe4e4;border:1px solid #f1b9b9;color:#9a1f1f;border-radius:8px;padding:8px 12px;font-size:13px;line-height:1.7;margin-bottom:8px}
 </style>
 <style>
 /* ===== 大型家具 官網vs門市對照 ===== */
@@ -474,8 +497,9 @@ mark.hl{background:#fff176;color:#333;padding:1px 3px;border-radius:3px;font-wei
       <div class="gen-seg gen-mode" id="gen-mode">
         <button type="button" data-m="reply" class="on">✉️ 客戶回信</button>
         <button type="button" data-m="furn">🚚 大型家具約配</button>
-        <button type="button" data-m="shopee">📦 蝦皮訂單查件</button>
+        <button type="button" data-m="shopee">📦 倉庫查件</button>
         <button type="button" data-m="pickup">🚛 新竹物流取件</button>
+        <button type="button" data-m="spcs">📮 蝦皮客服申請</button>
       </div>
       <div id="genm-reply">
         <label class="gen-lb">1. 客戶姓名／帳號</label><input id="gen-name" type="text" placeholder="例：王小姐 / muji123">
@@ -537,6 +561,109 @@ mark.hl{background:#fff176;color:#333;padding:1px 3px;border-radius:3px;font-wei
           <textarea id="pk-items" rows="6" placeholder="例：&#10;男透氣五分袖襯衫墨灰*XL*1&#10;男水洗牛津布扣領短袖套衫灰色XL*1"></textarea>
         </div>
       </div>
+      <div id="genm-spcs" style="display:none">
+        <label class="gen-lb">案件類型</label>
+        <select id="spcs-type">
+          <optgroup label="🚚 物流／出貨">
+            <option value="late">賣家未在期限內出貨（稽核申訴）</option>
+            <option value="abnormal">包裹貨態異常查詢</option>
+            <option value="inspect">包裹驗收失敗原因查詢</option>
+            <option value="damage">顧客收到破損・申請運損賠償</option>
+            <option value="lost">外箱破損／內容物短少・查物流責任</option>
+          </optgroup>
+          <optgroup label="⚖️ 爭議">
+            <option value="opendispute">後台沒跳出爭議選項・請蝦皮開啟</option>
+            <option value="dispute">請蝦皮協助發起爭議</option>
+          </optgroup>
+          <optgroup label="💰 退款">
+            <option value="refund">退貨退款申請</option>
+          </optgroup>
+        </select>
+        <div class="spcs-tip" id="spcs-tip"></div>
+
+        <div id="spcs-common">
+          <label class="gen-lb">蝦皮訂單編號 <span class="spcs-req">＊必填</span></label><input id="spcs-order" type="text" placeholder="例：260910MCHVSAGK">
+          <div id="spcs-track-wrap">
+            <label class="gen-lb">配送編號（出貨單號）<span class="spcs-req">＊必填</span></label><input id="spcs-track" type="text" placeholder="例：7271866586875 / TW263918053857Y">
+          </div>
+        </div>
+
+        <div class="spcs-sec" data-t="late">
+          <label class="gen-lb">貨態顯示</label><input id="spcs-late-status" type="text" value="賣家沒在期限內出貨">
+          <label class="gen-lb">倉庫回饋</label><input id="spcs-late-wh" type="text" value="倉庫回饋符合時間稽核出貨">
+          <label class="gen-lb">2-(b) 同箱總包裹件數</label><input id="spcs-late-cnt" type="text" placeholder="例：3">
+          <label class="gen-lb">2-(c) 同箱有成功寄件的訂單編號</label><input id="spcs-late-ok-order" type="text" placeholder="例：260910MBRSSYQG">
+          <label class="gen-lb">2-(c) 該筆的配編</label><input id="spcs-late-ok-track" type="text" placeholder="例：7271716225498">
+          <label class="gen-lb">3. 當日出貨至蝦皮理貨中心地點</label><input id="spcs-late-loc" type="text" value="桃園">
+          <label class="gen-lb">4. 當日出貨到店到店轉運中心的總箱數</label><input id="spcs-late-boxes" type="text" placeholder="例：92件（看簽收單【蝦皮】那一列）">
+          <label class="gen-lb">5. 貨運物流商名稱及宅配單號</label><input id="spcs-late-carrier" type="text" placeholder="例：快運">
+          <label class="gen-lb">6. 貨運配達日</label><input id="spcs-late-date" type="text" placeholder="例：9/14">
+          <label class="gen-lb">9. 同天是否有配送至其他物流中心</label><input id="spcs-late-other" type="text" placeholder="例：大智通 / 無">
+          <label class="gen-lb">附件（有附才勾）</label>
+          <div class="spcs-checks">
+            <label><input type="checkbox" id="spcs-late-a1"> 2-(a) 包裹外箱照</label>
+            <label><input type="checkbox" id="spcs-late-a7"> 7. 簽收單（需清楚簽收人大名）</label>
+            <label><input type="checkbox" id="spcs-late-a8"> 8. 出貨（裝箱）影片</label>
+          </div>
+        </div>
+
+        <div class="spcs-sec" data-t="abnormal">
+          <label class="gen-lb">貨態顯示文字</label><input id="spcs-ab-status" type="text" value="包裹異常，請用戶暫不取件">
+          <label class="gen-lb">想確認的事</label><input id="spcs-ab-ask" type="text" value="想確認此件包裹狀況">
+        </div>
+
+        <div class="spcs-sec" data-t="inspect">
+          <label class="gen-lb">訂單＋配編（一行一筆，中間空白或 # 隔開）<span class="spcs-req">＊必填</span></label>
+          <textarea id="spcs-in-list" rows="4" placeholder="例：&#10;260818NJM175BN #15289626&#10;260818NH8PJS2S #15307442"></textarea>
+        </div>
+
+        <div class="spcs-sec" data-t="damage">
+          <label class="gen-lb">顧客反映狀況</label><input id="spcs-dm-desc" type="text" value="顧客收到商品已破損">
+          <label class="gen-lb">出貨包裝狀況</label><input id="spcs-dm-pack" type="text" value="出貨皆有包裝完整">
+          <label class="gen-lb">附件（有附才勾）</label>
+          <div class="spcs-checks"><label><input type="checkbox" id="spcs-dm-photo"> 商品破損照／外箱照</label></div>
+        </div>
+
+        <div class="spcs-sec" data-t="lost">
+          <label class="gen-lb">顧客反映狀況</label><textarea id="spcs-lo-desc" rows="2">收到商品外箱破損，且內容物全空，未收到任何商品</textarea>
+          <label class="gen-lb">倉庫確認結果</label><input id="spcs-lo-wh" type="text" value="已向倉庫確認，倉庫出貨商品完整">
+        </div>
+
+        <div class="spcs-sec" data-t="opendispute">
+          <label class="gen-lb">狀況</label>
+          <select id="spcs-od-kind"><option value="退貨區收到退回包裹">退貨區收到退回包裹</option><option value="賣家取件成功">賣家取件成功</option></select>
+          <label class="gen-lb">日期</label><input id="spcs-od-date" type="text" placeholder="例：8/14">
+          <label class="gen-lb">爭議原因</label>
+          <select id="spcs-od-reason" class="spcs-reason"></select>
+          <input id="spcs-od-other" type="text" class="spcs-other" placeholder="選「其他」才填：自行描述原因" style="margin-top:6px;display:none">
+        </div>
+
+        <div class="spcs-sec" data-t="dispute">
+          <label class="gen-lb">爭議原因</label>
+          <select id="spcs-dp-reason" class="spcs-reason"></select>
+          <input id="spcs-dp-other" type="text" class="spcs-other" placeholder="選「其他」才填：自行描述原因" style="margin-top:6px;display:none">
+        </div>
+
+        <div class="spcs-sec" data-t="refund">
+          <label class="gen-lb">退款類別</label>
+          <div class="gen-seg" id="spcs-rf-cat"><button type="button" data-v="僅退款" class="on">僅退款</button><button type="button" data-v="退貨退款">退貨退款</button></div>
+          <label class="gen-lb">退款類型</label>
+          <div class="gen-seg" id="spcs-rf-type"><button type="button" data-v="部分退款" class="on">部分退款</button><button type="button" data-v="全額退款">全額退款</button></div>
+          <div class="spcs-checks"><label><input type="checkbox" id="spcs-rf-over"> 加註「已過鑑賞期所以不可退款」</label></div>
+          <label class="gen-lb">是否已收到退貨商品</label>
+          <select id="spcs-rf-recv"><option value="">—（不帶入）</option><option value="是">是</option><option value="否">否</option><option value="不需收回">不需收回</option></select>
+          <input id="spcs-rf-recvdate" type="text" placeholder="選「是」可填到倉日，例：8/18到倉" style="margin-top:6px">
+          <label class="gen-lb">退款品項 <span class="spcs-req">＊至少一項</span></label>
+          <div id="spcs-rf-items"></div>
+          <button type="button" class="spcs-add" id="spcs-rf-add">＋ 新增品項</button>
+          <label class="gen-lb">數量單位（合計用）</label><input id="spcs-rf-unit" type="text" value="件" placeholder="例：件 / 包 / 盒">
+          <label class="gen-lb">退款原因</label>
+          <select id="spcs-rf-reason"><option>商品瑕疵</option><option>商品退回倉庫</option><option>尺寸買錯</option><option>寄錯商品</option><option>商品短少</option><option>其他</option></select>
+          <input id="spcs-rf-reason-other" type="text" placeholder="選「其他」才填" style="margin-top:6px;display:none">
+          <label class="gen-lb">退款金額</label>
+          <input id="spcs-rf-amount" type="text" placeholder="有金額就填（例：2857）；空白＝請蝦皮協助計算">
+        </div>
+      </div>
       <label class="gen-lb" id="gen-ch-lb">服務管道</label>
       <div class="gen-seg" id="gen-seg-ch">
         <button type="button" data-v="官網" class="on">官網信件</button>
@@ -546,9 +673,17 @@ mark.hl{background:#fff176;color:#333;padding:1px 3px;border-radius:3px;font-wei
         <button type="button" class="gen-go" id="gen-go" style="flex:1">🔍 產生回應</button>
         <button type="button" id="gen-clear" style="flex:0 0 auto;background:#fff;color:#B81C22;border:1.5px solid #B81C22;border-radius:8px;padding:0 20px;font-size:15px;font-weight:800;cursor:pointer">🧹 清空</button>
       </div>
-      <div class="gen-hint">＊草稿僅供參考，請確認、修改後再送出。客戶回信寄客戶；大型家具約配／蝦皮訂單查件為內部後送，請勿寄客戶。</div>
+      <div class="gen-hint">＊草稿僅供參考，請確認、修改後再送出。客戶回信寄客戶；大型家具約配／倉庫查件為內部後送；蝦皮客服申請是貼給蝦皮賣家客服，皆請勿寄客戶。</div>
     </div>
-    <div class="gen-outwrap"><div id="gen-out"><div class="gen-empty">← 左邊填好客戶問題後，按「產生回應」</div></div></div>
+    <div class="gen-outwrap"><div id="gen-out"><div class="gen-empty">← 左邊填好客戶問題後，按「產生回應」</div></div>
+    <div id="furn-notice" class="furn-notice" style="display:none">
+      <div class="fn-t">📌 約配注意事項（跟客戶確認時請逐項提醒）</div>
+      <div class="fn-row"><b>配送時間</b>上午 09:00–12:00／下午 13:00–17:00／晚上 18:00–21:00</div>
+      <div class="fn-row"><b>前一日通知</b><div>配送前一日會依當日路線路順，告知正確抵達時間<br><span class="fn-em">北區 15:30 以後聯絡；中南區 17:00 以後由司機聯絡</span></div></div>
+      <div class="fn-row"><b>再次核對</b>消費者地址、是否需搬運上樓、是否有電梯</div>
+      <div class="fn-row"><b>提醒客戶</b>紙箱、包材請保留 10 天鑑賞期，確認商品都沒問題後再丟棄</div>
+    </div>
+    </div>
   </div>
 </div>
 
@@ -1538,9 +1673,11 @@ function gSetMode(m){genMODE=m;
   gToggle(document.getElementById("genm-furn"),m==="furn");
   gToggle(document.getElementById("genm-shopee"),m==="shopee");
   gToggle(document.getElementById("genm-pickup"),m==="pickup");
+  gToggle(document.getElementById("genm-spcs"),m==="spcs");
+  gToggle(document.getElementById("furn-notice"),m==="furn");
   gToggle(document.querySelector("#tab-gen .gen-intro"),m==="reply");
   gToggle(document.getElementById("gen-quick"),m==="reply");
-  const showCh=(m!=="shopee");
+  const showCh=(m!=="shopee"&&m!=="spcs");
   gToggle(document.getElementById("gen-ch-lb"),showCh);
   gToggle(document.getElementById("gen-seg-ch"),showCh);
   document.getElementById("gen-go").textContent=(m==="reply"?"🔍 產生回應":"🧾 產生案件內容");
@@ -1623,7 +1760,123 @@ function gPickup(){
   const body=[header,fixed].concat(rows).join("\n");
   gOutBlock(null,body,"⚠️ 這是給新竹物流的派車取件訊息，貼到對應派車管道即可。");
 }
-document.getElementById("gen-go").addEventListener("click",function(){if(genMODE==="furn")gFurn();else if(genMODE==="shopee")gShopee();else if(genMODE==="pickup")gPickup();else gRender();});
+/* ===== 📮 蝦皮客服申請（寫給蝦皮賣家客服的申請格式） ===== */
+const SPCS_TIPS={
+ late:"用在：蝦皮判定「賣家沒在期限內出貨」，但倉庫回饋有準時出貨。⚠️ 送出時記得附上：外箱照、簽收單、裝箱影片。",
+ abnormal:"用在：貨態顯示異常（例如「包裹異常，請用戶暫不取件」），想請蝦皮確認包裹狀況。",
+ inspect:"用在：包裹驗收失敗，想問原因。可以一次放多筆訂單。",
+ damage:"用在：顧客收到商品破損，但我們出貨時包裝完整，想申請運損賠償。記得附破損照片。",
+ lost:"用在：顧客收到外箱破損、內容物短少或全空，倉庫確認出貨完整，請蝦皮查是否物流運送中造成。",
+ opendispute:"用在：退貨區已收到退回包裹（或賣家取件成功），但後台沒有跳出「爭議」可以點。",
+ dispute:"用在：退回商品有問題（已拆封使用、條碼未退回、不是無印的包裹…），請蝦皮協助發起爭議。",
+ refund:"用在：申請退款（僅退款／退貨退款）。退款金額不確定就留空，會自動寫「請協助計算」。"
+};
+const SPCS_REASONS=["顧客退回非無印包裹","顧客退回商品已拆封使用","顧客退回商品條碼未退回","顧客退回商品已拆封使用且條碼未退回","顧客退回商品數量短少","顧客退回商品與訂單不符","其他"];
+let spcsTYPE="late",spcsRfCat="僅退款",spcsRfType="部分退款";
+function sT(id){const el=document.getElementById(id);return el?(el.value||"").trim():"";}
+function sC(id){const el=document.getElementById(id);return !!(el&&el.checked);}
+function spcsReasonVal(sel,other){const v=sT(sel);return v==="其他"?sT(other):v;}
+function spcsSetType(t){spcsTYPE=t;
+  document.querySelectorAll("#genm-spcs .spcs-sec").forEach(el=>el.classList.toggle("on",el.dataset.t===t));
+  document.getElementById("spcs-tip").textContent=SPCS_TIPS[t]||"";
+  gToggle(document.getElementById("spcs-common"),t!=="inspect");
+  gToggle(document.getElementById("spcs-track-wrap"),t!=="refund"&&t!=="dispute");
+  document.getElementById("gen-out").innerHTML='<div class="gen-empty">← 左邊填好後，按上方按鈕產生</div>';}
+function spcsAddRow(name,code,qty){const box=document.getElementById("spcs-rf-items");
+  const row=document.createElement("div");row.className="spcs-row";
+  row.innerHTML='<input type="text" class="r-name" placeholder="品名"><input type="text" class="r-code" placeholder="條碼（選填）"><input type="text" class="r-qty" placeholder="數量" inputmode="numeric"><button type="button" class="spcs-del" title="刪除這列">✕</button>';
+  row.querySelector(".r-name").value=name||"";row.querySelector(".r-code").value=code||"";row.querySelector(".r-qty").value=qty||"";
+  row.querySelector(".spcs-del").addEventListener("click",()=>{row.remove();if(!box.children.length)spcsAddRow();});
+  box.appendChild(row);}
+function spcsResetRows(){const box=document.getElementById("spcs-rf-items");if(!box)return;box.innerHTML="";spcsAddRow();}
+function spcsSeg(id,cb){const seg=document.getElementById(id);if(!seg)return;seg.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;[...seg.children].forEach(x=>x.classList.remove("on"));b.classList.add("on");cb(b.dataset.v);});}
+(function(){
+  const typeSel=document.getElementById("spcs-type");if(!typeSel)return;
+  typeSel.addEventListener("change",()=>spcsSetType(typeSel.value));
+  document.querySelectorAll("#genm-spcs .spcs-reason").forEach(sel=>{
+    SPCS_REASONS.forEach(r=>{const o=document.createElement("option");o.textContent=r;sel.appendChild(o);});
+    sel.addEventListener("change",()=>{const other=sel.parentNode.querySelector("#"+sel.id.replace("-reason","-other"));gToggle(other,sel.value==="其他");});
+  });
+  const rr=document.getElementById("spcs-rf-reason");rr.addEventListener("change",()=>gToggle(document.getElementById("spcs-rf-reason-other"),rr.value==="其他"));
+  spcsSeg("spcs-rf-cat",v=>spcsRfCat=v);spcsSeg("spcs-rf-type",v=>spcsRfType=v);
+  document.getElementById("spcs-rf-add").addEventListener("click",()=>spcsAddRow());
+  spcsResetRows();spcsSetType("late");
+  const clr=document.getElementById("gen-clear");
+  if(clr)clr.addEventListener("click",function(){
+    ["spcs-order","spcs-track","spcs-late-cnt","spcs-late-ok-order","spcs-late-ok-track","spcs-late-boxes","spcs-late-carrier","spcs-late-date","spcs-late-other","spcs-in-list","spcs-od-date","spcs-od-other","spcs-dp-other","spcs-rf-recvdate","spcs-rf-reason-other","spcs-rf-amount"].forEach(id=>{const el=document.getElementById(id);if(el)el.value="";});
+    ["spcs-late-a1","spcs-late-a7","spcs-late-a8","spcs-dm-photo","spcs-rf-over"].forEach(id=>{const el=document.getElementById(id);if(el)el.checked=false;});
+    spcsResetRows();
+    if(genMODE==="spcs")document.getElementById("gen-out").innerHTML='<div class="gen-empty">← 左邊填好後，按上方按鈕產生</div>';
+  });
+})();
+function spcsOut(body,miss,warn){
+  let h='<div class="spcs-head">📮 蝦皮賣家客服申請・複製後貼到蝦皮客服對話框</div>';
+  if(miss.length)h+='<div class="spcs-miss">⚠️ 還沒填：'+miss.map(gEsc).join("、")+'<br>可以先產生，但送出前請補齊。</div>';
+  h+='<div class="gen-reply">'+gEsc(body)+'</div><button type="button" class="gen-copy" id="gen-copy-spcs">📋 複製內容</button>';
+  if(warn)h+='<div class="gen-warn">'+warn+'</div>';
+  document.getElementById("gen-out").innerHTML=h;
+  gBindCopy("gen-copy-spcs",()=>body);}
+function gSpcs(){
+  const t=spcsTYPE,order=sT("spcs-order"),track=sT("spcs-track"),miss=[];
+  const needOrder=(t!=="inspect"),needTrack=(t!=="inspect"&&t!=="refund"&&t!=="dispute");
+  if(needOrder&&!order)miss.push("訂單編號");
+  if(needTrack&&!track)miss.push("配送編號");
+  const oLine="蝦皮訂單 "+order+" # "+track;
+  let L=["蝦皮客服您好"],warn="";
+  if(t==="late"){
+    L.push("訂單 "+order,"配編 "+track,"","貨態 "+sT("spcs-late-status"),sT("spcs-late-wh"),"請協助確認包裹動向","");
+    const okO=sT("spcs-late-ok-order"),okT=sT("spcs-late-ok-track");
+    [["spcs-late-cnt","同箱總包裹件數"],["spcs-late-ok-order","同箱成功寄件訂單"],["spcs-late-boxes","當日總箱數"],["spcs-late-carrier","貨運物流商"],["spcs-late-date","貨運配達日"],["spcs-late-other","是否配送其他物流中心"]].forEach(([id,n])=>{if(!sT(id))miss.push(n);});
+    const att=id=>sC(id)?"請見附件":"（未附）";
+    L.push("2-(a) 包裹外箱照："+att("spcs-late-a1"),
+      "2-(b) 同箱總包裹件數："+sT("spcs-late-cnt"),
+      "2-(c) 同箱之中有成功寄件的訂單編號："+okO+(okT?"（配編："+okT+"）":""),
+      "3. 當日出貨至蝦皮理貨中心地點："+sT("spcs-late-loc"),
+      "4. 當日出貨到蝦皮店到店轉運中心的總箱數："+sT("spcs-late-boxes"),
+      "5. 貨運物流商名稱及貨運宅配單號："+sT("spcs-late-carrier"),
+      "6. 貨運配達日："+sT("spcs-late-date"),
+      "7. 簽收單圖檔（需有清楚簽收人大名）："+att("spcs-late-a7"),
+      "8. 出貨（裝箱）影片："+att("spcs-late-a8"),
+      "9. 同天是否有配送至其他物流中心："+sT("spcs-late-other"));
+    const noAtt=[["spcs-late-a1","外箱照"],["spcs-late-a7","簽收單"],["spcs-late-a8","裝箱影片"]].filter(([id])=>!sC(id)).map(x=>x[1]);
+    warn="📎 記得在蝦皮對話框另外上傳附件"+(noAtt.length?"。目前沒勾的：<b>"+noAtt.join("、")+"</b>，確定沒有就沒關係。":"：外箱照、簽收單、裝箱影片。");
+  }else if(t==="abnormal"){
+    L.push("訂單 "+order,"配編 "+track,"","此包裹貨態顯示："+sT("spcs-ab-status"),sT("spcs-ab-ask")+"，謝謝");
+  }else if(t==="inspect"){
+    const rows=sT("spcs-in-list").split(/\n+/).map(x=>x.trim()).filter(x=>x);
+    if(!rows.length)miss.push("訂單＋配編");
+    rows.forEach(r=>{const p=r.split(/[\s#＃,，\/]+/).filter(x=>x);L.push("蝦皮訂單 "+(p[0]||"")+(p[1]?" # "+p[1]:""));});
+    L.push("請問包裹驗收失敗原因，謝謝");
+  }else if(t==="damage"){
+    L.push(oLine,sT("spcs-dm-desc")+"，"+sT("spcs-dm-pack")+"，","是否可以提出運損賠償，謝謝");
+    if(!sC("spcs-dm-photo"))warn="📎 運損賠償通常需要照片，記得在對話框附上商品破損照／外箱照。";
+  }else if(t==="lost"){
+    L.push(oLine,"顧客反映"+sT("spcs-lo-desc"),sT("spcs-lo-wh"),"請協助確認是否物流運送中造成，謝謝");
+  }else if(t==="opendispute"){
+    const r=spcsReasonVal("spcs-od-reason","spcs-od-other"),d=sT("spcs-od-date");
+    if(!d)miss.push("日期");if(!r)miss.push("爭議原因");
+    L.push(oLine,d+" "+sT("spcs-od-kind")+"，"+r,"後台系統未跳出爭議選項，無法點選爭議","請協助開啟爭議，謝謝！");
+  }else if(t==="dispute"){
+    const r=spcsReasonVal("spcs-dp-reason","spcs-dp-other");if(!r)miss.push("爭議原因");
+    L.push("訂單 "+order,r,"請協助發起爭議，謝謝");
+  }else if(t==="refund"){
+    const items=[...document.querySelectorAll("#spcs-rf-items .spcs-row")].map(r=>({n:r.querySelector(".r-name").value.trim(),c:r.querySelector(".r-code").value.trim(),q:r.querySelector(".r-qty").value.trim()})).filter(x=>x.n||x.c);
+    if(!items.length)miss.push("退款品項");
+    if(items.some(x=>!x.q))miss.push("品項數量");
+    const unit=sT("spcs-rf-unit")||"件";
+    let total=0,allNum=true;items.forEach(x=>{const n=parseFloat(x.q);if(isNaN(n))allNum=false;else total+=n;});
+    let rs=sT("spcs-rf-reason");if(rs==="其他")rs=sT("spcs-rf-reason-other");
+    const recv=sT("spcs-rf-recv"),rd=sT("spcs-rf-recvdate"),amt=sT("spcs-rf-amount");
+    L.push("【退貨退款申請】","退款類別："+spcsRfCat,"退款類型："+spcsRfType+(sC("spcs-rf-over")?"，已過鑑賞期所以不可退款":""));
+    if(recv)L.push("是否已收到退貨商品（是／否／不需收回）："+recv+(recv==="是"&&rd?" "+rd:""));
+    L.push("訂單編號【"+order+"】","退款品項");
+    items.forEach(x=>L.push(x.n+(x.c?"/"+x.c:"")+(x.q?" *"+x.q+unit:"")));
+    if(items.length>1&&allNum&&total>0)L.push("共"+total+unit);
+    L.push("退款原因【"+rs+"】","退款金額【"+(amt||"")+"】"+(amt?"":"請協助計算"));
+  }
+  spcsOut(L.join("\n"),miss,warn);
+}
+document.getElementById("gen-go").addEventListener("click",function(){if(genMODE==="spcs")gSpcs();else if(genMODE==="furn")gFurn();else if(genMODE==="shopee")gShopee();else if(genMODE==="pickup")gPickup();else gRender();});
 const GEN_QUICK=[
  {label:"退貨/鑑賞期",q:"客戶想退貨，詢問鑑賞期和退貨方式"},
  {label:"商品瑕疵/破損",q:"商品收到有瑕疵破損，要如何退換貨"},
