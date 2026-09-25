@@ -517,14 +517,25 @@ mark.hl{background:#fff176;color:#333;padding:1px 3px;border-radius:3px;font-wei
         <label class="gen-lb">訂單狀態</label><input id="sq-status" type="text" placeholder="例：不成立 / 成立 / 查無">
       </div>
       <div id="genm-pickup" style="display:none">
+        <label class="gen-lb">取件情境</label>
+        <div class="gen-seg" id="pk-kind">
+          <button type="button" data-v="dispatch" class="on">📦 我方派車取件</button>
+          <button type="button" data-v="recycle">📞 客戶來電要求回收</button>
+        </div>
         <label class="gen-lb">TM單號（官網用）</label><input id="pk-tm" type="text" placeholder="例：TM260901BA00FG">
         <label class="gen-lb">配送單號 10碼（官網用）</label><input id="pk-track" type="text" placeholder="例：2114974702">
         <label class="gen-lb">蝦皮訂單編號（蝦皮用）</label><input id="pk-sp" type="text" placeholder="蝦皮案件才填">
         <label class="gen-lb">客戶姓名</label><input id="pk-name" type="text" placeholder="例：楊怡真">
+        <div id="pk-disp-only">
         <label class="gen-lb">商品名稱／數量（蝦皮取件用）</label><input id="pk-prod" type="text" placeholder="例：PP收納盒/小/2入 *1">
         <label class="gen-lb">手機號碼</label><input id="pk-phone" type="text" placeholder="例：0939513196">
         <label class="gen-lb">取件地址</label><input id="pk-addr" type="text" placeholder="例：新北市板橋區藝文街106號9樓">
+        </div>
         <label class="gen-lb">說明</label><textarea id="pk-note" placeholder="例：客來電表示明日商品就會在管理室，再請人員協助，謝謝。"></textarea>
+        <div id="pk-rec-only" style="display:none">
+          <label class="gen-lb">退回商品清單（一行一件，前面的「-」會自動加）</label>
+          <textarea id="pk-items" rows="6" placeholder="例：&#10;男透氣五分袖襯衫墨灰*XL*1&#10;男水洗牛津布扣領短袖套衫灰色XL*1"></textarea>
+        </div>
       </div>
       <label class="gen-lb" id="gen-ch-lb">服務管道</label>
       <div class="gen-seg" id="gen-seg-ch">
@@ -1577,7 +1588,31 @@ function gShopee(){
   const body="DEAR "+to+"好～\n\n再請協助確認\n\n訂單單號 "+(order||"")+"\n配送單號 # "+(track||"")+"\n"+(ship||"")+"\n訂單狀態："+(status||"");
   gOutBlock(subj,body,"");
 }
+let pkKIND="dispatch";
+function gMaskName(n){n=(n||"").trim();if(!n||n.indexOf("*")>=0)return n;const a=[...n];if(a.length<=1)return n;if(a.length===2)return a[0]+"*";return a[0]+"*".repeat(a.length-2)+a[a.length-1];}
+(function(){const seg=document.getElementById("pk-kind");if(!seg)return;
+  seg.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
+    [...seg.children].forEach(x=>x.classList.remove("on"));b.classList.add("on");pkKIND=b.dataset.v;
+    const rec=(pkKIND==="recycle");
+    gToggle(document.getElementById("pk-disp-only"),!rec);
+    gToggle(document.getElementById("pk-rec-only"),rec);
+    const nt=document.getElementById("pk-note");
+    if(nt)nt.placeholder=rec?"例：客戶表示商品已放管理室 可以直接過去回收":"例：客來電表示明日商品就會在管理室，再請人員協助，謝謝。";
+    document.getElementById("gen-out").innerHTML='<div class="gen-empty">← 左邊填好後，按上方按鈕產生</div>';
+  });
+})();
+function gPickupRecycle(){
+  const chLabel=genCH==="蝦皮"?"蝦皮":"官網";
+  const name=gMaskName(gv("pk-name")),tm=gv("pk-tm"),track=gv("pk-track"),sp=gv("pk-sp"),note=gv("pk-note");
+  const header=(chLabel==="蝦皮"?[sp,name,track]:[tm,name,track]).map(x=>(x||"").trim()).filter(x=>x).join(" - ");
+  let lines=[header];
+  note.split(/\n+/).map(x=>x.trim().replace(/^[-－—]\s*/,"")).filter(x=>x).forEach(x=>lines.push("-"+x));
+  gv("pk-items").split(/\n+/).map(x=>x.trim().replace(/^[-－—]\s*/,"")).filter(x=>x).forEach(x=>lines.push("-"+x));
+  lines.push("以上，再麻煩了 ~ 謝謝");
+  gOutBlock(null,lines.join("\n"),"⚠️ 這是給新竹物流的回收訊息（客戶來電要求回收），貼到對應派車管道即可。姓名已自動遮罩中間字。");
+}
 function gPickup(){
+  if(pkKIND==="recycle"){gPickupRecycle();return;}
   const chLabel=genCH==="蝦皮"?"蝦皮":"官網";
   const name=gv("pk-name"),tm=gv("pk-tm"),track=gv("pk-track"),sp=gv("pk-sp"),prod=gv("pk-prod"),phone=gv("pk-phone"),addr=gv("pk-addr"),note=gv("pk-note");
   const header=chLabel==="蝦皮"?((sp||"")+"-"+(name||"")):((tm||"")+"-"+(name||"")+"-"+(track||""));
@@ -1610,7 +1645,7 @@ document.getElementById("gen-q").addEventListener("keydown",e=>{if(e.ctrlKey&&e.
   var b=document.getElementById('gen-clear');
   if(!b)return;
   b.addEventListener('click',function(){
-    ['gen-name','gen-order','gen-prod','gen-code','gen-q','furn-name','furn-tg','furn-tm','furn-sp','furn-desc','furn-date','furn-addrmode','furn-addr','furn-elev','furn-carry','furn-slot','furn-pack','sq-order','sq-track','sq-ship','sq-status','pk-tm','pk-track','pk-sp','pk-name','pk-prod','pk-phone','pk-addr','pk-note'].forEach(function(id){
+    ['gen-name','gen-order','gen-prod','gen-code','gen-q','furn-name','furn-tg','furn-tm','furn-sp','furn-desc','furn-date','furn-addrmode','furn-addr','furn-elev','furn-carry','furn-slot','furn-pack','sq-order','sq-track','sq-ship','sq-status','pk-tm','pk-track','pk-sp','pk-name','pk-prod','pk-phone','pk-addr','pk-note','pk-items'].forEach(function(id){
       var el=document.getElementById(id); if(el) el.value='';
     });
     var out=document.getElementById('gen-out');
