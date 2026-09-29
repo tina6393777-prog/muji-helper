@@ -563,7 +563,8 @@ mark.hl{background:#fff176;color:#333;padding:1px 3px;border-radius:3px;font-wei
         <label class="gen-lb">蝦皮訂單編號（蝦皮用）</label><input id="pk-sp" type="text" placeholder="蝦皮案件才填">
         <label class="gen-lb">客戶姓名</label><input id="pk-name" type="text" placeholder="例：楊怡真">
         <div id="pk-disp-only">
-        <label class="gen-lb">商品名稱／數量（蝦皮取件用）</label><input id="pk-prod" type="text" placeholder="例：PP收納盒/小/2入 *1">
+        <label class="gen-lb">商品名稱</label><input id="pk-prod" type="text" placeholder="例：PP盒/深型(正反疊)">
+        <label class="gen-lb">數量（沒填自動帶 1）</label><input id="pk-qty" type="number" min="1" placeholder="1">
         <label class="gen-lb">手機號碼</label><input id="pk-phone" type="text" placeholder="例：0939513196">
         <label class="gen-lb">取件地址</label><input id="pk-addr" type="text" placeholder="例：新北市板橋區藝文街106號9樓">
         </div>
@@ -1784,8 +1785,12 @@ function gPickup(){
   const header=chLabel==="蝦皮"?((sp||"")+"-"+(name||"")):((tm||"")+"-"+(name||"")+"-"+(track||""));
   const fixed="【請用"+chLabel+"客代，備註原訂單編號，請回饋收件單號】";
   let rows=[];
-  if(chLabel==="蝦皮")rows.push("商品名稱："+prod);
-  rows.push("客戶姓名："+name,"手機號碼："+phone,"取件地址："+addr,"說明："+note);
+  const qty=(gv("pk-qty")||"").trim()||"1";
+  const prodTxt=prod?(/\*\s*\d+\s*$/.test(prod)?prod:prod+"*"+qty):"";
+  if(chLabel==="蝦皮")rows.push("商品名稱："+prodTxt);
+  rows.push("客戶姓名："+name,"手機號碼："+phone,"取件地址："+addr);
+  if(chLabel!=="蝦皮"&&prodTxt)rows.push("商品名稱："+prodTxt);
+  rows.push("說明："+note);
   const body=[header,fixed].concat(rows).join("\n");
   gOutBlock(null,body,"⚠️ 這是給新竹物流的派車取件訊息，貼到對應派車管道即可。");
 }
@@ -1927,7 +1932,7 @@ document.getElementById("gen-q").addEventListener("keydown",e=>{if(e.ctrlKey&&e.
   var b=document.getElementById('gen-clear');
   if(!b)return;
   b.addEventListener('click',function(){
-    ['gen-name','gen-order','gen-prod','gen-code','gen-q','furn-name','furn-tg','furn-tm','furn-sp','furn-desc','furn-date','furn-addrmode','furn-addr','furn-elev','furn-carry','furn-slot','furn-pack','sq-order','sq-track','sq-ship','sq-status','pk-tm','pk-track','pk-sp','pk-name','pk-prod','pk-phone','pk-addr','pk-note','pk-items'].forEach(function(id){
+    ['gen-name','gen-order','gen-prod','gen-code','gen-q','furn-name','furn-tg','furn-tm','furn-sp','furn-desc','furn-date','furn-addrmode','furn-addr','furn-elev','furn-carry','furn-slot','furn-pack','sq-order','sq-track','sq-ship','sq-status','pk-tm','pk-track','pk-sp','pk-name','pk-prod','pk-qty','pk-phone','pk-addr','pk-note','pk-items'].forEach(function(id){
       var el=document.getElementById(id); if(el) el.value='';
     });
     var out=document.getElementById('gen-out');
