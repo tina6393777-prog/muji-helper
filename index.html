@@ -1548,6 +1548,10 @@ document.getElementById('smart-input').addEventListener('keydown',e=>{if(e.key==
 #tab-gen .gb-high{background:#e3f3e6;color:#1f7a37}#tab-gen .gb-mid{background:#fdf2df;color:#b5820b}#tab-gen .gb-low{background:#fbe4e4;color:#b02a2a}
 #tab-gen .gen-rt{font-size:14px;margin:2px 0 0;color:#5a534d;font-weight:700}
 #tab-gen .gen-reply{background:#fdfcfa;border:1px solid #e6e0d8;border-radius:10px;padding:14px;white-space:pre-wrap;font-size:14px;margin-top:10px;line-height:1.75}
+#tab-gen .gen-reply[contenteditable]{cursor:text;outline:none;transition:border-color .15s,box-shadow .15s}
+#tab-gen .gen-reply[contenteditable]:hover{border-color:#d9b9b9}
+#tab-gen .gen-reply[contenteditable]:focus{border-color:#B81C22;box-shadow:0 0 0 3px rgba(184,28,34,.12);background:#fff}
+#tab-gen .gen-edhint{font-size:12px;color:#8a817a;margin-top:8px}
 #tab-gen .gen-fill{background:#fff3cd;color:#9a6b00;font-weight:700;border-radius:3px;padding:0 2px}
 #tab-gen .gen-src{font-size:12px;color:#8a817a;margin:12px 0 4px;border-top:1px dashed #e6e0d8;padding-top:8px}
 #tab-gen .gen-src b{color:#6b635c}
@@ -1692,12 +1696,12 @@ function gMakeReply(i){
   const full=head+pl+filled+tail;
   GEN_COPY=full;
   let h='<h3 class="gen-rt">✉️ '+genCH+'回信草稿'+gBadge(gConf(x))+'</h3>';
-  h+='<div class="gen-reply">'+gMark(gEsc(full))+'</div>';
+  h+='<div class="gen-edhint">✏️ 可以直接點下面的內容修改，按複製會帶出修改後的版本</div>'+'<div class="gen-reply" id="gen-ed-reply" contenteditable="true" spellcheck="false">'+gMark(gEsc(full))+'</div>';
   h+='<button type="button" class="gen-copy" id="gen-copybtn">📋 複製回信</button>';
   h+='<div class="gen-src">來源範本：<b>'+gEsc(best.t)+'</b>（'+gEsc(best.ch)+' / '+gEsc(best.cat)+'）　黃底處請同仁自行確認填入</div>';
   const fin=document.getElementById("gen-final");fin.innerHTML=h;
   document.querySelectorAll("#tab-gen .gen-cand").forEach((el,idx)=>el.classList.toggle("sel",idx===i));
-  document.getElementById("gen-copybtn").addEventListener("click",function(){navigator.clipboard.writeText(GEN_COPY).then(()=>{this.textContent="✅ 已複製";this.classList.add("done");setTimeout(()=>{this.textContent="📋 複製回信";this.classList.remove("done");},1800);});});
+  document.getElementById("gen-copybtn").addEventListener("click",function(){navigator.clipboard.writeText(gEdTxt("gen-ed-reply")).then(()=>{this.textContent="✅ 已複製";this.classList.add("done");setTimeout(()=>{this.textContent="📋 複製回信";this.classList.remove("done");},1800);});});
   fin.scrollIntoView({behavior:"smooth",block:"nearest"});
 }
 document.getElementById("gen-seg-ch").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
@@ -1726,14 +1730,16 @@ document.getElementById("gen-mode").addEventListener("click",e=>{const b=e.targe
 let furnACT="變更";
 document.getElementById("furn-act").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;[...b.parentNode.children].forEach(x=>x.classList.remove("on"));b.classList.add("on");furnACT=b.dataset.v;});
 (function(){const d=new Date();const md=("0"+(d.getMonth()+1)).slice(-2)+"/"+("0"+d.getDate()).slice(-2);const f=document.getElementById("furn-date");if(f&&!f.value)f.value=md;})();
+function gEdTxt(id){const el=document.getElementById(id);return el?el.innerText.replace(/\u00a0/g," ").replace(/\n+$/,""):"";}
+document.addEventListener("paste",function(e){const t=e.target.closest&&e.target.closest("#tab-gen [contenteditable]");if(!t)return;e.preventDefault();const tx=(e.clipboardData||window.clipboardData).getData("text/plain");document.execCommand("insertText",false,tx);});
 function gBindCopy(id,getText){const el=document.getElementById(id);if(!el)return;el.addEventListener("click",function(){navigator.clipboard.writeText(getText()).then(()=>{const o=this.textContent;this.textContent="✅ 已複製";this.classList.add("done");setTimeout(()=>{this.textContent=o;this.classList.remove("done");},1600);});});}
 function gOutBlock(subj,body,warn){
-  let h='<div class="gen-internal">🔒 內部後送格式・請勿直接寄給客戶</div>';
-  if(subj){h+='<div class="gen-src">主旨</div><div class="gen-reply">'+gEsc(subj)+'</div><button type="button" class="gen-copy" id="gen-copy-subj">📋 複製主旨</button>';}
-  h+='<div class="gen-src">內文</div><div class="gen-reply">'+gEsc(body)+'</div><button type="button" class="gen-copy" id="gen-copy-body">📋 複製內文</button>';
+  let h='<div class="gen-internal">🔒 內部後送格式・請勿直接寄給客戶</div><div class="gen-edhint">✏️ 可以直接點下面的內容修改，按複製會帶出修改後的版本</div>';
+  if(subj){h+='<div class="gen-src">主旨</div><div class="gen-reply" id="gen-ed-subj" contenteditable="true" spellcheck="false">'+gEsc(subj)+'</div><button type="button" class="gen-copy" id="gen-copy-subj">📋 複製主旨</button>';}
+  h+='<div class="gen-src">內文</div><div class="gen-reply" id="gen-ed-body" contenteditable="true" spellcheck="false">'+gEsc(body)+'</div><button type="button" class="gen-copy" id="gen-copy-body">📋 複製內文</button>';
   if(warn)h+='<div class="gen-warn">'+warn+'</div>';
   document.getElementById("gen-out").innerHTML=h;
-  gBindCopy("gen-copy-subj",()=>subj);gBindCopy("gen-copy-body",()=>body);
+  gBindCopy("gen-copy-subj",()=>gEdTxt("gen-ed-subj"));gBindCopy("gen-copy-body",()=>gEdTxt("gen-ed-body"));
 }
 function gFurn(){
   const name=gv("furn-name"),tg=gv("furn-tg"),tm=gv("furn-tm"),sp=gv("furn-sp"),desc=gv("furn-desc"),date=gv("furn-date");
@@ -1855,10 +1861,10 @@ function spcsSeg(id,cb){const seg=document.getElementById(id);if(!seg)return;seg
 function spcsOut(body,miss,warn){
   let h='<div class="spcs-head">📮 蝦皮賣家客服申請・複製後貼到蝦皮客服對話框</div>';
   if(miss.length)h+='<div class="spcs-miss">⚠️ 還沒填：'+miss.map(gEsc).join("、")+'<br>可以先產生，但送出前請補齊。</div>';
-  h+='<div class="gen-reply">'+gEsc(body)+'</div><button type="button" class="gen-copy" id="gen-copy-spcs">📋 複製內容</button>';
+  h+='<div class="gen-edhint">✏️ 可以直接點下面的內容修改，按複製會帶出修改後的版本</div>'+'<div class="gen-reply" id="gen-ed-spcs" contenteditable="true" spellcheck="false">'+gEsc(body)+'</div><button type="button" class="gen-copy" id="gen-copy-spcs">📋 複製內容</button>';
   if(warn)h+='<div class="gen-warn">'+warn+'</div>';
   document.getElementById("gen-out").innerHTML=h;
-  gBindCopy("gen-copy-spcs",()=>body);}
+  gBindCopy("gen-copy-spcs",()=>gEdTxt("gen-ed-spcs"));}
 function gSpcs(){
   const t=spcsTYPE,order=sT("spcs-order"),track=sT("spcs-track"),miss=[];
   const needOrder=(t!=="inspect"),needTrack=(t!=="inspect"&&t!=="refund"&&t!=="dispute");
