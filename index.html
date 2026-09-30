@@ -1780,7 +1780,7 @@ function gMaskName(n){n=(n||"").trim();if(!n||n.indexOf("*")>=0)return n;const a
 function gPickupRecycle(){
   const chLabel=genCH==="蝦皮"?"蝦皮":"官網";
   const name=gMaskName(gv("pk-name")),tm=gv("pk-tm"),track=gv("pk-track"),sp=gv("pk-sp"),note=gv("pk-note");
-  const header=(chLabel==="蝦皮"?[sp,name,track]:[tm,name,track]).map(x=>(x||"").trim()).filter(x=>x).join(" - ");
+  const header=(chLabel==="蝦皮"?[sp||tm,name,track]:[tm||sp,name,track]).map(x=>(x||"").trim()).filter(x=>x).join(" - ");
   let lines=[header];
   note.split(/\n+/).map(x=>x.trim().replace(/^[-－—]\s*/,"")).filter(x=>x).forEach(x=>lines.push("-"+x));
   gv("pk-items").split(/\n+/).map(x=>x.trim().replace(/^[-－—]\s*/,"")).filter(x=>x).forEach(x=>lines.push("-"+x));
@@ -1791,8 +1791,8 @@ function gPickup(){
   if(pkKIND==="recycle"){gPickupRecycle();return;}
   const chLabel=genCH==="蝦皮"?"蝦皮":"官網";
   const name=gv("pk-name"),tm=gv("pk-tm"),track=gv("pk-track"),sp=gv("pk-sp"),prod=gv("pk-prod"),phone=gv("pk-phone"),addr=gv("pk-addr"),note=gv("pk-note");
-  const header=chLabel==="蝦皮"?((sp||"")+"-"+(name||"")):((tm||"")+"-"+(name||"")+"-"+(track||""));
-  const fixed="【請用"+chLabel+"客代，備註原訂單編號，請回饋收件單號】";
+  const header=(chLabel==="蝦皮"?[sp||tm,name]:[tm||sp,name,track]).map(x=>(x||"").trim()).filter(x=>x).join("-");
+  const fixed="【請用"+((sp||"").trim()?"蝦皮":chLabel)+"客代，備註原訂單編號，請回饋收件單號】";
   let rows=[];
   const qty=(gv("pk-qty")||"").trim()||"1";
   const prodTxt=prod?(/\*\s*\d+\s*$/.test(prod)?prod:prod+"*"+qty):"";
