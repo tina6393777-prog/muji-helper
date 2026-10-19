@@ -31,16 +31,34 @@ details>summary .grp:after{content:"▸ 展開";font-weight:400;font-size:13px;c
 .acts .ok{background:var(--ink);color:#fff;border-color:var(--ink)}
 .msg{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px;color:var(--sub);line-height:1.6}
 #toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:999px;font-size:14px;display:none;z-index:9}
+
+.imp-btn{background:var(--red)!important;color:#fff!important;border-color:var(--red)!important;font-weight:700}
+#imp{position:fixed;inset:0;background:rgba(40,35,30,.45);display:none;z-index:8;overflow:auto;padding:24px 12px}
+#imp .box{background:var(--bg);max-width:820px;margin:0 auto;border-radius:12px;padding:18px 18px 0}
+#imp h2{font-size:18px;margin-bottom:6px}#imp .hint{color:var(--sub);font-size:13px;line-height:1.6}
+#imp .file{display:block;margin:14px 0;padding:18px;border:2px dashed var(--line);border-radius:10px;text-align:center;background:#fff;cursor:pointer}
+#imp .sec{margin:16px 0 6px;font-weight:700}#imp .sec small{font-weight:400;color:var(--sub)}
+#imp .it{display:flex;gap:10px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:6px}
+#imp .it input{margin-top:4px;width:18px;height:18px;flex:none}
+#imp .it .t{font-weight:700}#imp .it .n{font-size:13px;color:var(--ink);white-space:pre-line;margin-top:4px;line-height:1.5}
+#imp .bd{display:inline-block;font-size:12px;padding:1px 8px;border-radius:999px;margin-left:6px;background:#EFEAE3}
+#imp .bd.c{background:#E3EFEA;color:var(--green);font-weight:700}#imp .bd.f{background:var(--red);color:#fff}#imp .bd.m{background:var(--redbg);color:var(--red)}
+#imp .man{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin-bottom:6px;font-size:13px;line-height:1.5}
+#imp .man b{color:var(--sub);font-weight:400}#imp .man i{display:block;color:var(--green);font-style:normal;font-size:12px}
+#imp .foot{position:sticky;bottom:0;background:var(--bg);display:flex;gap:8px;justify-content:flex-end;padding:12px 0;border-top:1px solid var(--line);margin-top:12px}
+#imp .foot button{font:inherit;border-radius:8px;padding:8px 16px;cursor:pointer;border:1px solid var(--line);background:#fff}
+#imp .foot .go{background:var(--ink);color:#fff;border-color:var(--ink);font-weight:700}
 @media(max-width:600px){.chips{grid-template-columns:repeat(2,1fr)}.tags{margin-left:0}}
 </style></head><body>
 <header><h1>📦 新竹物流未結案追蹤</h1><a href="index.html">← 回小幫手</a></header>
 <div class="wrap">
-<div class="bar"><span id="upd">載入中…</span><button id="reload">↻ 重新整理</button><button id="who"></button></div>
+<div class="bar"><span id="upd">載入中…</span><button id="reload">↻ 重新整理</button><button id="who"></button><button id="impBtn" class="imp-btn">📥 匯入 LINE 對話</button></div>
 <div class="chips" id="chips"></div>
 <input id="q" placeholder="搜尋訂單編號、物流單號、客戶…">
 <div id="list"></div>
 </div>
 <div id="toast"></div>
+<div id="imp"><div class="box" id="impBox"></div></div>
 <script>
 // ★ 部署 Apps Script 後，把「網頁應用程式網址」貼在下面引號裡
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzciVED3RJSngZWiTJXVVOiuVQJu3uwO7LOBcgoBug6UarnwoCExdRyxS6jrkio5CT1mA/exec";
@@ -97,5 +115,153 @@ document.getElementById("list").onclick=e=>{const b=e.target.closest("button[dat
 document.getElementById("q").oninput=render;
 document.getElementById("reload").onclick=load;
 document.getElementById("who").onclick=()=>myName(true);
+
+// ===== 匯入 LINE =====
+// ===== LINE 對話解析（網頁與測試共用）=====
+const HCT_NAMES=["Sia Chiu","Jamie"], MUJI_NAMES=["讌涵","姚宜君"];
+const KNOWN=["Sia Chiu","Jamie","讌涵","姚宜君","ㄚ娟","程高客服KH","程高客服2","程高客服","昱儒","✿ 約翰毛毛ฅʕ•ᴥ•ʔฅ"].sort((a,b)=>b.length-a.length);
+function parseLine(txt){
+  const lines=txt.replace(/^﻿/,"").split(/\r?\n/); const msgs=[]; let day=null, cur=null;
+  for(const raw of lines){
+    const d=raw.match(/^(\d{4})[\/.](\d{1,2})[\/.](\d{1,2})[\s（(]/)||raw.match(/^(\d{4})[\/.](\d{1,2})[\/.](\d{1,2})$/);
+    if(d){day=[+d[1],+d[2],+d[3]];cur=null;continue}
+    const t=raw.match(/^(\d{1,2}):(\d{2})[\t ](.*)$/);
+    if(t&&day){let rest=t[3],who="",text="";
+      if(rest.includes("\t")){const i=rest.indexOf("\t");who=rest.slice(0,i).trim();text=rest.slice(i+1)}
+      else{const k=KNOWN.find(n=>rest.startsWith(n+" ")||rest===n||rest.startsWith(n+"已"));
+        if(k){who=k;text=rest.slice(k.length).replace(/^ /,"")}else{const i=rest.indexOf(" ");who=i<0?rest:rest.slice(0,i);text=i<0?"":rest.slice(i+1)}}
+      cur={dt:new Date(day[0],day[1]-1,day[2],+t[1],+t[2]),who,text,side:HCT_NAMES.includes(who)?"hct":MUJI_NAMES.includes(who)?"muji":"us"};
+      msgs.push(cur);continue}
+    if(cur)cur.text+="\n"+raw;
+  }
+  msgs.forEach(m=>m.text=m.text.replace(/\s+$/,""));
+  return msgs;
+}
+const RE_TRK=/(?<![0-9])(?!09)\d{10}(?![0-9])/g;
+const RE_ORD=/(?<![A-Z0-9])(?:TM|TG)?(?=[0-9A-Z]*[A-Z])\d{6,7}[A-Z0-9]{5,9}(?:-\d{1,2})?(?![A-Z0-9])/g;
+const baseOrd=o=>o.replace(/-\d{1,2}$/,"");
+function idsOf(text){const up=text.toUpperCase();
+  const trk=[...new Set((up.match(RE_TRK)||[]))];
+  const ord=[...new Set((up.match(RE_ORD)||[]).map(baseOrd))].filter(o=>/[A-Z]/.test(o)&&o.length>=12);
+  return {trk,ord}}
+function maskName(n){n=(n||"").replace(/＊/g,"*").trim();if(!n)return"";if(n.includes("*"))return n;
+  if(!/[一-鿿]/.test(n))return n.slice(0,2)+"***";return n.length<=2?n[0]+"*":n[0]+"*".repeat(n.length-2)+n[n.length-1]}
+function nameOf(text){const m=text.match(/-\s*([一-鿿A-Za-z]{1,4}[＊*]?[一-鿿A-Za-z]{0,3})\s*-\s*\d{9,10}/);return m?m[1]:""}
+const PII_LINE=/^\s*【?(電話|手機|手機號碼|連絡電話|聯絡電話|地址|收件地址|取件地址|回收地址|收件資訊|客戶姓名|姓名|收件人|寄件人)】?\s*[:：]/;
+const RE_ADDR=/\d{0,3}[\u4e00-\u9fff]{1,3}[市縣][\u4e00-\u9fff]{1,4}[區鄉鎮市][^，,。\s]*?\d+號[^，,。\s]*/g;
+function clean(text,fullName,masked){let t=text.split("\n").filter(l=>!PII_LINE.test(l))
+  .join(" ").replace(RE_ADDR,"[地址]").replace(/(?<![0-9A-Za-z])09\d{2}-?\d{3}-?\d{3}(?!\d)/g,"[電話]").replace(/(?<![0-9A-Za-z])0\d{1,2}-\d{6,8}(?!\d)/g,"[電話]").replace(/\s+/g," ").trim();
+  if(fullName&&!fullName.includes("*")&&!fullName.includes("＊"))t=t.split(fullName).join(maskName(fullName));
+  if(masked&&/^[\u4e00-\u9fff][*]+[\u4e00-\u9fff]$/.test(masked)){const re=new RegExp(masked[0]+"[\u4e00-\u9fff]{"+(masked.length-2)+"}"+masked[masked.length-1],"g");t=t.replace(re,masked)}
+  return t||"（無文字內容）"}
+function statusLine(text){ // 第一行若以單號開頭，拿掉「單號-姓名-單號」那段
+  const lines=text.split("\n");
+  if(/^\s*(蝦皮\S*\s*)?[0-9A-Z][0-9A-Z]{7,}/.test(lines[0])){lines[0]=lines[0].replace(/^\s*(蝦皮\S*\s*)?[0-9A-Z][0-9A-Z\-]*(\s*-?\s*[^\s\-\d]{1,8}\s*-\s*\d{9,10})?(\s*[\/／+]\s*\d{9,10})*[\s，,]*/,"")}
+  const r=lines.join("\n").trim();return r||text}
+function holdOf(text,dt){const m=text.match(/保留至\s*(\d{1,2})\/(\d{1,2})/);if(!m)return"";let y=dt.getFullYear();if(+m[1]<dt.getMonth()+1-6)y++;
+  return `${y}-${String(m[1]).padStart(2,"0")}-${String(m[2]).padStart(2,"0")}`}
+function faultOf(text){if(/送錯|配錯/.test(text))return"疑似送錯";if(/遺失/.test(text))return"疑似遺失";if(/破損|破\d瓶|破一/.test(text))return"疑似破損";
+  if(/非無印|不屬無印|錯件|收錯|錯誤包裹|ZARA|酷澎|GU商品/.test(text))return"疑似回收錯";return""}
+const ASK=/請協助確認|請協助提供|請提供|是否|請再確認|請問|協請確認|請再協助/;
+const CLOSE=/已通知取消取件|已取消取件|已再次通知站所取消取件|已退倉|皆已退倉|已配達|已通知改址|已辦退|已退還給客|已退回給客|已收到，謝謝|已有電聯客確認已收到|已送至客正址|10\/\d+已退倉/;
+const OPEN=/已請站所協處|待追蹤|已派車|待確認|待回覆|已取件，待追退倉|已提供給站所/;
+function judge(m){ // 回傳 {cat, close}
+  if(m.side==="hct"){
+    if(ASK.test(m.text))return{cat:"我方",close:false};
+    if(CLOSE.test(m.text)&&!/待追|待確認|待回覆/.test(m.text))return{cat:"",close:true};
+    return{cat:"新竹",close:false}}
+  if(/請|煩請|協助|取消取件/.test(m.text))return{cat:"新竹",close:false};
+  return{cat:"",close:false}}
+const NOISE=/^(以上)?(收|收到|收收|已通知|已收到|好的|了解)?[，,、 ]*(謝謝|謝|感謝協助|感謝)?[\s~～!！。.]*$|^(\[?貼圖\]?|\[?照片\]?|圖片|貼圖)$|已收回訊息|已退出群組|已關閉設定|已新增|已建立記事本|已分享記事本|已張貼至記事本/;
+function buildSuggestions(msgs,cases,since){
+  const idx=new Map(); // key -> case
+  for(const c of cases){const {trk,ord}=idsOf((c.order||"")+" "+(c.trk||""));trk.forEach(k=>idx.set(k,c));ord.forEach(k=>idx.set(k,c))}
+  const upd=new Map(), add=new Map(), manual=[]; let last=since, recent=[];
+  for(const m of msgs){ if(since&&m.dt<=since)continue; if(!last||m.dt>last)last=m.dt;
+    if(!m.text.trim()||(m.text.trim().length<16&&NOISE.test(m.text.trim())))continue;
+    const {trk,ord}=idsOf(m.text); const keys=[...trk,...ord];
+    if(!keys.length){ const h=recent.filter(x=>x.dt.toDateString()===m.dt.toDateString()).slice(-3).map(x=>x.label);
+      manual.push({...m,hint:[...new Set(h)].reverse().join("、")}); continue}
+    {const c=keys.map(k=>idx.get(k)).find(Boolean);const label=c?(c.order+" "+(c.name||"")).trim():(ord[0]||trk[0]);
+      recent=recent.filter(x=>x.label!==label);recent.push({dt:m.dt,label})}
+    const md=`${m.dt.getMonth()+1}/${m.dt.getDate()}`; const who=m.side==="hct"?"新竹":m.side==="muji"?"MUJI":"我方";
+    const hit=keys.map(k=>idx.get(k)).find(Boolean)||null;
+    const full=nameOf(m.text); const mk=hit&&hit.name?hit.name.replace(/＊/g,"*"):maskName(full); const note=`${md} ${who}：${clean(statusLine(m.text),full,mk).slice(0,140)}`;
+    const j=judge(m);
+    if(hit){ if(hit.state==="已結案"){manual.push(m);continue}
+      const u=upd.get(hit.id)||{type:"update",id:hit.id,c:hit,notes:[],cat:"",close:false,closeNote:""};
+      u.notes.push(note); if(j.close){u.close=true;u.closeNote=clean(statusLine(m.text),full,mk).slice(0,60)}else{u.close=false;if(j.cat&&j.cat!==hit.cat)u.cat=j.cat;else u.cat=""}
+      const f=faultOf(m.text);if(f&&!hit.fault)u.fault=f;
+      upd.set(hit.id,u); continue}
+    // 新案件：以第一個單號為鍵
+    const key=keys[0]; let a=[...add.values()].find(x=>keys.some(k=>x.keys.has(k)));
+    if(!a){a={type:"add",keys:new Set(),row:{cat:"",fault:"",first:`${m.dt.getFullYear()}-${String(m.dt.getMonth()+1).padStart(2,"0")}-${String(m.dt.getDate()).padStart(2,"0")}`,
+      order:ord.join("／")||"",trk:trk.join("／")||"",name:maskName(full),status:"",next:"",hold:""},notes:[],close:false};add.set(key,a)}
+    keys.forEach(k=>a.keys.add(k)); if(!a.row.name&&full)a.row.name=maskName(full);
+    if(!a.row.order&&ord.length)a.row.order=ord.join("／"); if(!a.row.trk&&trk.length)a.row.trk=trk.join("／");
+    a.notes.push(note); const h=holdOf(m.text,m.dt); if(h)a.row.hold=h; const f=faultOf(m.text); if(f)a.row.fault=f;
+    if(j.close)a.close=true; else {a.close=false; a.row.cat=j.cat||"新竹"}
+  }
+  const adds=[...add.values()].map(a=>{a.row.status=a.notes.join("\n");a.row.next=a.row.cat==="我方"?"回覆新竹":"追蹤新竹回覆";delete a.keys;return a});
+  return {updates:[...upd.values()],adds:adds.filter(a=>!a.close),closedNew:adds.filter(a=>a.close),manual,last};
+}
+
+
+let IMP=null;
+const pad=n=>String(n).padStart(2,"0");
+const fmtDT=d=>d?`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`:"";
+const parseDT=s=>{const m=String(s||"").match(/(\d{4})-(\d{1,2})-(\d{1,2})(?:\s+(\d{1,2}):(\d{2}))?/);return m?new Date(+m[1],m[2]-1,+m[3],+(m[4]||0),+(m[5]||0)):null};
+function closeImp(){document.getElementById("imp").style.display="none";IMP=null}
+async function openImp(){
+  if(!myName())return; if(!myPw())return;
+  const el=document.getElementById("imp"),box=document.getElementById("impBox");el.style.display="block";
+  box.innerHTML='<h2>📥 匯入 LINE 對話</h2><div class="hint">讀取資料中…</div>';
+  try{const r=await (await fetch(SCRIPT_URL+"?all=1",{cache:"no-store"})).json();
+    IMP={all:r.rows||[],since:parseDT(r.lastImport),sinceTxt:r.lastImport};
+    box.innerHTML=`<h2>📥 匯入 LINE 對話</h2>
+    <div class="hint">1. 在 LINE「MUJI-新竹物流」群組 → ≡ → 設定 → 傳送聊天記錄，存成 txt<br>
+    2. 選擇檔案後，系統只會讀 <b>${esc(r.lastImport)}</b> 之後的新訊息<br>3. 確認建議清單，打勾的才會寫入</div>
+    <label class="file">📄 點這裡選擇 LINE 匯出的 txt 檔<input type="file" id="impFile" accept=".txt,text/plain" hidden></label>
+    <div class="foot"><button onclick="closeImp()">取消</button></div>`;
+    document.getElementById("impFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>analyze(rd.result);rd.readAsText(f,"utf-8")};
+  }catch(e){box.innerHTML='<h2>📥 匯入 LINE 對話</h2><div class="hint">讀取失敗，請稍後再試。</div><div class="foot"><button onclick="closeImp()">關閉</button></div>'}
+}
+function analyze(txt){
+  const box=document.getElementById("impBox");
+  const msgs=parseLine(txt);
+  if(!msgs.length){box.innerHTML='<h2>📥 匯入 LINE 對話</h2><div class="hint">這個檔案讀不到對話，請確認是 LINE「傳送聊天記錄」匯出的 txt。</div><div class="foot"><button onclick="closeImp()">關閉</button></div>';return}
+  const fresh=msgs.filter(m=>!IMP.since||m.dt>IMP.since);
+  const r=buildSuggestions(msgs,IMP.all,IMP.since); IMP.r=r;
+  if(!fresh.length){box.innerHTML=`<h2>📥 匯入 LINE 對話</h2><div class="hint">沒有新訊息（檔案最後一則是 ${esc(fmtDT(msgs[msgs.length-1].dt))}，上次已匯入到 ${esc(IMP.sinceTxt)}）。</div><div class="foot"><button onclick="closeImp()">關閉</button></div>`;return}
+  const catTxt=c=>c==="我方"?"改為輪到我們":"改為等新竹";
+  const up=r.updates.map((u,i)=>`<label class="it"><input type="checkbox" data-u="${i}" checked><div><span class="t">${esc(u.c.order)}</span> <span class="who">${esc(u.c.name||"")}</span>
+    ${u.close?'<span class="bd c">→ 結案</span>':""}${u.cat?`<span class="bd">→ ${catTxt(u.cat)}</span>`:""}${u.fault?`<span class="bd f">${esc(u.fault)}</span>`:""}
+    <div class="n">${esc(u.notes.join("\n"))}</div></div></label>`).join("");
+  const ad=r.adds.map((a,i)=>`<label class="it"><input type="checkbox" data-a="${i}" checked><div><span class="t">${esc(a.row.order||a.row.trk)}</span> <span class="who">${esc(a.row.name||"")}</span>
+    <span class="bd ${a.row.cat==="我方"?"m":""}">${a.row.cat==="我方"?"輪到我們":"等新竹"}</span>${a.row.fault?`<span class="bd f">${esc(a.row.fault)}</span>`:""}${a.row.hold?`<span class="bd">保留至 ${esc(a.row.hold.slice(5).replace("-","/"))}</span>`:""}
+    <div class="n">${a.row.order&&a.row.trk?esc(a.row.trk)+"\n":""}${esc(a.notes.join("\n"))}</div></div></label>`).join("");
+  const cn=r.closedNew.map(a=>esc((a.row.order||a.row.trk)+" "+(a.row.name||""))).join("、");
+  const man=r.manual.map(m=>`<div class="man"><b>${m.dt.getMonth()+1}/${m.dt.getDate()} ${pad(m.dt.getHours())}:${pad(m.dt.getMinutes())}・${esc(m.who)}</b><br>${esc(m.text.slice(0,160))}${m.hint?`<i>可能相關：${esc(m.hint)}</i>`:""}</div>`).join("");
+  box.innerHTML=`<h2>📥 匯入 LINE 對話</h2>
+   <div class="hint">讀到 <b>${fresh.length}</b> 則新訊息（${esc(fmtDT(fresh[0].dt))} ～ ${esc(fmtDT(fresh[fresh.length-1].dt))}）。請檢查下面的建議，<b>不對的取消打勾</b>。</div>
+   ${up?`<div class="sec">🔄 更新既有案件 <small>${r.updates.length} 筆</small></div>${up}`:""}
+   ${ad?`<div class="sec">🆕 新增案件 <small>${r.adds.length} 筆</small></div>${ad}`:""}
+   ${cn?`<div class="sec">✅ 這段期間新出現、也已處理完的 <small>${r.closedNew.length} 筆，不新增</small></div><div class="hint">${cn}</div>`:""}
+   ${man?`<div class="sec">👀 沒有單號、對不上案件的訊息 <small>${r.manual.length} 則，請自己看一下需不需要在案件上「更新進度」或「結案」</small></div>${man}`:""}
+   <div class="foot"><button onclick="closeImp()">取消</button><button class="go" id="impGo">寫入勾選的項目</button></div>`;
+  document.getElementById("impGo").onclick=submitImp;
+}
+async function submitImp(){
+  const r=IMP.r,ops=[];
+  document.querySelectorAll("#impBox input[data-u]:checked").forEach(cb=>{const u=r.updates[+cb.dataset.u];ops.push({type:"update",id:u.id,notes:u.notes,cat:u.close?"":u.cat,close:u.close,closeNote:u.closeNote,fault:u.fault||""})});
+  document.querySelectorAll("#impBox input[data-a]:checked").forEach(cb=>{const a=r.adds[+cb.dataset.a];ops.push({type:"add",row:a.row})});
+  const btn=document.getElementById("impGo");btn.disabled=true;btn.textContent="寫入中…";
+  try{const res=await (await fetch(SCRIPT_URL,{method:"POST",body:JSON.stringify({action:"import",ops,lastImport:fmtDT(r.last),by:myName(),pw:myPw()})})).json();
+    if(!res.ok){if(res.badPw){ls.del("hcOpen.pw");toast("密碼錯誤，請再試一次")}else toast(res.msg||"寫入失敗");btn.disabled=false;btn.textContent="寫入勾選的項目";return}
+    closeImp();toast(`完成：更新 ${res.updated} 筆（含結案 ${res.closed}）、新增 ${res.added} 筆`);load()}
+  catch(e){toast("連線失敗，請稍後再試");btn.disabled=false;btn.textContent="寫入勾選的項目"}
+}
+document.getElementById("impBtn").onclick=openImp;
+
 document.getElementById("who").textContent="👤 "+(ls.get("hcOpen.by")||"設定名字");load();
 </script></body></html>
