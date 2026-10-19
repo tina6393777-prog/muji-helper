@@ -124,7 +124,7 @@
 
   <header>
     <h1>交辦清單<span class="dot"> ·</span></h1>
-    <p class="lead">使用情況：待外撥案件 ＋ 官網待追蹤，都可登記在這邊追蹤。</p>
+    <p class="lead">使用情況：客服室交辦回電 ＋ 內部交接（總部／倉庫），都可登記在這邊追蹤。<br>新竹物流的案件請改登記到「新竹未結案」。</p>
   </header>
 
   <hr class="rule">
@@ -135,31 +135,36 @@
     <p class="hint">帶*的是必填。送出後狀態自動為「待外撥」,會出現在下方清單。</p>
     <div style="background:#FBF6EA;border:1px dashed #d8b24b;border-radius:10px;padding:12px 14px;margin:6px 0 16px">
       <div style="font-weight:800;color:#7A171C;margin-bottom:6px">📋 貼上訊息快速帶入</div>
-      <textarea id="msgPaste" rows="3" style="width:100%;box-sizing:border-box;border:1px solid #E7E4DD;border-radius:8px;padding:8px 10px;font-family:inherit;font-size:14px" placeholder="把新竹物流的訊息整段貼進來，例如：&#10;TM260831BA00M2-2114974256 站所回報無貨可退，9/8未回取消取件，謝謝"></textarea>
+      <textarea id="msgPaste" rows="3" style="width:100%;box-sizing:border-box;border:1px solid #E7E4DD;border-radius:8px;padding:8px 10px;font-family:inherit;font-size:14px" placeholder="把客服室的 LINE 訊息整段貼進來，例如：&#10;Q:官網TG261013MA00Z6，詢問訂單配送事宜&#10;A:轉程曦_王先生_0933768152"></textarea>
       <div style="margin-top:8px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
         <button class="btn" type="button" onclick="fillFromMsg()">解析並帶入</button>
         <span id="msgHint" style="font-size:12.5px;color:#8A8781"></span>
       </div>
     </div>
 
+    <div class="two">
     <div class="field">
       <label for="source">案件來源<span class="req">*</span></label>
       <select id="source" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid #d9d4cc;border-radius:8px;font-family:inherit;font-size:15px;background:#fff">
         <option value="">請選擇…</option>
         <option>客服室</option>
-        <option>新竹物流</option>
         <option>總部</option>
         <option>倉庫</option>
       </select>
     </div>
+    <div class="field">
+      <label for="creator">新增人員<span class="req">*</span></label>
+      <input id="creator" type="text" maxlength="20" autocomplete="off" placeholder="你的名字（下次會自動帶入）">
+    </div>
+    </div>
 
     <div class="two">
       <div class="field">
-        <label for="order">訂單編號<span class="req">*</span></label>
+        <label for="order">訂單編號 <span style="color:var(--muted);font-weight:400;">(選填)</span></label>
         <input id="order" type="text" maxlength="60" autocomplete="off">
       </div>
       <div class="field">
-        <label for="tracking">物流單號<span class="req">*</span></label>
+        <label for="tracking">物流單號 <span style="color:var(--muted);font-weight:400;">(選填)</span></label>
         <input id="tracking" type="text" maxlength="60" autocomplete="off">
       </div>
     </div>
@@ -175,14 +180,14 @@
         <input id="phone" type="text" maxlength="30" autocomplete="off" placeholder="客戶電話">
       </div>
       <div class="field">
-        <label for="caseNo">案件編號 <span style="color:var(--muted);font-weight:400;">(選填)</span></label>
-        <input id="caseNo" type="text" maxlength="60" autocomplete="off">
+        <label for="caseNo">後送案件編號 <span style="color:var(--muted);font-weight:400;">(選填)</span></label>
+        <input id="caseNo" type="text" maxlength="60" autocomplete="off" placeholder="例如 20261016-008">
       </div>
     </div>
 
     <div class="field">
-      <label for="task">待聯絡事項<span class="req">*</span></label>
-      <textarea id="task" placeholder="要跟客戶確認或告知的內容。" maxlength="1000"></textarea>
+      <label for="task">交辦內容<span class="req">*</span></label>
+      <textarea id="task" placeholder="要回電確認或告知客戶的內容、需交接給下一位同仁的事項。" maxlength="1000"></textarea>
     </div>
 
     <button class="btn" id="submitBtn">新增交辦</button>
@@ -256,7 +261,7 @@
         return false;
       }
       if(kw){
-        const hay = ((r.customer||"")+" "+(r.order||"")+" "+(r.tracking||"")+" "+(r.task||"")+" "+(r.result||"")+" "+(r.handler||"")+" "+(r.source||"")).toLowerCase();
+        const hay = ((r.customer||"")+" "+(r.order||"")+" "+(r.tracking||"")+" "+(r.task||"")+" "+(r.result||"")+" "+(r.handler||"")+" "+(r.source||"")+" "+(r.creator||"")).toLowerCase();
         if(!hay.includes(kw)) return false;
       }
       return true;
@@ -295,16 +300,16 @@
           '<div class="row1">'+
             '<span class="cust">'+esc(r.customer||"—")+'</span>'+
             '<span class="status '+sc+'">'+st+'</span>'+
-            (r.time ? '<span class="time">建立 '+esc(r.time)+'</span>' : '')+
+            (r.time ? '<span class="time">建立 '+esc(r.time)+(r.creator?'　·　新增：'+esc(r.creator):'')+'</span>' : (r.creator?'<span class="time">新增：'+esc(r.creator)+'</span>':''))+
           '</div>'+
           '<div class="kv">'+
             '<span class="k">案件來源</span><span class="v">'+esc(r.source||"—")+'</span>'+
             '<span class="k">訂單編號</span><span class="v">'+esc(r.order||"—")+'</span>'+
             '<span class="k">物流單號</span><span class="v">'+esc(r.tracking||"—")+'</span>'+
-            (r.caseNo ? '<span class="k">案件編號</span><span class="v">'+esc(r.caseNo)+'</span>' : '')+
+            (r.caseNo ? '<span class="k">後送案件編號</span><span class="v">'+esc(r.caseNo)+'</span>' : '')+
             (r.phone ? '<span class="k">連絡電話</span><span class="v">'+esc(r.phone)+'</span>' : '')+
           '</div>'+
-          '<div class="task"><div class="tlabel">待聯絡事項</div>'+esc(r.task||"—")+'</div>'+
+          '<div class="task"><div class="tlabel">交辦內容</div>'+esc(r.task||"—")+'</div>'+
           resultHtml+
           '<div class="actions">'+
             '<button class="btn sm toggle-edit">'+(done?"修改結果":"更新結果")+'</button>'+
@@ -323,14 +328,14 @@
           '<div class="editcase">'+
             '<div class="field"><label>案件來源</label><select class="ec-source">'+
               '<option value=""'+(!r.source?' selected':'')+'>（未設定）</option>'+
-              ['客服室','新竹物流','總部','倉庫'].map(function(o){return '<option'+(o===(r.source||"")?' selected':'')+'>'+o+'</option>';}).join('')+
+              ['客服室','總部','倉庫'].concat(r.source==='新竹物流'?['新竹物流']:[]).map(function(o){return '<option'+(o===(r.source||"")?' selected':'')+'>'+o+'</option>';}).join('')+
             '</select></div>'+
             '<div class="field"><label>訂單編號</label><input class="ec-order" type="text" maxlength="60" value="'+esc(r.order||"")+'"></div>'+
             '<div class="field"><label>物流單號</label><input class="ec-tracking" type="text" maxlength="60" value="'+esc(r.tracking||"")+'"></div>'+
             '<div class="field"><label>客戶姓名</label><input class="ec-customer" type="text" maxlength="40" value="'+esc(r.customer||"")+'"></div>'+
             '<div class="field"><label>連絡電話</label><input class="ec-phone" type="text" maxlength="30" value="'+esc(r.phone||"")+'"></div>'+
-            '<div class="field"><label>案件編號</label><input class="ec-caseno" type="text" maxlength="60" value="'+esc(r.caseNo||"")+'"></div>'+
-            '<div class="field"><label>待聯絡事項</label><textarea class="ec-task" maxlength="1000">'+esc(r.task||"")+'</textarea></div>'+
+            '<div class="field"><label>後送案件編號</label><input class="ec-caseno" type="text" maxlength="60" value="'+esc(r.caseNo||"")+'"></div>'+
+            '<div class="field"><label>交辦內容</label><textarea class="ec-task" maxlength="1000">'+esc(r.task||"")+'</textarea></div>'+
             '<div class="edit-btns">'+
               '<button class="btn sm save-editcase">儲存修改</button>'+
               '<button class="btn sm ghost cancel-editcase">取消</button>'+
@@ -356,19 +361,20 @@
     const phone = $("phone").value.trim();
     const caseNo = $("caseNo").value.trim();
     const source = $("source").value.trim();
+    const creator = $("creator").value.trim();
     const msg = $("formMsg");
     msg.className = "form-msg";
 
-    if(!order){ msg.className="form-msg err"; msg.textContent="請填寫訂單編號。"; return; }
-    if(!tracking){ msg.className="form-msg err"; msg.textContent="請填寫物流單號。"; return; }
     if(!customer){ msg.className="form-msg err"; msg.textContent="請填寫客戶姓名。"; return; }
-    if(!task){ msg.className="form-msg err"; msg.textContent="請填寫待聯絡事項。"; return; }
+    if(!task){ msg.className="form-msg err"; msg.textContent="請填寫交辦內容。"; return; }
     if(!source){ msg.className="form-msg err"; msg.textContent="請選擇案件來源。"; return; }
+    if(!creator){ msg.className="form-msg err"; msg.textContent="請填寫新增人員。"; return; }
+    try{ localStorage.setItem("jb_creator", creator); }catch(e){}
 
     const btn = $("submitBtn");
     btn.disabled = true; btn.textContent = "送出中…";
     try{
-      const res = await fetch(SCRIPT_URL, { method:"POST", body: JSON.stringify({ order, tracking, customer, task, phone, caseNo, source }) });
+      const res = await fetch(SCRIPT_URL, { method:"POST", body: JSON.stringify({ order, tracking, customer, task, phone, caseNo, source, creator }) });
       const json = await res.json();
       if(!json.ok) throw new Error(json.error || "送出失敗");
       msg.className="form-msg ok"; msg.textContent="已新增!狀態為「待外撥」,顯示於下方清單。";
@@ -434,7 +440,7 @@
 
     if(!order){ emsg.className="form-msg ec-msg err"; emsg.textContent="訂單編號不能空白。"; return; }
     if(!customer){ emsg.className="form-msg ec-msg err"; emsg.textContent="客戶姓名不能空白。"; return; }
-    if(!task){ emsg.className="form-msg ec-msg err"; emsg.textContent="待聯絡事項不能空白。"; return; }
+    if(!task){ emsg.className="form-msg ec-msg err"; emsg.textContent="交辦內容不能空白。"; return; }
 
     const saveBtn = item.querySelector(".save-editcase");
     saveBtn.disabled = true; saveBtn.textContent = "儲存中…";
@@ -486,6 +492,7 @@
       }
     });
 
+    try{ const c = localStorage.getItem("jb_creator"); if(c) $("creator").value = c; }catch(e){}
     loadBoard();
   });
 </script>
@@ -494,18 +501,34 @@ function fillFromMsg(){
   var t=(document.getElementById('msgPaste').value||'').trim();
   var hint=document.getElementById('msgHint');
   if(!t){ hint.textContent='請先貼上訊息'; return; }
-  var order=(t.match(/TM[0-9A-Za-z]{4,}/)||[''])[0];
-  var phone=(t.match(/09\d{8}/)||[''])[0];
-  var tracking='', tens=t.match(/\d{10}/g)||[], i;
-  for(i=0;i<tens.length;i++){ if(tens[i]!==phone && tens[i].slice(0,2)!=='09'){ tracking=tens[i]; break; } }
+  // 訂單編號：TG / TM / TS 開頭，可能有好幾個
+  var orders=t.match(/T[GMS][0-9A-Za-z]{8,}/g)||[], seen={}, uniq=[];
+  orders.forEach(function(o){ if(!seen[o]){ seen[o]=1; uniq.push(o); } });
+  var order=uniq.join(' / ');
+  // 回電對象：以 A 行「轉程曦_名字_電話」為準
+  var customer='', phone='';
+  var aLine=(t.match(/A\s*[:：].*/)||[''])[0];
+  var m=aLine.match(/轉程曦[_＿]([^_＿]*)[_＿]/);
+  if(m){ customer=m[1].replace(/[（(].*$/,'').trim(); var m2=customer.match(/找(.+)$/); if(m2) customer=m2[1].trim(); }
+  var aPhone=aLine.match(/0\d{8,9}/g);
+  if(aPhone){ phone=aPhone[aPhone.length-1]; }
+  if(!phone){ var p2=t.match(/09\d{8}/); if(p2) phone=p2[0]; }
+  if(!phone){ var em=aLine.match(/[A-Za-z0-9.+-][\w.+-]*@[\w-]+\.[\w.]+/); if(em) phone=em[0]; }
+  // 物流單號：10 碼數字且不是電話
+  var tracking='', tens=t.match(/\b\d{10}\b/g)||[], i;
+  for(i=0;i<tens.length;i++){ if(tens[i]!==phone && tens[i].slice(0,1)!=='0'){ tracking=tens[i]; break; } }
   document.getElementById('order').value=order;
   document.getElementById('tracking').value=tracking;
   document.getElementById('phone').value=phone;
+  document.getElementById('customer').value=customer;
   document.getElementById('task').value=t;
-  var _s=document.getElementById('source'); if(_s) _s.value='新竹物流';
-  var got=[]; if(order)got.push('訂單編號'); if(tracking)got.push('物流單號'); if(phone)got.push('電話');
-  hint.innerHTML='✅ 已帶入：'+(got.length?got.join('、'):'（僅帶入事項）')+'　·　請補「客戶姓名」後按下方「新增交辦」';
-  var c=document.getElementById('customer'); if(c) c.focus();
+  var _s=document.getElementById('source');
+  if(_s && /轉程曦|客服室/.test(t)) _s.value='客服室';
+  var got=[]; if(order)got.push('訂單編號'); if(customer)got.push('回電對象'); if(phone)got.push('聯絡方式'); if(tracking)got.push('物流單號');
+  var miss=[]; if(!customer)miss.push('客戶姓名'); if(!_s.value)miss.push('案件來源');
+  hint.innerHTML='✅ 已帶入：'+(got.length?got.join('、'):'（僅帶入事項）')+(miss.length?'　·　請補：'+miss.join('、'):'')+'　·　確認後按下方「新增交辦」';
+  var focusId=!customer?'customer':'task';
+  var c=document.getElementById(focusId); if(c) c.focus();
 }
 </script>
 </body>
