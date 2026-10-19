@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-TW"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>新竹未結案追蹤｜MUJI 客服小幫手</title>
+<style>
+:root{--red:#B81C22;--ink:#3A3632;--sub:#7A736B;--line:#E4DDD3;--bg:#F4F1EA;--card:#fff;--amber:#B7791F;--amberbg:#FDF3E1;--redbg:#FBEAEA;--green:#4F7470}
+*{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:var(--ink);font-family:"Microsoft JhengHei","PingFang TC","Noto Sans TC",sans-serif;font-size:15px}
+header{background:var(--red);color:#fff;padding:12px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+header h1{font-size:18px}header a{margin-left:auto;background:#fff;color:var(--red);text-decoration:none;padding:6px 14px;border-radius:8px;font-size:13px;font-weight:800}
+.wrap{max-width:960px;margin:0 auto;padding:16px}
+.bar{display:flex;gap:8px;align-items:center;margin-bottom:12px;color:var(--sub);font-size:13px;flex-wrap:wrap}
+.bar button{font:inherit;border:1px solid var(--line);background:#fff;border-radius:8px;padding:5px 12px;cursor:pointer;color:var(--ink)}
+.chips{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.chip{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;cursor:pointer;text-align:left;font:inherit;color:inherit}
+.chip b{display:block;font-size:24px;line-height:1.2}.chip span{font-size:13px;color:var(--sub)}
+.chip.on{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink) inset}.chip.me b,.chip.flt b{color:var(--red)}
+input#q{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font:inherit;margin-bottom:14px;background:#fff}
+.grp{margin:18px 0 8px;font-weight:700;font-size:16px;display:flex;align-items:center;gap:8px}.grp small{font-weight:400;color:var(--sub);font-size:13px}
+details>summary{cursor:pointer;list-style:none}details>summary::-webkit-details-marker{display:none}
+details>summary .grp:after{content:"▸ 展開";font-weight:400;font-size:13px;color:var(--sub)}details[open]>summary .grp:after{content:"▾ 收合"}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:8px;transition:opacity .3s}
+.card.busy{opacity:.4;pointer-events:none}
+.top{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:baseline}
+.ord{font-weight:700;word-break:break-all}.who{color:var(--sub);font-size:14px}.trk{color:var(--sub);font-size:13px;word-break:break-all}
+.tags{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.tag{font-size:12px;padding:2px 8px;border-radius:999px;white-space:nowrap;background:#EFEAE3}
+.tag.f{background:var(--red);color:#fff}.tag.old{background:var(--redbg);color:var(--red);font-weight:700}.tag.hold{background:var(--amberbg);color:var(--amber);font-weight:700}
+.st{margin:6px 0 2px;line-height:1.55;white-space:pre-line}.nx{color:var(--green);font-size:14px}.nx:before{content:"➜ "}
+.meta{color:var(--sub);font-size:12px;margin-top:4px}
+.acts{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.acts button{font:inherit;font-size:13px;border-radius:8px;padding:5px 12px;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink)}
+.acts .ok{background:var(--ink);color:#fff;border-color:var(--ink)}
+.msg{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px;color:var(--sub);line-height:1.6}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:999px;font-size:14px;display:none;z-index:9}
+@media(max-width:600px){.chips{grid-template-columns:repeat(2,1fr)}.tags{margin-left:0}}
+</style></head><body>
+<header><h1>📦 新竹物流未結案追蹤</h1><a href="index.html">← 回小幫手</a></header>
+<div class="wrap">
+<div class="bar"><span id="upd">載入中…</span><button id="reload">↻ 重新整理</button><button id="who"></button></div>
+<div class="chips" id="chips"></div>
+<input id="q" placeholder="搜尋訂單編號、物流單號、客戶…">
+<div id="list"></div>
+</div>
+<div id="toast"></div>
+<script>
+// ★ 部署 Apps Script 後，把「網頁應用程式網址」貼在下面引號裡
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzciVED3RJSngZWiTJXVVOiuVQJu3uwO7LOBcgoBug6UarnwoCExdRyxS6jrkio5CT1mA/exec";
+
+const DAY=864e5; let DATA=[], filter="all";
+const ls={get:k=>{try{return localStorage.getItem(k)||""}catch(e){return ""}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}},del:k=>{try{localStorage.removeItem(k)}catch(e){}}};
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function toast(t){const el=document.getElementById("toast");el.textContent=t;el.style.display="block";clearTimeout(el._t);el._t=setTimeout(()=>el.style.display="none",2200)}
+function toDate(s){const m=String(s||"").match(/(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);return m?new Date(+m[1],m[2]-1,+m[3]):null}
+const md=d=>(d.getMonth()+1)+"/"+d.getDate();
+function myName(force){let n=ls.get("hcOpen.by");if(!n||force){n=(prompt("請輸入你的名字（會記在更新紀錄）",n)||"").trim();if(n)ls.set("hcOpen.by",n)}
+  document.getElementById("who").textContent="👤 "+(ls.get("hcOpen.by")||"設定名字");return ls.get("hcOpen.by")}
+function myPw(){let p=ls.get("hcOpen.pw");if(!p){p=(prompt("請輸入團隊密碼（只要輸入一次）")||"").trim();if(p)ls.set("hcOpen.pw",p)}return p}
+
+async function load(){
+  if(!SCRIPT_URL){document.getElementById("upd").textContent="";document.getElementById("list").innerHTML='<div class="msg">還沒設定資料來源：請把 Apps Script 的網頁應用程式網址貼到 SCRIPT_URL。</div>';return}
+  document.getElementById("upd").textContent="載入中…";
+  try{const r=await (await fetch(SCRIPT_URL,{cache:"no-store"})).json();DATA=r.rows||[];
+    const t=new Date();document.getElementById("upd").textContent="已更新 "+md(t)+" "+String(t.getHours()).padStart(2,"0")+":"+String(t.getMinutes()).padStart(2,"0");render()}
+  catch(e){document.getElementById("upd").textContent="";document.getElementById("list").innerHTML='<div class="msg">讀取失敗，請按「↻ 重新整理」再試一次。</div>'}
+}
+async function act(id,action,note){
+  const by=myName();if(!by)return;const pw=myPw();if(!pw)return;
+  const card=document.querySelector(`.card[data-id="${id}"]`);if(card)card.classList.add("busy");
+  try{const r=await (await fetch(SCRIPT_URL,{method:"POST",body:JSON.stringify({action,id,note,by,pw})})).json();
+    if(!r.ok){if(r.badPw){ls.del("hcOpen.pw");toast("密碼錯誤，請再試一次")}else toast(r.msg||"更新失敗");if(card)card.classList.remove("busy");return}
+    toast(action==="close"?"已結案 ✓":"已更新 ✓");await load()}
+  catch(e){toast("連線失敗，請稍後再試");if(card)card.classList.remove("busy")}
+}
+function card(r){const now=new Date();now.setHours(0,0,0,0);const f=toDate(r.first),h=toDate(r.hold);const days=f?Math.round((now-f)/DAY):null;let tags="";
+  if(r.fault)tags+=`<span class="tag f">${esc(r.fault)}</span>`;
+  if(h){const left=Math.round((h-now)/DAY);tags+=`<span class="tag hold">保留至 ${md(h)}${left>=0?`（剩 ${left} 天）`:"（已過期）"}</span>`}
+  if(days!==null)tags+=`<span class="tag ${days>7?"old":""}">${md(f)} 起・${days} 天</span>`;
+  const sw=r.cat==="我方"?"⇄ 改為等新竹":r.cat==="新竹"?"⇄ 改為輪到我們":"";
+  return `<div class="card" data-id="${esc(r.id)}"><div class="top"><span class="ord">${esc(r.order)}</span>${r.name&&r.name!=="—"?`<span class="who">${esc(r.name)}</span>`:""}${r.trk&&r.trk!=="—"?`<span class="trk">${esc(r.trk)}</span>`:""}<span class="tags">${tags}</span></div>
+  <div class="st">${esc(r.status)}</div>${r.next?`<div class="nx">${esc(r.next)}</div>`:""}${r.by?`<div class="meta">最後更新：${esc(r.by)} ${esc(r.at)}</div>`:""}
+  <div class="acts"><button class="ok" data-a="close">✓ 結案</button><button data-a="note">✎ 更新進度</button>${sw?`<button data-a="switch">${sw}</button>`:""}</div></div>`}
+const GROUPS=[["我方","🔴 輪到我們處理"],["新竹","🟡 等新竹回覆"],["待查系統","⚪ 久無消息・請查系統"]];
+function render(){const q=document.getElementById("q").value.trim().toLowerCase();
+  let rows=DATA.filter(r=>!q||[r.order,r.trk,r.name,r.status].join(" ").toLowerCase().includes(q));
+  if(filter==="fault")rows=rows.filter(r=>r.fault);else if(filter!=="all")rows=rows.filter(r=>r.cat===filter);
+  const cnt=k=>DATA.filter(r=>r.cat===k).length;
+  document.getElementById("chips").innerHTML=[["all","全部未結案",DATA.length,""],["我方","輪到我們",cnt("我方"),"me"],["新竹","等新竹",cnt("新竹"),""],["fault","新竹疏失",DATA.filter(r=>r.fault).length,"flt"]]
+   .map(([k,l,n,c])=>`<button class="chip ${c} ${filter===k?"on":""}" data-k="${k}"><b>${n}</b><span>${l}</span></button>`).join("");
+  let html="";for(const [k,label] of GROUPS){const g=rows.filter(r=>r.cat===k).sort((a,b)=>((a.hold||"9")+a.first)<((b.hold||"9")+b.first)?-1:1);
+   if(!g.length)continue;const head=`<div class="grp">${label}<small>${g.length} 筆</small></div>`;
+   html+=(k==="待查系統"&&!q&&filter==="all")?`<details><summary>${head}</summary>${g.map(card).join("")}</details>`:head+g.map(card).join("")}
+  document.getElementById("list").innerHTML=html||'<div class="msg">沒有未結案的案件 🎉</div>'}
+document.getElementById("chips").onclick=e=>{const b=e.target.closest(".chip");if(!b)return;filter=filter===b.dataset.k?"all":b.dataset.k;render()};
+document.getElementById("list").onclick=e=>{const b=e.target.closest("button[data-a]");if(!b)return;const id=b.closest(".card").dataset.id,a=b.dataset.a;
+  if(a==="close"){const n=prompt("結案備註（例如：已退倉、已取消取件；可留空）","");if(n===null)return;act(id,"close",n.trim())}
+  else if(a==="note"){const n=prompt("輸入最新進度（會加在狀況下面）","");if(!n||!n.trim())return;act(id,"note",n.trim())}
+  else act(id,"switch")};
+document.getElementById("q").oninput=render;
+document.getElementById("reload").onclick=load;
+document.getElementById("who").onclick=()=>myName(true);
+document.getElementById("who").textContent="👤 "+(ls.get("hcOpen.by")||"設定名字");load();
+</script></body></html>
