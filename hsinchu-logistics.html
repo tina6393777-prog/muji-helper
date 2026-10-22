@@ -135,7 +135,7 @@
     <p class="hint">帶*的是必填。送出後狀態自動為「待外撥」,會出現在下方清單。</p>
     <div style="background:#FBF6EA;border:1px dashed #d8b24b;border-radius:10px;padding:12px 14px;margin:6px 0 16px">
       <div style="font-weight:800;color:#7A171C;margin-bottom:6px">📋 貼上訊息快速帶入</div>
-      <textarea id="msgPaste" rows="3" style="width:100%;box-sizing:border-box;border:1px solid #E7E4DD;border-radius:8px;padding:8px 10px;font-family:inherit;font-size:14px" placeholder="把客服室的 LINE 訊息整段貼進來，例如：&#10;Q:官網TG261013MA00Z6，詢問訂單配送事宜&#10;A:轉程曦_王先生_0933768152"></textarea>
+      <textarea id="msgPaste" rows="3" style="width:100%;box-sizing:border-box;border:1px solid #E7E4DD;border-radius:8px;padding:8px 10px;font-family:inherit;font-size:14px" placeholder="把客服室的 LINE 訊息整段貼進來，例如：&#10;Q:官網TG261013MA00Z6，詢問訂單配送事宜&#10;A:轉程曦_王先生_09XX-XXX-XXX"></textarea>
       <div style="margin-top:8px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
         <button class="btn" type="button" onclick="fillFromMsg()">解析並帶入</button>
         <span id="msgHint" style="font-size:12.5px;color:#8A8781"></span>
@@ -170,7 +170,7 @@
     </div>
 
     <div class="field">
-      <label for="customer">客戶姓名<span class="req">*</span></label>
+      <label for="customer">客戶姓名/帳號<span class="req">*</span></label>
       <input id="customer" type="text" maxlength="40" autocomplete="off">
     </div>
 
@@ -222,26 +222,67 @@
 <script>
   // ====== 設定：這是「新竹物流交辦」的 Google Apps Script 網址 ======
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxj1OBUO9tL6PvP4g7RWr0pjjsoKbRRIbVa4xDOsl5o92vCNmS2dBM0uOecsMhO-vVQyQ/exec";
+  const CACHE_KEY = "hl_board_cache_v1";
 
   const STATUSES = ["待外撥","已完成","聯絡不到"];
   let allRows = [];
   let filterSt = "全部";
   let keyword = "";
+  let loading = false;      // 背景是否正在抓資料
+  let pendingRender = false; // 有人正在編輯時，新資料先暫緩重畫
 
   const $ = (id) => document.getElementById(id);
 
-  async function loadBoard(){
-    $("list").innerHTML = '<div class="state">正在載入交辦清單…</div>';
-    $("countText").textContent = "載入中…";
+  // 【加速1】網頁一開就先去抓資料，不等畫面全部載完
+  let firstFetch = fetchRows();
+
+  function fetchRows(){
+    return fetch(SCRIPT_URL, { method:"GET" })
+      .then(res => res.json())
+      .then(json => { if(!json.ok) throw new Error("回傳格式錯誤"); return json.data || []; });
+  }
+
+  function readCache(){
+    try{ const c = localStorage.getItem(CACHE_KEY); return c ? JSON.parse(c) : null; }catch(e){ return null; }
+  }
+  function writeCache(){
+    try{ localStorage.setItem(CACHE_KEY, JSON.stringify({ t: Date.now(), rows: allRows })); }catch(e){}
+  }
+
+  function someoneEditing(){
+    return !!$("list").querySelector(".edit.open, .editcase.open");
+  }
+
+  function setSyncText(t){
+    const el = $("syncText"); if(el) el.textContent = t;
+  }
+
+  // 【加速2】先秀出上次的資料，背景再悄悄更新
+  async function loadBoard(silent){
+    if(loading) return;
+    loading = true;
+    if(!silent && allRows.length === 0){
+      $("list").innerHTML = '<div class="state">正在載入交辦清單…</div>';
+      $("countText").textContent = "載入中…";
+    }
+    setSyncText("　🔄 同步中…");
     try{
-      const res = await fetch(SCRIPT_URL, { method:"GET" });
-      const json = await res.json();
-      if(!json.ok) throw new Error("回傳格式錯誤");
-      allRows = json.data || [];
-      render();
+      const p = firstFetch || fetchRows();
+      firstFetch = null;
+      allRows = await p;
+      writeCache();
+      if(someoneEditing()){ pendingRender = true; } else { render(); }
+      setSyncText("");
     }catch(err){
-      $("list").innerHTML = '<div class="state err">載入失敗,請按上方「重新整理」再試一次。</div>';
-      $("countText").textContent = "";
+      if(allRows.length === 0){
+        $("list").innerHTML = '<div class="state err">載入失敗，請按上方「重新整理」再試一次。</div>';
+        $("countText").textContent = "";
+        setSyncText("");
+      }else{
+        setSyncText("　⚠️ 同步失敗，目前顯示的是上次資料");
+      }
+    }finally{
+      loading = false;
     }
   }
 
@@ -252,29 +293,31 @@
   }
 
   function render(){
+    pendingRender = false;
     const kw = keyword.trim().toLowerCase();
-    const rows = allRows.filter(r=>{
+    const rows = [];
+    allRows.forEach((r, idx)=>{
       const st = r.status || "待外撥";
       if(filterSt === "全部"){
-        if(st === "已完成") return false;   // 待處理案件視圖不顯示已完成
+        if(st === "已完成") return;   // 待處理案件視圖不顯示已完成
       } else if(st !== filterSt){
-        return false;
+        return;
       }
       if(kw){
         const hay = ((r.customer||"")+" "+(r.order||"")+" "+(r.tracking||"")+" "+(r.task||"")+" "+(r.result||"")+" "+(r.handler||"")+" "+(r.source||"")+" "+(r.creator||"")).toLowerCase();
-        if(!hay.includes(kw)) return false;
+        if(!hay.includes(kw)) return;
       }
-      return true;
+      rows.push([r, idx]);
     });
 
     $("countText").textContent = "共 " + rows.length + " 筆";
 
     if(rows.length === 0){
-      $("list").innerHTML = '<div class="state">目前沒有符合的交辦。換個篩選條件,或在上面新增第一筆。</div>';
+      $("list").innerHTML = '<div class="state">目前沒有符合的交辦。換個篩選條件，或在上面新增第一筆。</div>';
       return;
     }
 
-    $("list").innerHTML = rows.map(r=>{
+    $("list").innerHTML = rows.map(([r, idx])=>{
       const st = r.status || "待外撥";
       const sc = statusClass(st);
       const done = (st !== "待外撥") && r.result;
@@ -292,11 +335,9 @@
           '</div>';
       }
 
-      // 更新面板的選單
-      const opts = STATUSES.map(s=>'<option value="'+s+'"'+(s===st?' selected':'')+'>'+s+'</option>').join("");
-
+      // 【加速3】編輯表單不先做好，按了按鈕才產生
       return (
-        '<div class="item" data-order="'+esc(r.order)+'" data-tracking="'+esc(r.tracking)+'" data-customer="'+esc(r.customer)+'" data-rowkey="'+esc(r.rowKey)+'">'+
+        '<div class="item" data-idx="'+idx+'" data-order="'+esc(r.order)+'" data-tracking="'+esc(r.tracking)+'" data-customer="'+esc(r.customer)+'" data-rowkey="'+esc(r.rowKey)+'">'+
           '<div class="row1">'+
             '<span class="cust">'+esc(r.customer||"—")+'</span>'+
             '<span class="status '+sc+'">'+st+'</span>'+
@@ -315,41 +356,71 @@
             '<button class="btn sm toggle-edit">'+(done?"修改結果":"更新結果")+'</button>'+
             '<button class="btn sm ghost toggle-editcase">✏️ 編輯內容</button>'+
           '</div>'+
-          '<div class="edit">'+
-            '<div class="field"><label>狀態</label><select class="e-status">'+opts+'</select></div>'+
-            '<div class="field"><label>外撥結果</label><textarea class="e-result" placeholder="撥打結果、客戶回覆、需後續處理事項…">'+esc(r.result||"")+'</textarea></div>'+
-            '<div class="field"><label>處理人</label><input class="e-handler" type="text" maxlength="30" value="'+esc(r.handler||"")+'" placeholder="你的姓名或工號"></div>'+
-            '<div class="edit-btns">'+
-              '<button class="btn sm save-edit">儲存</button>'+
-              '<button class="btn sm ghost cancel-edit">取消</button>'+
-            '</div>'+
-            '<div class="form-msg e-msg" aria-live="polite"></div>'+
-          '</div>'+
-          '<div class="editcase">'+
-            '<div class="field"><label>案件來源</label><select class="ec-source">'+
-              '<option value=""'+(!r.source?' selected':'')+'>（未設定）</option>'+
-              ['客服室','總部','倉庫'].concat(r.source==='新竹物流'?['新竹物流']:[]).map(function(o){return '<option'+(o===(r.source||"")?' selected':'')+'>'+o+'</option>';}).join('')+
-            '</select></div>'+
-            '<div class="field"><label>訂單編號</label><input class="ec-order" type="text" maxlength="60" value="'+esc(r.order||"")+'"></div>'+
-            '<div class="field"><label>物流單號</label><input class="ec-tracking" type="text" maxlength="60" value="'+esc(r.tracking||"")+'"></div>'+
-            '<div class="field"><label>客戶姓名</label><input class="ec-customer" type="text" maxlength="40" value="'+esc(r.customer||"")+'"></div>'+
-            '<div class="field"><label>連絡電話</label><input class="ec-phone" type="text" maxlength="30" value="'+esc(r.phone||"")+'"></div>'+
-            '<div class="field"><label>後送案件編號</label><input class="ec-caseno" type="text" maxlength="60" value="'+esc(r.caseNo||"")+'"></div>'+
-            '<div class="field"><label>交辦內容</label><textarea class="ec-task" maxlength="1000">'+esc(r.task||"")+'</textarea></div>'+
-            '<div class="edit-btns">'+
-              '<button class="btn sm save-editcase">儲存修改</button>'+
-              '<button class="btn sm ghost cancel-editcase">取消</button>'+
-            '</div>'+
-            '<div class="form-msg ec-msg" aria-live="polite"></div>'+
-          '</div>'+
         '</div>'
       );
     }).join("");
   }
 
+  function rowOf(item){ return allRows[Number(item.dataset.idx)] || {}; }
+
+  function editHtml(r){
+    const st = r.status || "待外撥";
+    const opts = STATUSES.map(s=>'<option value="'+s+'"'+(s===st?' selected':'')+'>'+s+'</option>').join("");
+    return '<div class="edit">'+
+      '<div class="field"><label>狀態</label><select class="e-status">'+opts+'</select></div>'+
+      '<div class="field"><label>外撥結果</label><textarea class="e-result" placeholder="撥打結果、客戶回覆、需後續處理事項…">'+esc(r.result||"")+'</textarea></div>'+
+      '<div class="field"><label>處理人</label><input class="e-handler" type="text" maxlength="30" value="'+esc(r.handler||"")+'" placeholder="你的姓名或工號"></div>'+
+      '<div class="edit-btns">'+
+        '<button class="btn sm save-edit">儲存</button>'+
+        '<button class="btn sm ghost cancel-edit">取消</button>'+
+      '</div>'+
+      '<div class="form-msg e-msg" aria-live="polite"></div>'+
+    '</div>';
+  }
+
+  function editCaseHtml(r){
+    return '<div class="editcase">'+
+      '<div class="field"><label>案件來源</label><select class="ec-source">'+
+        '<option value=""'+(!r.source?' selected':'')+'>（未設定）</option>'+
+        ['客服室','總部','倉庫'].concat(r.source==='新竹物流'?['新竹物流']:[]).map(function(o){return '<option'+(o===(r.source||"")?' selected':'')+'>'+o+'</option>';}).join('')+
+      '</select></div>'+
+      '<div class="field"><label>訂單編號</label><input class="ec-order" type="text" maxlength="60" value="'+esc(r.order||"")+'"></div>'+
+      '<div class="field"><label>物流單號</label><input class="ec-tracking" type="text" maxlength="60" value="'+esc(r.tracking||"")+'"></div>'+
+      '<div class="field"><label>客戶姓名/帳號</label><input class="ec-customer" type="text" maxlength="40" value="'+esc(r.customer||"")+'"></div>'+
+      '<div class="field"><label>連絡電話</label><input class="ec-phone" type="text" maxlength="30" value="'+esc(r.phone||"")+'"></div>'+
+      '<div class="field"><label>後送案件編號</label><input class="ec-caseno" type="text" maxlength="60" value="'+esc(r.caseNo||"")+'"></div>'+
+      '<div class="field"><label>交辦內容</label><textarea class="ec-task" maxlength="1000">'+esc(r.task||"")+'</textarea></div>'+
+      '<div class="edit-btns">'+
+        '<button class="btn sm save-editcase">儲存修改</button>'+
+        '<button class="btn sm ghost cancel-editcase">取消</button>'+
+      '</div>'+
+      '<div class="form-msg ec-msg" aria-live="polite"></div>'+
+    '</div>';
+  }
+
+  // 取得（必要時才建立）某張卡片的編輯區
+  function panel(item, cls){
+    let el = item.querySelector("."+cls);
+    if(!el){
+      item.insertAdjacentHTML("beforeend", cls==="edit" ? editHtml(rowOf(item)) : editCaseHtml(rowOf(item)));
+      el = item.querySelector("."+cls);
+    }
+    return el;
+  }
+  function closePanel(item, cls){
+    const el = item.querySelector("."+cls);
+    if(el) el.classList.remove("open");
+    if(pendingRender && !someoneEditing()) render();
+  }
+
   function esc(s){
     return String(s==null?"":s)
       .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
+  }
+
+  function nowText(){
+    const d = new Date(), p = n => String(n).padStart(2,"0");
+    return d.getFullYear()+"/"+p(d.getMonth()+1)+"/"+p(d.getDate())+" "+p(d.getHours())+":"+p(d.getMinutes());
   }
 
   // ---- 新增交辦 ----
@@ -365,7 +436,7 @@
     const msg = $("formMsg");
     msg.className = "form-msg";
 
-    if(!customer){ msg.className="form-msg err"; msg.textContent="請填寫客戶姓名。"; return; }
+    if(!customer){ msg.className="form-msg err"; msg.textContent="請填寫客戶姓名/帳號。"; return; }
     if(!task){ msg.className="form-msg err"; msg.textContent="請填寫交辦內容。"; return; }
     if(!source){ msg.className="form-msg err"; msg.textContent="請選擇案件來源。"; return; }
     if(!creator){ msg.className="form-msg err"; msg.textContent="請填寫新增人員。"; return; }
@@ -377,11 +448,14 @@
       const res = await fetch(SCRIPT_URL, { method:"POST", body: JSON.stringify({ order, tracking, customer, task, phone, caseNo, source, creator }) });
       const json = await res.json();
       if(!json.ok) throw new Error(json.error || "送出失敗");
-      msg.className="form-msg ok"; msg.textContent="已新增!狀態為「待外撥」,顯示於下方清單。";
+      msg.className="form-msg ok"; msg.textContent="已新增！狀態為「待外撥」，顯示於下方清單。";
       $("order").value=""; $("tracking").value=""; $("customer").value=""; $("task").value=""; $("phone").value=""; $("caseNo").value=""; $("source").value="";
-      await loadBoard();
+      // 【加速4】存好後先直接放進清單，不用等整份重抓
+      allRows.push({ order, tracking, customer, task, phone, caseNo, source, creator, status:"待外撥", time: nowText() });
+      if(!someoneEditing()) render();
+      loadBoard(true);   // 背景再同步一次（取得正式編號）
     }catch(err){
-      msg.className="form-msg err"; msg.textContent="送出失敗,請稍後再試一次。";
+      msg.className="form-msg err"; msg.textContent="送出失敗，請稍後再試一次。";
     }finally{
       btn.disabled = false; btn.textContent = "新增交辦";
     }
@@ -415,9 +489,15 @@
       });
       const json = await res.json();
       if(!json.ok) throw new Error(json.error || "更新失敗");
-      await loadBoard();
+      // 【加速4】直接更新這一筆，不整份重抓
+      const r = rowOf(item);
+      Object.assign(r, { status, result, handler, updated: nowText() });
+      writeCache();
+      item.querySelector(".edit").classList.remove("open");
+      if(!someoneEditing()) render(); else pendingRender = true;
+      loadBoard(true);
     }catch(err){
-      emsg.className="form-msg e-msg err"; emsg.textContent="更新失敗,請稍後再試一次。";
+      emsg.className="form-msg e-msg err"; emsg.textContent="更新失敗，請稍後再試一次。";
       saveBtn.disabled = false; saveBtn.textContent = "儲存";
     }
   }
@@ -439,7 +519,7 @@
     emsg.className = "form-msg ec-msg";
 
     if(!order){ emsg.className="form-msg ec-msg err"; emsg.textContent="訂單編號不能空白。"; return; }
-    if(!customer){ emsg.className="form-msg ec-msg err"; emsg.textContent="客戶姓名不能空白。"; return; }
+    if(!customer){ emsg.className="form-msg ec-msg err"; emsg.textContent="客戶姓名/帳號不能空白。"; return; }
     if(!task){ emsg.className="form-msg ec-msg err"; emsg.textContent="交辦內容不能空白。"; return; }
 
     const saveBtn = item.querySelector(".save-editcase");
@@ -451,17 +531,30 @@
       });
       const json = await res.json();
       if(!json.ok) throw new Error(json.error || "儲存失敗");
-      await loadBoard();
+      const r = rowOf(item);
+      Object.assign(r, { source, order, tracking, customer, phone, caseNo, task });
+      writeCache();
+      item.querySelector(".editcase").classList.remove("open");
+      if(!someoneEditing()) render(); else pendingRender = true;
+      loadBoard(true);
     }catch(err){
-      emsg.className="form-msg ec-msg err"; emsg.textContent="儲存失敗,請稍後再試一次。";
+      emsg.className="form-msg ec-msg err"; emsg.textContent="儲存失敗，請稍後再試一次。";
       saveBtn.disabled = false; saveBtn.textContent = "儲存修改";
     }
   }
 
   // ---- 事件 ----
   document.addEventListener("DOMContentLoaded", ()=>{
+    // 在「共 N 筆」旁邊加一個小小的同步狀態
+    const ct = $("countText");
+    if(ct && !$("syncText")){
+      const s = document.createElement("span");
+      s.id = "syncText"; s.style.color = "var(--muted)"; s.style.fontSize = "12.5px";
+      ct.insertAdjacentElement("afterend", s);
+    }
+
     $("submitBtn").addEventListener("click", submit);
-    $("refreshBtn").addEventListener("click", loadBoard);
+    $("refreshBtn").addEventListener("click", ()=>loadBoard(false));
 
     $("statusChips").addEventListener("click",(e)=>{
       const b = e.target.closest(".chip"); if(!b) return;
@@ -470,21 +563,29 @@
       render();
     });
 
-    $("search").addEventListener("input",(e)=>{ keyword = e.target.value; render(); });
+    // 【加速5】搜尋：停止打字 0.25 秒後才篩選
+    let searchTimer = null;
+    $("search").addEventListener("input",(e)=>{
+      keyword = e.target.value;
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(render, 250);
+    });
 
     // 清單內的按鈕(用委派)
     $("list").addEventListener("click",(e)=>{
       const item = e.target.closest(".item"); if(!item) return;
       if(e.target.closest(".toggle-edit")){
-        item.querySelector(".editcase").classList.remove("open");
-        item.querySelector(".edit").classList.toggle("open");
+        const ec = item.querySelector(".editcase"); if(ec) ec.classList.remove("open");
+        panel(item,"edit").classList.toggle("open");
+        if(pendingRender && !someoneEditing()) render();
       }else if(e.target.closest(".toggle-editcase")){
-        item.querySelector(".edit").classList.remove("open");
-        item.querySelector(".editcase").classList.toggle("open");
+        const ed = item.querySelector(".edit"); if(ed) ed.classList.remove("open");
+        panel(item,"editcase").classList.toggle("open");
+        if(pendingRender && !someoneEditing()) render();
       }else if(e.target.closest(".cancel-edit")){
-        item.querySelector(".edit").classList.remove("open");
+        closePanel(item,"edit");
       }else if(e.target.closest(".cancel-editcase")){
-        item.querySelector(".editcase").classList.remove("open");
+        closePanel(item,"editcase");
       }else if(e.target.closest(".save-edit")){
         saveEdit(item);
       }else if(e.target.closest(".save-editcase")){
@@ -493,7 +594,14 @@
     });
 
     try{ const c = localStorage.getItem("jb_creator"); if(c) $("creator").value = c; }catch(e){}
-    loadBoard();
+
+    // 先用上次的資料秒開畫面
+    const cache = readCache();
+    if(cache && Array.isArray(cache.rows) && cache.rows.length){
+      allRows = cache.rows;
+      render();
+    }
+    loadBoard(true);
   });
 </script>
 <script>
@@ -525,7 +633,7 @@ function fillFromMsg(){
   var _s=document.getElementById('source');
   if(_s && /轉程曦|客服室/.test(t)) _s.value='客服室';
   var got=[]; if(order)got.push('訂單編號'); if(customer)got.push('回電對象'); if(phone)got.push('聯絡方式'); if(tracking)got.push('物流單號');
-  var miss=[]; if(!customer)miss.push('客戶姓名'); if(!_s.value)miss.push('案件來源');
+  var miss=[]; if(!customer)miss.push('客戶姓名/帳號'); if(!_s.value)miss.push('案件來源');
   hint.innerHTML='✅ 已帶入：'+(got.length?got.join('、'):'（僅帶入事項）')+(miss.length?'　·　請補：'+miss.join('、'):'')+'　·　確認後按下方「新增交辦」';
   var focusId=!customer?'customer':'task';
   var c=document.getElementById(focusId); if(c) c.focus();
