@@ -150,6 +150,8 @@
         <option>客服室</option>
         <option>總部</option>
         <option>倉庫</option>
+        <option>官網</option>
+        <option>蝦皮</option>
       </select>
     </div>
     <div class="field">
@@ -382,7 +384,7 @@
     return '<div class="editcase">'+
       '<div class="field"><label>案件來源</label><select class="ec-source">'+
         '<option value=""'+(!r.source?' selected':'')+'>（未設定）</option>'+
-        ['客服室','總部','倉庫'].concat(r.source==='新竹物流'?['新竹物流']:[]).map(function(o){return '<option'+(o===(r.source||"")?' selected':'')+'>'+o+'</option>';}).join('')+
+        ['客服室','總部','倉庫','官網','蝦皮'].concat(r.source==='新竹物流'?['新竹物流']:[]).map(function(o){return '<option'+(o===(r.source||"")?' selected':'')+'>'+o+'</option>';}).join('')+
       '</select></div>'+
       '<div class="field"><label>訂單編號</label><input class="ec-order" type="text" maxlength="60" value="'+esc(r.order||"")+'"></div>'+
       '<div class="field"><label>物流單號</label><input class="ec-tracking" type="text" maxlength="60" value="'+esc(r.tracking||"")+'"></div>'+
