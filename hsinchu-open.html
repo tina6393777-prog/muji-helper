@@ -56,11 +56,19 @@ details>summary .grp:after{content:"▸ 展開";font-weight:400;font-size:13px;c
 #imp .foot{position:sticky;bottom:0;background:var(--bg);display:flex;gap:8px;justify-content:flex-end;padding:12px 0;border-top:1px solid var(--line);margin-top:12px}
 #imp .foot button{font:inherit;border-radius:8px;padding:8px 16px;cursor:pointer;border:1px solid var(--line);background:#fff}
 #imp .foot .go{background:var(--ink);color:#fff;border-color:var(--ink);font-weight:700}
+#imp textarea,#imp .fm input,#imp .fm select{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font:inherit;font-size:14px;background:#fff;color:var(--ink)}
+#imp #adPaste{margin:10px 0 12px}
+#imp .fm{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#imp .fm label{font-size:13px;color:var(--sub);display:flex;flex-direction:column;gap:4px}
+#imp .fm .w{grid-column:1/-1}
+#imp .warn{margin-top:10px;padding:8px 12px;border-radius:8px;background:var(--redbg);color:var(--red);font-size:13px;line-height:1.5;display:none}
+#imp .warn.on{display:block}
+@media(max-width:600px){#imp .fm{grid-template-columns:1fr}}
 @media(max-width:600px){.chips{grid-template-columns:repeat(2,1fr)}.tags{margin-left:0}}
 </style></head><body>
 <header><h1>📦 新竹物流追蹤清單</h1><a href="index.html">← 回小幫手</a></header>
 <div class="wrap">
-<div class="bar"><span id="upd">載入中…</span><button id="reload">↻ 重新整理</button><button id="who"></button><button id="impBtn" class="imp-btn">📥 匯入 LINE 對話</button></div>
+<div class="bar"><span id="upd">載入中…</span><button id="reload">↻ 重新整理</button><button id="who"></button><button id="addBtn" class="imp-btn">➕ 新增案件</button><button id="impBtn" class="imp-btn">📥 匯入 LINE 對話</button></div>
 <div class="chips" id="chips"></div>
 <input id="q" placeholder="搜尋訂單編號、物流單號、客戶…">
 <div id="list"></div>
@@ -315,6 +323,84 @@ async function submitImp(){
   catch(e){toast("連線失敗，請稍後再試");btn.disabled=false;btn.textContent="寫入勾選的項目"}
 }
 document.getElementById("impBtn").onclick=openImp;
+
+// ===== 手動新增案件（可貼上 LINE 訊息自動帶入）=====
+let ADD=null;
+const ymd=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+function openAdd(){
+  if(!myName())return; if(!myPw())return;
+  const el=document.getElementById("imp"),box=document.getElementById("impBox");el.style.display="block";
+  ADD={all:[],last:"",ready:null};
+  ADD.ready=fetch(SCRIPT_URL+"?all=1",{cache:"no-store"}).then(r=>r.json()).then(r=>{ADD.all=r.rows||[];ADD.last=r.lastImport||"";checkDup();return true}).catch(()=>false);
+  box.innerHTML=`<h2>➕ 新增案件</h2>
+  <div class="hint">在 LINE 對那則訊息按右鍵（手機長按）→ <b>複製</b>，貼到下面這格，單號、姓名、狀況會自動帶入。<br>也可以不貼，直接自己填下面的欄位。</div>
+  <textarea id="adPaste" rows="4" placeholder="（選填）把 LINE 訊息貼在這裡"></textarea>
+  <div class="fm">
+   <label>訂單編號<input id="adOrd" placeholder="例：TM260922TA00PH"></label>
+   <label>物流單號<input id="adTrk" placeholder="例：2114979495"></label>
+   <label>客戶姓名<input id="adName" placeholder="例：蔡*雅"></label>
+   <label>保留至（沒有就留空）<input id="adHold" type="date"></label>
+   <label class="w">目前狀況<textarea id="adSt" rows="3" placeholder="例：客戶10/3申請退貨，至今未有物流人員收件，已請新竹盡速前往"></textarea></label>
+   <label>放在哪一區<select id="adCat"><option value="新竹">🟡 等新竹回覆</option><option value="我方">🔴 待客服追蹤</option></select></label>
+   <label>新竹疏失<select id="adFault"><option value="">無</option><option>疑似送錯</option><option>疑似遺失</option><option>疑似破損</option><option>疑似回收錯</option></select></label>
+  </div>
+  <div class="warn" id="adWarn"></div>
+  <div class="foot"><button onclick="closeImp()">取消</button><button class="go" id="adGo">新增</button></div>`;
+  const $=id=>document.getElementById(id);
+  $("adPaste").oninput=()=>fillFromPaste($("adPaste").value);
+  $("adOrd").oninput=$("adTrk").oninput=()=>checkDup();
+  $("adGo").onclick=submitAdd;
+  $("adPaste").focus();
+}
+function fillFromPaste(txt){
+  const $=id=>document.getElementById(id);
+  let t=String(txt||"").replace(/\r/g,"").trim(); if(!t)return;
+  // 如果貼的是「13:22 程高客服2 內容」這種格式，先把時間和人名拿掉
+  if(/^\d{1,2}:\d{2}[\t ]/.test(t)){const ms=parseLine("2000/1/1\n"+t);if(ms.length)t=ms.map(m=>m.text).join("\n")}
+  t=t.replace(/^"|"$/g,"");
+  const {trk,ord}=idsOf(t); const full=nameOf(t); const mk=maskName(full);
+  if(ord.length)$("adOrd").value=ord.join("／");
+  if(trk.length)$("adTrk").value=trk.join("／");
+  if(mk)$("adName").value=mk;
+  $("adSt").value=clean(statusLine(t),full,mk);
+  const h=holdOf(t,new Date()); if(h)$("adHold").value=h;
+  const f=faultOf(t); if(f)$("adFault").value=f;
+  if(ASK.test(t))$("adCat").value="我方";
+  checkDup();
+}
+function findDup(){
+  const v=(document.getElementById("adOrd").value+" "+document.getElementById("adTrk").value);
+  const {trk,ord}=idsOf(v); const keys=[...trk,...ord]; if(!keys.length||!ADD)return null;
+  for(const c of ADD.all){const x=idsOf((c.order||"")+" "+(c.trk||""));if([...x.trk,...x.ord].some(k=>keys.includes(k)))return c}
+  return null}
+function checkDup(){
+  const w=document.getElementById("adWarn"); if(!w)return; const c=findDup();
+  if(!c){w.classList.remove("on");w.textContent="";return}
+  w.classList.add("on");
+  w.textContent=c.state==="已結案"
+    ?`⚠️ ${c.order||c.trk} ${c.name||""} 之前已經結案過了。如果這次是新的狀況，可以照樣新增一筆。`
+    :`⚠️ ${c.order||c.trk} ${c.name||""} 已經在清單裡（還沒結案）。建議關掉這個視窗，到那張卡片按「✎ 更新進度」就好。`}
+async function submitAdd(){
+  const $=id=>document.getElementById(id); const btn=$("adGo");
+  const order=$("adOrd").value.trim(), trk=$("adTrk").value.trim();
+  if(!order&&!trk){toast("請至少填訂單編號或物流單號");$("adOrd").focus();return}
+  btn.disabled=true;btn.textContent="檢查中…";
+  const ok=await ADD.ready;
+  if(!ok){toast("讀取資料失敗，請稍後再試");btn.disabled=false;btn.textContent="新增";return}
+  const dup=findDup();
+  if(dup&&dup.state!=="已結案"&&!confirm(`${dup.order||dup.trk} 已經在清單裡還沒結案，確定還要再新增一筆嗎？`)){btn.disabled=false;btn.textContent="新增";return}
+  const by=myName(),pw=myPw(); const now=new Date(); const st=$("adSt").value.trim().replace(/\s*\n\s*/g," ");
+  const cat=$("adCat").value;
+  const row={cat,fault:$("adFault").value,first:ymd(now),order,trk,name:$("adName").value.trim(),
+    status:st?`${md(now)} ${by}：${st}`:"",next:cat==="我方"?"回覆新竹":"追蹤新竹回覆",hold:$("adHold").value||""};
+  btn.textContent="新增中…";
+  try{const res=await (await fetch(SCRIPT_URL,{method:"POST",body:JSON.stringify({action:"import",ops:[{type:"add",row}],lastImport:ADD.last,by,pw})})).json();
+    if(!res.ok){if(res.badPw){ls.del("hcOpen.pw");toast("密碼錯誤，請再試一次")}else toast(res.msg||"新增失敗");btn.disabled=false;btn.textContent="新增";return}
+    closeImp();toast(`已新增 ${order||trk} ✓`);load(true)}
+  catch(e){toast("連線失敗，請稍後再試");btn.disabled=false;btn.textContent="新增"}
+}
+document.getElementById("addBtn").onclick=openAdd;
+
 
 document.getElementById("who").textContent="👤 "+(ls.get("hcOpen.by")||"設定名字");
 // 先用上次的資料秒開畫面，背景再抓最新
