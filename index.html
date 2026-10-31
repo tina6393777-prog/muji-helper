@@ -410,7 +410,7 @@ mark.hl{background:#fff176;color:#333;padding:1px 3px;border-radius:3px;font-wei
 #tab-sec91 .s9-stat{background:#fdf8f8;border:1px solid #f0dcdc;border-radius:8px;padding:6px 10px;font-size:12px;color:#555}
 #tab-sec91 .s9-stat b{color:#B81C22;font-size:15px;margin-left:4px}
 #tab-sec91 .s9-tblwrap{overflow-x:auto;border:1px solid #eee;border-radius:8px}
-#tab-sec91 .s9-tbl{width:100%;border-collapse:collapse;font-size:12px;min-width:640px}
+#tab-sec91 .s9-tbl{width:100%;border-collapse:collapse;font-size:12px;min-width:720px}
 #tab-sec91 .s9-tbl th{background:#B81C22;color:#fff;padding:7px 8px;text-align:left;font-weight:normal;white-space:nowrap}
 #tab-sec91 .s9-tbl td{padding:7px 8px;border-bottom:1px solid #f2f2f2;vertical-align:top}
 #tab-sec91 .s9-tbl tr:nth-child(even) td{background:#fdf8f8}
@@ -529,7 +529,8 @@ mark.hl{background:#fff176;color:#333;padding:1px 3px;border-radius:3px;font-wei
       <div><label>顧客姓名 <span class="req">*</span></label><input id="s9-name" type="text" placeholder="例如：林小姐"></div>
       <div><label>聯絡電話 <span class="req">*</span></label><input id="s9-phone" type="tel" placeholder="0912345678"></div>
       <div><label>官網訂單編號（選填）</label><input id="s9-order" type="text" placeholder="顧客有提供再填"></div>
-      <div><label>來電類型 <span class="req">*</span></label><select id="s9-type"></select></div>
+      <div><label>後送單號（有後送才填）</label><input id="s9-ticket" type="text" placeholder="例如：後送系統的案件編號"></div>
+      <div class="full"><label>來電類型 <span class="req">*</span></label><select id="s9-type"></select></div>
       <div class="full"><label>是否有詐騙或財務損失 <span class="req">*</span></label>
         <div class="s9-radio">
           <label><input type="radio" name="s9-loss" value="有財損">有財損</label>
@@ -556,7 +557,7 @@ mark.hl{background:#fff176;color:#333;padding:1px 3px;border-radius:3px;font-wei
   <div class="s9-box">
     <div class="s9-h2" style="display:flex;justify-content:space-between;align-items:center;gap:8px">📊 登記紀錄 <button class="s9-btn2" type="button" onclick="s9Load()">重新整理</button></div>
     <div class="s9-stats" id="s9-stats"></div>
-    <div class="s9-tblwrap"><table class="s9-tbl"><thead><tr><th>來電時間</th><th>同仁</th><th>顧客</th><th>電話</th><th>類型</th><th>財損</th><th>處理方式</th><th>備註</th></tr></thead><tbody id="s9-rows"><tr><td colspan="8" style="text-align:center;color:#999">載入中…</td></tr></tbody></table></div>
+    <div class="s9-tblwrap"><table class="s9-tbl"><thead><tr><th>來電時間</th><th>同仁</th><th>顧客</th><th>電話</th><th>類型</th><th>財損</th><th>處理方式</th><th>後送單號</th><th>備註</th></tr></thead><tbody id="s9-rows"><tr><td colspan="9" style="text-align:center;color:#999">載入中…</td></tr></tbody></table></div>
     <div class="s9-src" style="margin-top:6px">※ 為保護個資，這裡的姓名、電話只顯示部分，完整資料請到 Google 試算表查看。</div>
   </div>
 
@@ -2491,7 +2492,7 @@ function s9InitForm(){
 function s9Submit(){
   var g=function(id){return document.getElementById(id).value.trim();};
   var lossEl=document.querySelector('input[name="s9-loss"]:checked');
-  var d={by:g('s9-by'),time:g('s9-time').replace('T',' '),name:g('s9-name'),phone:g('s9-phone'),order:g('s9-order'),
+  var d={by:g('s9-by'),time:g('s9-time').replace('T',' '),name:g('s9-name'),phone:g('s9-phone'),order:g('s9-order'),ticket:g('s9-ticket'),
     type:g('s9-type'),loss:lossEl?lossEl.value:'',amount:g('s9-amount'),action:g('s9-action'),note:g('s9-note')};
   var miss=[];
   if(!d.by)miss.push('登記同仁');if(!d.time)miss.push('來電時間');if(!d.name)miss.push('顧客姓名');
@@ -2505,13 +2506,13 @@ function s9Submit(){
     .then(function(r){return r.json();})
     .then(function(res){if(res&&res.ok===false)throw new Error(res.error||'失敗');s9Done();})
     .catch(function(err){
-      if(err&&err.message&&err.message!=='Failed to fetch'&&!/JSON/i.test(err.message)){s9Status('送出失敗：'+err.message,'err');btn.disabled=false;return;}
-      s9Done();
+      s9Status('❌ 送出失敗，資料還在表單上，請再按一次；一直失敗請通知督導','err');
+      btn.disabled=false;
     });
 }
 function s9Done(){
   s9Status('✅ 已登記，謝謝！','ok');
-  ['s9-name','s9-phone','s9-order','s9-amount','s9-note'].forEach(function(id){document.getElementById(id).value='';});
+  ['s9-name','s9-phone','s9-order','s9-ticket','s9-amount','s9-note'].forEach(function(id){document.getElementById(id).value='';});
   document.getElementById('s9-type').value='';document.getElementById('s9-action').value='';
   var r=document.querySelector('input[name="s9-loss"]:checked');if(r)r.checked=false;
   document.getElementById('s9-time').value=s9NowLocal();
@@ -2521,11 +2522,11 @@ function s9Done(){
 
 function s9Load(){
   var body=document.getElementById('s9-rows'); if(!body) return;
-  if(!S9_URL){body.innerHTML='<tr><td colspan="8" style="text-align:center;color:#999">尚未連上試算表</td></tr>';return;}
-  body.innerHTML='<tr><td colspan="8" style="text-align:center;color:#999">載入中…</td></tr>';
+  if(!S9_URL){body.innerHTML='<tr><td colspan="9" style="text-align:center;color:#999">尚未連上試算表</td></tr>';return;}
+  body.innerHTML='<tr><td colspan="9" style="text-align:center;color:#999">載入中…</td></tr>';
   fetch(S9_URL).then(function(r){return r.json();}).then(function(d){
     S9_ALL=(d&&d.rows)?d.rows:[];s9RenderRows();
-  }).catch(function(){body.innerHTML='<tr><td colspan="8" style="text-align:center;color:#999">目前無法讀取，稍後再按「重新整理」</td></tr>';});
+  }).catch(function(){body.innerHTML='<tr><td colspan="9" style="text-align:center;color:#999">目前無法讀取，稍後再按「重新整理」</td></tr>';});
 }
 function s9RenderRows(){
   var body=document.getElementById('s9-rows');
@@ -2540,9 +2541,9 @@ function s9RenderRows(){
   var h='<div class="s9-stat">累計<b>'+S9_ALL.length+'</b></div><div class="s9-stat">今日<b>'+cntToday+'</b></div><div class="s9-stat">有財損<b>'+cntLoss+'</b></div>';
   Object.keys(byType).sort(function(a,b){return byType[b]-byType[a];}).forEach(function(k){h+='<div class="s9-stat">'+s9Esc(k)+'<b>'+byType[k]+'</b></div>';});
   st.innerHTML=h;
-  if(!S9_ALL.length){body.innerHTML='<tr><td colspan="8" style="text-align:center;color:#999">目前還沒有登記</td></tr>';return;}
+  if(!S9_ALL.length){body.innerHTML='<tr><td colspan="9" style="text-align:center;color:#999">目前還沒有登記</td></tr>';return;}
   body.innerHTML=S9_ALL.slice(0,100).map(function(r){
-    return '<tr><td style="white-space:nowrap">'+s9Esc(r.time)+'</td><td>'+s9Esc(r.by)+'</td><td>'+s9Esc(r.name)+'</td><td style="white-space:nowrap">'+s9Esc(r.phone)+'</td><td>'+s9Esc(r.type)+'</td><td>'+s9Esc(r.loss)+(r.amount?'<br>$'+s9Esc(r.amount):'')+'</td><td>'+s9Esc(r.action)+'</td><td>'+s9Esc(r.note)+'</td></tr>';
+    return '<tr><td style="white-space:nowrap">'+s9Esc(r.time)+'</td><td>'+s9Esc(r.by)+'</td><td>'+s9Esc(r.name)+'</td><td style="white-space:nowrap">'+s9Esc(r.phone)+'</td><td>'+s9Esc(r.type)+'</td><td>'+s9Esc(r.loss)+(r.amount?'<br>$'+s9Esc(r.amount):'')+'</td><td>'+s9Esc(r.action)+'</td><td style="white-space:nowrap">'+s9Esc(r.ticket)+'</td><td>'+s9Esc(r.note)+'</td></tr>';
   }).join('');
 }
 
