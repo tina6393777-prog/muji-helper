@@ -410,11 +410,18 @@ mark.hl{background:#fff176;color:#333;padding:1px 3px;border-radius:3px;font-wei
 #tab-sec91 .s9-stat{background:#fdf8f8;border:1px solid #f0dcdc;border-radius:8px;padding:6px 10px;font-size:12px;color:#555}
 #tab-sec91 .s9-stat b{color:#B81C22;font-size:15px;margin-left:4px}
 #tab-sec91 .s9-tblwrap{overflow-x:auto;border:1px solid #eee;border-radius:8px}
-#tab-sec91 .s9-tbl{width:100%;border-collapse:collapse;font-size:12px;min-width:720px}
+#tab-sec91 .s9-tbl{width:100%;border-collapse:collapse;font-size:12px;min-width:780px}
 #tab-sec91 .s9-tbl th{background:#B81C22;color:#fff;padding:7px 8px;text-align:left;font-weight:normal;white-space:nowrap}
 #tab-sec91 .s9-tbl td{padding:7px 8px;border-bottom:1px solid #f2f2f2;vertical-align:top}
 #tab-sec91 .s9-tbl tr:nth-child(even) td{background:#fdf8f8}
 #tab-sec91 .s9-src{font-size:12px;color:#777;line-height:1.7}
+#tab-sec91 .s9-editbar{background:#EEF4FB;border:1px solid #B9D0E8;border-left:4px solid #2C6E9B;border-radius:8px;padding:9px 12px;font-size:13px;color:#1f4a6b;margin:0 0 10px;line-height:1.7}
+#tab-sec91 .s9-editing{outline:2px solid #2C6E9B;outline-offset:-2px}
+#tab-sec91 #s9-reg{scroll-margin-top:60px}
+#tab-sec91 .s9-keep{color:#2C6E9B;font-weight:normal}
+#tab-sec91 .s9-editbtn{padding:4px 10px;font-size:12px;border:1px solid #B81C22;color:#B81C22;background:#fff;border-radius:6px;cursor:pointer;white-space:nowrap;font-family:inherit}
+#tab-sec91 .s9-editbtn:hover{background:#fdf0f0}
+#tab-sec91 .s9-edited{font-size:11px;color:#2C6E9B;margin-top:3px}
 #tab-sec91 .s9-src a{color:#B81C22}
 @media (max-width:640px){
   #tab-sec91 .s9-facts,#tab-sec91 .s9-cards,#tab-sec91 .s9-two,#tab-sec91 .s9-split,#tab-sec91 .s9-form{grid-template-columns:1fr}
@@ -521,13 +528,14 @@ mark.hl{background:#fff176;color:#333;padding:1px 3px;border-radius:3px;font-wei
   </div>
 
   <div class="s9-box" id="s9-reg">
-    <div class="s9-h2">📝 來電登記表</div>
+    <div class="s9-h2" id="s9-reg-title">📝 來電登記表</div>
+    <div class="s9-editbar" id="s9-editbar" style="display:none"><span id="s9-editinfo"></span><br>姓名、電話、訂單編號為保護個資不會顯示，<b>不修改請留空</b>；「登記同仁」請填<b>修改人</b>。</div>
     <div class="s9-warn" id="s9-nourl" style="display:none">⚙️ 登記表還沒連上 Google 試算表，請督導完成設定後再使用。</div>
     <div class="s9-form">
       <div><label>登記同仁 <span class="req">*</span></label><input id="s9-by" type="text" placeholder="例如：王婷"></div>
       <div><label>來電時間 <span class="req">*</span></label><input id="s9-time" type="datetime-local"></div>
-      <div><label>顧客姓名 <span class="req">*</span></label><input id="s9-name" type="text" placeholder="例如：林小姐"></div>
-      <div><label>聯絡電話 <span class="req">*</span></label><input id="s9-phone" type="tel" placeholder="0912345678"></div>
+      <div><label>顧客姓名 <span class="req">*</span><span class="s9-keep" style="display:none">（不改留空）</span></label><input id="s9-name" type="text" placeholder="例如：林小姐"></div>
+      <div><label>聯絡電話 <span class="req">*</span><span class="s9-keep" style="display:none">（不改留空）</span></label><input id="s9-phone" type="tel" placeholder="0912345678"></div>
       <div><label>官網訂單編號（選填）</label><input id="s9-order" type="text" placeholder="顧客有提供再填"></div>
       <div><label>後送單號（有後送才填）</label><input id="s9-ticket" type="text" placeholder="例如：後送系統的案件編號"></div>
       <div class="full"><label>來電類型 <span class="req">*</span></label><select id="s9-type"></select></div>
@@ -550,15 +558,15 @@ mark.hl{background:#fff176;color:#333;padding:1px 3px;border-radius:3px;font-wei
         </select>
       </div>
       <div class="full"><label>備註</label><textarea id="s9-note" rows="3" placeholder="顧客情緒、特殊要求、後續需追蹤的事"></textarea></div>
-      <div class="full"><button class="s9-btn" id="s9-submit" type="button" onclick="s9Submit()">送出登記</button><span class="s9-status" id="s9-status"></span></div>
+      <div class="full"><button class="s9-btn" id="s9-submit" type="button" onclick="s9Submit()">送出登記</button> <button class="s9-btn2" id="s9-cancel" type="button" onclick="s9CancelEdit()" style="display:none">取消修改</button><span class="s9-status" id="s9-status"></span></div>
     </div>
   </div>
 
   <div class="s9-box">
-    <div class="s9-h2" style="display:flex;justify-content:space-between;align-items:center;gap:8px">📊 登記紀錄 <button class="s9-btn2" type="button" onclick="s9Load()">重新整理</button></div>
+    <div class="s9-h2" style="display:flex;justify-content:space-between;align-items:center;gap:8px">📊 登記紀錄 <span style="display:flex;gap:6px;flex-wrap:wrap"><a class="s9-btn2" href="https://docs.google.com/spreadsheets/d/1yh1j6H7CedKMj2So2vi-YviJDNtsDSLtqAc5apxDm0Y/edit?gid=178190589#gid=178190589" target="_blank" rel="noopener" style="text-decoration:none">📄 開啟後台試算表</a><button class="s9-btn2" type="button" onclick="s9Load()">重新整理</button></span></div>
     <div class="s9-stats" id="s9-stats"></div>
-    <div class="s9-tblwrap"><table class="s9-tbl"><thead><tr><th>來電時間</th><th>同仁</th><th>顧客</th><th>電話</th><th>類型</th><th>財損</th><th>處理方式</th><th>後送單號</th><th>備註</th></tr></thead><tbody id="s9-rows"><tr><td colspan="9" style="text-align:center;color:#999">載入中…</td></tr></tbody></table></div>
-    <div class="s9-src" style="margin-top:6px">※ 為保護個資，這裡的姓名、電話只顯示部分，完整資料請到 Google 試算表查看。</div>
+    <div class="s9-tblwrap"><table class="s9-tbl"><thead><tr><th>來電時間</th><th>同仁</th><th>顧客</th><th>電話</th><th>類型</th><th>財損</th><th>處理方式</th><th>後送單號</th><th>備註</th><th>操作</th></tr></thead><tbody id="s9-rows"><tr><td colspan="10" style="text-align:center;color:#999">載入中…</td></tr></tbody></table></div>
+    <div class="s9-src" style="margin-top:6px">※ 為保護個資，這裡的姓名、電話只顯示部分，完整資料請到 <a href="https://docs.google.com/spreadsheets/d/1yh1j6H7CedKMj2So2vi-YviJDNtsDSLtqAc5apxDm0Y/edit?gid=178190589#gid=178190589" target="_blank" rel="noopener">Google 試算表</a> 查看（需有試算表權限才能開啟）。</div>
   </div>
 
   <div class="s9-src">官方公告：<a href="https://www.muji.tw/muji-journal/news/news/261030.html" target="_blank" rel="noopener">台灣無印良品聲明</a>｜<a href="https://91app.com/91app-202610-security-incident/" target="_blank" rel="noopener">91APP 事件說明</a>｜<a href="https://91app.com/91app-202610-security-incident-compensation/" target="_blank" rel="noopener">91APP 補償與通知說明</a></div>
@@ -2489,44 +2497,92 @@ function s9InitForm(){
   if(!S9_URL){document.getElementById('s9-nourl').style.display='block';document.getElementById('s9-submit').disabled=true;}
 }
 
+var S9_EDIT=null; // 正在修改的那筆資料（null＝新增模式）
 function s9Submit(){
   var g=function(id){return document.getElementById(id).value.trim();};
   var lossEl=document.querySelector('input[name="s9-loss"]:checked');
   var d={by:g('s9-by'),time:g('s9-time').replace('T',' '),name:g('s9-name'),phone:g('s9-phone'),order:g('s9-order'),ticket:g('s9-ticket'),
     type:g('s9-type'),loss:lossEl?lossEl.value:'',amount:g('s9-amount'),action:g('s9-action'),note:g('s9-note')};
+  var editing=!!S9_EDIT;
   var miss=[];
-  if(!d.by)miss.push('登記同仁');if(!d.time)miss.push('來電時間');if(!d.name)miss.push('顧客姓名');
-  if(!d.phone)miss.push('聯絡電話');if(!d.type)miss.push('來電類型');if(!d.loss)miss.push('是否有財損');if(!d.action)miss.push('處理方式');
+  if(!d.by)miss.push(editing?'修改人（登記同仁欄）':'登記同仁');if(!d.time)miss.push('來電時間');
+  if(!editing&&!d.name)miss.push('顧客姓名');if(!editing&&!d.phone)miss.push('聯絡電話');
+  if(!d.type)miss.push('來電類型');if(!d.loss)miss.push('是否有財損');if(!d.action)miss.push('處理方式');
   if(miss.length){s9Status('還沒填：'+miss.join('、'),'err');return;}
-  if(!/^[0-9+\-\s()#]{6,20}$/.test(d.phone)){s9Status('電話格式看起來不對，請再確認','err');return;}
+  if(d.phone&&!/^[0-9+\-\s()#]{6,20}$/.test(d.phone)){s9Status('電話格式看起來不對，請再確認','err');return;}
   if(!S9_URL){s9Status('登記表還沒連上試算表','err');return;}
+  if(editing){d.mode='update';d.id=S9_EDIT.id;}
   try{localStorage.setItem('s9_by',d.by);}catch(e){}
-  var btn=document.getElementById('s9-submit');btn.disabled=true;s9Status('送出中…','');
+  var btn=document.getElementById('s9-submit');btn.disabled=true;s9Status(editing?'儲存中…':'送出中…','');
   fetch(S9_URL,{method:'POST',body:JSON.stringify(d)})
     .then(function(r){return r.json();})
-    .then(function(res){if(res&&res.ok===false)throw new Error(res.error||'失敗');s9Done();})
+    .then(function(res){if(!res||res.ok!==true)throw new Error((res&&res.error)||'失敗');s9Done(editing);})
     .catch(function(err){
-      s9Status('❌ 送出失敗，資料還在表單上，請再按一次；一直失敗請通知督導','err');
+      var m=(err&&err.message&&err.message!=='Failed to fetch')?('（'+err.message+'）'):'';
+      s9Status('❌ '+(editing?'儲存':'送出')+'失敗'+m+'，資料還在表單上，請再按一次；一直失敗請通知督導','err');
       btn.disabled=false;
     });
 }
-function s9Done(){
-  s9Status('✅ 已登記，謝謝！','ok');
+function s9ClearForm(){
   ['s9-name','s9-phone','s9-order','s9-ticket','s9-amount','s9-note'].forEach(function(id){document.getElementById(id).value='';});
   document.getElementById('s9-type').value='';document.getElementById('s9-action').value='';
   var r=document.querySelector('input[name="s9-loss"]:checked');if(r)r.checked=false;
   document.getElementById('s9-time').value=s9NowLocal();
+}
+function s9SetMode(rec){
+  S9_EDIT=rec||null;
+  var e=!!rec;
+  document.getElementById('s9-reg-title').textContent=e?'✏️ 修改登記':'📝 來電登記表';
+  document.getElementById('s9-editbar').style.display=e?'block':'none';
+  document.getElementById('s9-cancel').style.display=e?'inline-block':'none';
+  document.getElementById('s9-submit').textContent=e?'儲存修改':'送出登記';
+  document.getElementById('s9-reg').classList.toggle('s9-editing',e);
+  ['s9-name','s9-phone','s9-order'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(!el.dataset.ph)el.dataset.ph=el.placeholder;
+    el.placeholder=e?'不修改請留空':el.dataset.ph;
+  });
+  document.querySelectorAll('#s9-reg .s9-keep').forEach(function(x){x.style.display=e?'inline':'none';});
+}
+function s9Done(editing){
+  s9ClearForm();
+  if(editing)s9SetMode(null);
+  s9Status(editing?'✅ 已儲存修改':'✅ 已登記，謝謝！','ok');
   document.getElementById('s9-submit').disabled=false;
   setTimeout(s9Load,800);
 }
+function s9Edit(i){
+  var r=S9_ALL[i]; if(!r) return;
+  if(!r.id){alert('這筆資料還沒有編號，請先按「重新整理」再修改');return;}
+  s9ClearForm();
+  var t=String(r.time||'').replace(/\//g,'-').replace(' ','T');
+  var m=t.match(/^(\d{4})-(\d{1,2})-(\d{1,2})T(\d{1,2}):(\d{2})/);
+  if(m)t=m[1]+'-'+('0'+m[2]).slice(-2)+'-'+('0'+m[3]).slice(-2)+'T'+('0'+m[4]).slice(-2)+':'+m[5];
+  document.getElementById('s9-time').value=t;
+  document.getElementById('s9-ticket').value=r.ticket||'';
+  document.getElementById('s9-amount').value=r.amount||'';
+  document.getElementById('s9-note').value=r.note||'';
+  var sel=document.getElementById('s9-type');
+  if(r.type&&![].some.call(sel.options,function(o){return o.value===r.type;})){var o=document.createElement('option');o.textContent=r.type;sel.appendChild(o);}
+  sel.value=r.type||'';
+  var act=document.getElementById('s9-action');
+  if(r.action&&![].some.call(act.options,function(o){return o.value===r.action;})){var o2=document.createElement('option');o2.textContent=r.action;act.appendChild(o2);}
+  act.value=r.action||'';
+  var lr=document.querySelector('input[name="s9-loss"][value="'+(r.loss||'').replace(/"/g,'')+'"]');if(lr)lr.checked=true;
+  document.getElementById('s9-editinfo').textContent='正在修改：'+(r.time||'')+'　'+(r.name||'')+'（'+(r.phone||'')+'）　原登記：'+(r.by||'');
+  s9SetMode(r);
+  s9Status('','');
+  document.getElementById('s9-reg').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function s9CancelEdit(){s9ClearForm();s9SetMode(null);s9Status('已取消修改','');}
 
 function s9Load(){
   var body=document.getElementById('s9-rows'); if(!body) return;
-  if(!S9_URL){body.innerHTML='<tr><td colspan="9" style="text-align:center;color:#999">尚未連上試算表</td></tr>';return;}
-  body.innerHTML='<tr><td colspan="9" style="text-align:center;color:#999">載入中…</td></tr>';
+  if(!S9_URL){body.innerHTML='<tr><td colspan="10" style="text-align:center;color:#999">尚未連上試算表</td></tr>';return;}
+  body.innerHTML='<tr><td colspan="10" style="text-align:center;color:#999">載入中…</td></tr>';
   fetch(S9_URL).then(function(r){return r.json();}).then(function(d){
     S9_ALL=(d&&d.rows)?d.rows:[];s9RenderRows();
-  }).catch(function(){body.innerHTML='<tr><td colspan="9" style="text-align:center;color:#999">目前無法讀取，稍後再按「重新整理」</td></tr>';});
+  }).catch(function(){body.innerHTML='<tr><td colspan="10" style="text-align:center;color:#999">目前無法讀取，稍後再按「重新整理」</td></tr>';});
 }
 function s9RenderRows(){
   var body=document.getElementById('s9-rows');
@@ -2541,9 +2597,10 @@ function s9RenderRows(){
   var h='<div class="s9-stat">累計<b>'+S9_ALL.length+'</b></div><div class="s9-stat">今日<b>'+cntToday+'</b></div><div class="s9-stat">有財損<b>'+cntLoss+'</b></div>';
   Object.keys(byType).sort(function(a,b){return byType[b]-byType[a];}).forEach(function(k){h+='<div class="s9-stat">'+s9Esc(k)+'<b>'+byType[k]+'</b></div>';});
   st.innerHTML=h;
-  if(!S9_ALL.length){body.innerHTML='<tr><td colspan="9" style="text-align:center;color:#999">目前還沒有登記</td></tr>';return;}
-  body.innerHTML=S9_ALL.slice(0,100).map(function(r){
-    return '<tr><td style="white-space:nowrap">'+s9Esc(r.time)+'</td><td>'+s9Esc(r.by)+'</td><td>'+s9Esc(r.name)+'</td><td style="white-space:nowrap">'+s9Esc(r.phone)+'</td><td>'+s9Esc(r.type)+'</td><td>'+s9Esc(r.loss)+(r.amount?'<br>$'+s9Esc(r.amount):'')+'</td><td>'+s9Esc(r.action)+'</td><td style="white-space:nowrap">'+s9Esc(r.ticket)+'</td><td>'+s9Esc(r.note)+'</td></tr>';
+  if(!S9_ALL.length){body.innerHTML='<tr><td colspan="10" style="text-align:center;color:#999">目前還沒有登記</td></tr>';return;}
+  body.innerHTML=S9_ALL.slice(0,100).map(function(r,i){
+    return '<tr><td style="white-space:nowrap">'+s9Esc(r.time)+'</td><td>'+s9Esc(r.by)+'</td><td>'+s9Esc(r.name)+'</td><td style="white-space:nowrap">'+s9Esc(r.phone)+'</td><td>'+s9Esc(r.type)+'</td><td>'+s9Esc(r.loss)+(r.amount?'<br>$'+s9Esc(r.amount):'')+'</td><td>'+s9Esc(r.action)+'</td><td style="white-space:nowrap">'+s9Esc(r.ticket)+'</td><td>'+s9Esc(r.note)+(r.edited?'<div class="s9-edited">✏️ '+s9Esc(r.edited)+'</div>':'')+'</td>'
+      +'<td><button type="button" class="s9-editbtn" onclick="s9Edit('+i+')">修改</button></td></tr>';
   }).join('');
 }
 
