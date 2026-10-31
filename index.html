@@ -331,6 +331,96 @@ mark.hl{background:#fff176;color:#333;padding:1px 3px;border-radius:3px;font-wei
 .pk-stores{font-size:13px;line-height:1.8;color:#444}
 .pk-stores b{display:inline-block;background:#B81C22;color:#fff;border-radius:4px;padding:0 6px;margin-right:6px;font-size:12px}
 </style>
+<style>
+/* ===== 91APP 資安事件頁籤（2026-10-31 新增）===== */
+.tab.tab-alert{color:#fff;font-weight:bold;background:rgba(255,255,255,.14)}
+#tab-sec91 .s9-head{background:#fff;border-radius:10px;padding:14px 16px;margin:0 0 14px;box-shadow:0 1px 3px rgba(0,0,0,.06);border-top:3px solid #B81C22}
+#tab-sec91 .s9-title{font-size:17px;font-weight:800;color:#B81C22}
+#tab-sec91 .s9-ver{font-size:12px;color:#777;margin-top:4px;line-height:1.6}
+#tab-sec91 .s9-ver b{color:#9c3d10}
+#tab-sec91 .s9-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0 0 14px}
+#tab-sec91 .s9-fact{background:#fff;border-radius:10px;padding:10px 12px;box-shadow:0 1px 3px rgba(0,0,0,.06);border-left:4px solid #999}
+#tab-sec91 .s9-fact .k{font-size:12px;font-weight:800;margin-bottom:4px}
+#tab-sec91 .s9-fact .v{font-size:13px;line-height:1.6;color:#333}
+#tab-sec91 .f-range{border-left-color:#B81C22}#tab-sec91 .f-range .k{color:#B81C22}
+#tab-sec91 .f-leak{border-left-color:#C25E00}#tab-sec91 .f-leak .k{color:#9a4b00}
+#tab-sec91 .f-safe{border-left-color:#2E7D4F}#tab-sec91 .f-safe .k{color:#22663f}
+#tab-sec91 .f-notice{border-left-color:#2C6E9B}#tab-sec91 .f-notice .k{color:#235a80}
+#tab-sec91 .s9-box{background:#fff;border-radius:10px;padding:12px 16px;margin:0 0 14px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+#tab-sec91 .s9-h2{font-size:15px;font-weight:800;color:#B81C22;margin:2px 0 10px}
+/* 接聽流程 */
+#tab-sec91 .s9-flow{display:flex;flex-direction:column;gap:0}
+#tab-sec91 .s9-step{display:flex;gap:10px;align-items:flex-start;background:#fdf8f8;border:1px solid #f0dcdc;border-radius:8px;padding:10px 12px}
+#tab-sec91 .s9-num{flex-shrink:0;width:26px;height:26px;border-radius:50%;background:#B81C22;color:#fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center}
+#tab-sec91 .s9-step .t{font-weight:800;font-size:14px;color:#333}
+#tab-sec91 .s9-step .d{font-size:13px;color:#555;line-height:1.6;margin-top:2px}
+#tab-sec91 .s9-arrow{text-align:center;color:#c9a5a5;font-size:14px;line-height:18px}
+#tab-sec91 .s9-split{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#tab-sec91 .s9-yes{background:#FFF1EE;border:1px solid #F2C2B5;border-radius:8px;padding:10px 12px}
+#tab-sec91 .s9-no{background:#EEF6F1;border:1px solid #BCD9C7;border-radius:8px;padding:10px 12px}
+#tab-sec91 .s9-yes .t{color:#a3301a;font-weight:800;font-size:13px}
+#tab-sec91 .s9-no .t{color:#22663f;font-weight:800;font-size:13px}
+#tab-sec91 .s9-yes .d,#tab-sec91 .s9-no .d{font-size:13px;color:#444;line-height:1.6;margin-top:3px}
+/* 情境卡 */
+#tab-sec91 .s9-chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+#tab-sec91 .s9-chip{padding:5px 12px;background:#fff;border:1.5px solid #ddd;border-radius:16px;cursor:pointer;font-size:12px;color:#555;font-family:inherit}
+#tab-sec91 .s9-chip.on{background:#B81C22;color:#fff;border-color:#B81C22}
+#tab-sec91 .s9-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+#tab-sec91 .s9-card{border:1px solid #eee;border-radius:10px;overflow:hidden;background:#fff;display:flex;flex-direction:column}
+#tab-sec91 .s9-card .q{padding:9px 12px;font-weight:800;font-size:14px;background:#faf7f4;border-bottom:1px solid #eee;display:flex;gap:8px;align-items:center;justify-content:space-between}
+#tab-sec91 .s9-card .a{padding:9px 12px;font-size:13px;line-height:1.7;color:#333;flex:1}
+#tab-sec91 .s9-card .n{padding:7px 12px;font-size:12px;font-weight:700;border-top:1px dashed #eee;color:#555}
+#tab-sec91 .s9-card details{padding:0 12px 9px;font-size:13px}
+#tab-sec91 .s9-card summary{cursor:pointer;color:#B81C22;font-size:12px;font-weight:700;padding:4px 0}
+#tab-sec91 .s9-card .full{background:#fdf8f8;border-radius:6px;padding:8px 10px;line-height:1.7;color:#444;margin-top:4px}
+#tab-sec91 .s9-copy{margin-top:6px;padding:4px 10px;font-size:12px;border:1px solid #B81C22;color:#B81C22;background:#fff;border-radius:6px;cursor:pointer;font-family:inherit}
+#tab-sec91 .tag{flex-shrink:0;font-size:11px;font-weight:800;padding:2px 8px;border-radius:10px;white-space:nowrap}
+#tab-sec91 .tg-info{background:#E5EFF6;color:#235a80}
+#tab-sec91 .tg-refer{background:#FCE9D9;color:#8a4300}
+#tab-sec91 .tg-fraud{background:#FBE3E3;color:#9b1c1c}
+#tab-sec91 .tg-muji{background:#ECE7F5;color:#4f3a7a}
+/* 禁止 & 聯絡 */
+#tab-sec91 .s9-two{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 14px}
+#tab-sec91 .s9-dont{background:#FFF5F5;border:1px solid #F1C4C4;border-radius:10px;padding:12px 14px}
+#tab-sec91 .s9-dont .t{color:#9b1c1c;font-weight:800;font-size:14px;margin-bottom:6px}
+#tab-sec91 .s9-dont li{font-size:13px;line-height:1.75;color:#5a2a2a}
+#tab-sec91 .s9-contact{background:#fff;border:1px solid #e3e3e3;border-radius:10px;padding:12px 14px}
+#tab-sec91 .s9-contact .t{color:#333;font-weight:800;font-size:14px;margin-bottom:6px}
+#tab-sec91 .s9-contact .row{display:grid;grid-template-columns:92px 1fr;gap:6px;font-size:13px;padding:5px 0;border-top:1px dashed #eee;line-height:1.6}
+#tab-sec91 .s9-contact .row b{color:#B81C22}
+#tab-sec91 ul{margin:0;padding-left:18px}
+/* 登記表 */
+#tab-sec91 .s9-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 12px}
+#tab-sec91 .s9-form .full{grid-column:1 / -1}
+#tab-sec91 .s9-form label{display:block;font-size:12px;font-weight:700;color:#555;margin-bottom:4px}
+#tab-sec91 .s9-form label .req{color:#B81C22}
+#tab-sec91 .s9-form input,#tab-sec91 .s9-form select,#tab-sec91 .s9-form textarea{width:100%;box-sizing:border-box;padding:9px 10px;border:1.5px solid #ddd;border-radius:8px;font-size:14px;font-family:inherit;background:#fff;color:#333}
+#tab-sec91 .s9-form input:focus,#tab-sec91 .s9-form select:focus,#tab-sec91 .s9-form textarea:focus{outline:none;border-color:#B81C22}
+#tab-sec91 .s9-radio{display:flex;gap:6px;flex-wrap:wrap}
+#tab-sec91 .s9-radio label{display:flex;align-items:center;gap:5px;font-weight:normal;font-size:13px;color:#333;border:1.5px solid #ddd;border-radius:8px;padding:7px 12px;cursor:pointer;margin:0}
+#tab-sec91 .s9-radio input{width:auto;margin:0}
+#tab-sec91 .s9-btn{background:#B81C22;color:#fff;border:none;border-radius:8px;padding:11px 22px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit}
+#tab-sec91 .s9-btn:disabled{opacity:.55;cursor:default}
+#tab-sec91 .s9-btn2{background:#fff;color:#B81C22;border:1.5px solid #B81C22;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
+#tab-sec91 .s9-status{font-size:13px;margin-left:10px}
+#tab-sec91 .s9-status.ok{color:#22663f;font-weight:700}
+#tab-sec91 .s9-status.err{color:#9b1c1c;font-weight:700}
+#tab-sec91 .s9-warn{background:#FFF4E5;border:1px solid #F0C98A;border-left:4px solid #E69B00;border-radius:8px;padding:9px 12px;font-size:13px;color:#6b4e00;margin:0 0 10px;line-height:1.6}
+#tab-sec91 .s9-stats{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 10px}
+#tab-sec91 .s9-stat{background:#fdf8f8;border:1px solid #f0dcdc;border-radius:8px;padding:6px 10px;font-size:12px;color:#555}
+#tab-sec91 .s9-stat b{color:#B81C22;font-size:15px;margin-left:4px}
+#tab-sec91 .s9-tblwrap{overflow-x:auto;border:1px solid #eee;border-radius:8px}
+#tab-sec91 .s9-tbl{width:100%;border-collapse:collapse;font-size:12px;min-width:640px}
+#tab-sec91 .s9-tbl th{background:#B81C22;color:#fff;padding:7px 8px;text-align:left;font-weight:normal;white-space:nowrap}
+#tab-sec91 .s9-tbl td{padding:7px 8px;border-bottom:1px solid #f2f2f2;vertical-align:top}
+#tab-sec91 .s9-tbl tr:nth-child(even) td{background:#fdf8f8}
+#tab-sec91 .s9-src{font-size:12px;color:#777;line-height:1.7}
+#tab-sec91 .s9-src a{color:#B81C22}
+@media (max-width:640px){
+  #tab-sec91 .s9-facts,#tab-sec91 .s9-cards,#tab-sec91 .s9-two,#tab-sec91 .s9-split,#tab-sec91 .s9-form{grid-template-columns:1fr}
+}
+</style>
+
 </head>
 <body>
 <header>
@@ -350,6 +440,7 @@ mark.hl{background:#fff176;color:#333;padding:1px 3px;border-radius:3px;font-wei
 
 <div class="tabs">
 <div class="tab active" onclick="showTab('qa',this)">📚 知識庫</div>
+<div class="tab tab-alert" onclick="showTab('sec91',this)">🚨 91APP資安</div>
 <div class="tab" onclick="showTab('nov',this)">🎁 11月活動</div>
 <div class="tab" onclick="showTab('store',this)">🏪 門市服務</div>
 <div class="tab" onclick="showTab('size',this)">📏 尺寸查詢</div>
@@ -372,6 +463,104 @@ mark.hl{background:#fff176;color:#333;padding:1px 3px;border-radius:3px;font-wei
   <div class="chips" id="qa-chips"></div>
   <div class="rcount" id="qa-count"></div>
   <div id="qa-results"></div>
+</div>
+
+<div id="tab-sec91" class="panel">
+  <div class="s9-head">
+    <div class="s9-title">🚨 91APP 資安事件｜來電應對速查</div>
+    <div class="s9-ver">資料版本：2026/10/31（依 MUJI 10/30 聲明、91APP 10/29 補償說明整理）<br><b>11/2 起 91APP 會公布補償登記方式，屆時本頁會更新，以最新版為準。</b></div>
+  </div>
+
+  <div class="s9-facts">
+    <div class="s9-fact f-range"><div class="k">📅 影響範圍</div><div class="v"><b>2025/4/4 ～ 2026/10/14</b> 在 MUJI <b>官網</b>下的訂單（在範圍內≠一定外洩）</div></div>
+    <div class="s9-fact f-leak"><div class="k">⚠️ 可能外洩</div><div class="v">姓名、電話、配送地址、Email（如有填）、訂單紀錄<br>（超商取貨的訂單沒有地址）</div></div>
+    <div class="s9-fact f-safe"><div class="k">✅ 不受影響</div><div class="v"><b>信用卡資訊、會員密碼</b>不在其中；<b>實體門市</b>消費資料完全不受影響</div></div>
+    <div class="s9-fact f-notice"><div class="k">📩 官方通知</div><div class="v"><b>11/2 起</b> 91APP 寄 Email（寄件網域 <b>@91app.com</b>），沒 Email 的用簡訊通知</div></div>
+  </div>
+
+  <div class="s9-box">
+    <div class="s9-h2">📞 接聽三步驟</div>
+    <div class="s9-flow">
+      <div class="s9-step"><div class="s9-num">1</div><div><div class="t">先道歉＋說明範圍</div><div class="d">「很抱歉讓您擔心了。合作的雲端服務商 91APP 資料庫遭駭，部分官網訂單資料可能受影響，信用卡和密碼不在其中。」</div></div></div>
+      <div class="s9-arrow">▼</div>
+      <div class="s9-step"><div class="s9-num">2</div><div><div class="t">問一句：「請問目前有沒有遇到詐騙或財務損失？」</div></div></div>
+      <div class="s9-arrow">▼</div>
+      <div class="s9-split">
+        <div class="s9-yes"><div class="t">🔴 有損失／被騙</div><div class="d">① 安撫道歉<br>② 請保存訊息、轉帳證明，打 <b>165</b> 報案<br>③ 轉介 <b>91APP 專線 (02)7723-1622 按 6</b></div></div>
+        <div class="s9-no"><div class="t">🟢 沒有損失</div><div class="d">① 說明 11/2 起會收到 91APP 通知<br>② 提醒防詐（不點連結、不操作 ATM）<br>③ 想先反映可打 91APP 專線</div></div>
+      </div>
+      <div class="s9-arrow">▼</div>
+      <div class="s9-step"><div class="s9-num">3</div><div><div class="t">掛電話後，填寫下方「來電登記表」</div><div class="d">每一通相關來電都要登記，方便統計回報 MUJI。</div></div></div>
+    </div>
+  </div>
+
+  <div class="s9-box">
+    <div class="s9-h2">💬 常見問題 × 一句話回應</div>
+    <div class="s9-chips" id="s9-chips"></div>
+    <div class="s9-cards" id="s9-cards"></div>
+  </div>
+
+  <div class="s9-two">
+    <div class="s9-dont">
+      <div class="t">⛔ 絕對不能說</div>
+      <ul>
+        <li>「您的資料<b>一定有／一定沒有</b>外洩」</li>
+        <li>「會賠您 OO 元／OO 折價券」（不判斷資格、不承諾金額）</li>
+        <li>「是 91APP 的錯，跟我們沒關係」</li>
+        <li>請顧客報信用卡號、密碼、驗證碼</li>
+        <li>主動打電話通知顧客外洩（容易被當詐騙）</li>
+      </ul>
+    </div>
+    <div class="s9-contact">
+      <div class="t">☎️ 轉介資訊</div>
+      <div class="row"><b>91APP 專線</b><span>(02) 7723-1622 <b>語音按 6</b><br>週一～五 09:00–18:00</span></div>
+      <div class="row"><b>91APP 信箱</b><span>servicetw@91app.com</span></div>
+      <div class="row"><b>反詐騙</b><span>165 專線／165 全民防騙網</span></div>
+      <div class="row"><b>MUJI 客服</b><span>0800-50-51-51（其他問題）</span></div>
+    </div>
+  </div>
+
+  <div class="s9-box" id="s9-reg">
+    <div class="s9-h2">📝 來電登記表</div>
+    <div class="s9-warn" id="s9-nourl" style="display:none">⚙️ 登記表還沒連上 Google 試算表，請督導完成設定後再使用。</div>
+    <div class="s9-form">
+      <div><label>登記同仁 <span class="req">*</span></label><input id="s9-by" type="text" placeholder="例如：王婷"></div>
+      <div><label>來電時間 <span class="req">*</span></label><input id="s9-time" type="datetime-local"></div>
+      <div><label>顧客姓名 <span class="req">*</span></label><input id="s9-name" type="text" placeholder="例如：林小姐"></div>
+      <div><label>聯絡電話 <span class="req">*</span></label><input id="s9-phone" type="tel" placeholder="0912345678"></div>
+      <div><label>官網訂單編號（選填）</label><input id="s9-order" type="text" placeholder="顧客有提供再填"></div>
+      <div><label>來電類型 <span class="req">*</span></label><select id="s9-type"></select></div>
+      <div class="full"><label>是否有詐騙或財務損失 <span class="req">*</span></label>
+        <div class="s9-radio">
+          <label><input type="radio" name="s9-loss" value="有財損">有財損</label>
+          <label><input type="radio" name="s9-loss" value="接到詐騙但沒損失">接到詐騙但沒損失</label>
+          <label><input type="radio" name="s9-loss" value="沒有">沒有</label>
+        </div>
+      </div>
+      <div><label>損失金額（有財損才填）</label><input id="s9-amount" type="number" min="0" placeholder="例如：15000"></div>
+      <div><label>處理方式 <span class="req">*</span></label>
+        <select id="s9-action">
+          <option value="">請選擇</option>
+          <option>已說明完畢</option>
+          <option>已轉介91APP專線</option>
+          <option>已轉介91APP＋提醒報165</option>
+          <option>需後送MUJI</option>
+          <option>其他（寫在備註）</option>
+        </select>
+      </div>
+      <div class="full"><label>備註</label><textarea id="s9-note" rows="3" placeholder="顧客情緒、特殊要求、後續需追蹤的事"></textarea></div>
+      <div class="full"><button class="s9-btn" id="s9-submit" type="button" onclick="s9Submit()">送出登記</button><span class="s9-status" id="s9-status"></span></div>
+    </div>
+  </div>
+
+  <div class="s9-box">
+    <div class="s9-h2" style="display:flex;justify-content:space-between;align-items:center;gap:8px">📊 登記紀錄 <button class="s9-btn2" type="button" onclick="s9Load()">重新整理</button></div>
+    <div class="s9-stats" id="s9-stats"></div>
+    <div class="s9-tblwrap"><table class="s9-tbl"><thead><tr><th>來電時間</th><th>同仁</th><th>顧客</th><th>電話</th><th>類型</th><th>財損</th><th>處理方式</th><th>備註</th></tr></thead><tbody id="s9-rows"><tr><td colspan="8" style="text-align:center;color:#999">載入中…</td></tr></tbody></table></div>
+    <div class="s9-src" style="margin-top:6px">※ 為保護個資，這裡的姓名、電話只顯示部分，完整資料請到 Google 試算表查看。</div>
+  </div>
+
+  <div class="s9-src">官方公告：<a href="https://www.muji.tw/muji-journal/news/news/261030.html" target="_blank" rel="noopener">台灣無印良品聲明</a>｜<a href="https://91app.com/91app-202610-security-incident/" target="_blank" rel="noopener">91APP 事件說明</a>｜<a href="https://91app.com/91app-202610-security-incident-compensation/" target="_blank" rel="noopener">91APP 補償與通知說明</a></div>
 </div>
 
 <div id="tab-nov" class="panel">
@@ -2218,5 +2407,150 @@ document.querySelectorAll("#spcs-attach .sa-img, #furn-notice .fn-img").forEach(
 lb.addEventListener("click",()=>{lb.style.display="none";});
 document.addEventListener("keydown",e=>{if(e.key==="Escape")lb.style.display="none";});})();
 </script>
+<script>
+/* ===== 91APP 資安事件頁籤（2026-10-31 新增）===== */
+// ▼▼▼ 把 Apps Script「部署」後拿到的網址貼在下面引號裡 ▼▼▼
+var S9_URL = "";
+// ▲▲▲ 只要改這一行 ▲▲▲
+
+var S9_TAGS = {info:['tg-info','說明'],refer:['tg-refer','轉介91APP'],fraud:['tg-fraud','防詐'],muji:['tg-muji','MUJI後送']};
+var S9_CASES = [
+  {type:'詢問是否外洩', tag:'info', q:'我的資料有沒有外洩？',
+   a:'期間內在<b>官網</b>下單才在可能範圍，<b>不代表一定外洩</b>；信用卡、密碼不在內，門市消費不受影響。',
+   n:'➜ 請顧客留意 11/2 起的 Email／簡訊通知',
+   full:'如果您在 2025 年 4 月 4 日到今年 10 月 14 日之間有在 MUJI 官網下單，訂單資料就在可能受影響的範圍內，但不代表一定外洩。可能涉及的是姓名、電話、地址、Email 和訂單紀錄，信用卡和會員密碼都不在裡面。如果只在門市消費，就完全不受影響。11 月 2 日起 91APP 會主動用 Email 或簡訊通知受影響的顧客，請您留意。'},
+  {type:'已被詐騙／有財損', tag:'refer', q:'我已經被詐騙／有損失了',
+   a:'先道歉安撫，請顧客<b>保存訊息、通話紀錄、轉帳證明</b>，並撥 <b>165</b> 報案。',
+   n:'➜ 轉介 91APP (02)7723-1622 按 6',
+   full:'真的很抱歉發生這種事。請您先保存好詐騙的訊息、通話紀錄和轉帳證明，並撥打 165 報案。財損的部分由 91APP 負責處理，請直接聯繫 91APP 專線 (02) 7723-1622，語音選單按 6，或寫信到 servicetw@91app.com，他們會即時協助您。'},
+  {type:'詢問補償', tag:'refer', q:'沒被騙，但個資外洩要賠什麼？',
+   a:'91APP 表示<b>沒有財損</b>但個資受影響者也會納入補償；辦法<b>預計 11/2 公布</b>。',
+   n:'➜ ⛔ 不講金額、不講品項；可先洽 91APP',
+   full:'理解您的感受。91APP 表示即使沒有財產損失，個資受影響的顧客也會納入補償對象。詳細的補償內容和登記方式預計 11 月 2 日公布，屆時您收到通知後就可以登記。目前也可以先打給 91APP 專線 (02) 7723-1622 按 6 反映。'},
+  {type:'可疑來電／簡訊查證', tag:'fraud', q:'接到自稱 MUJI／91APP 的電話或簡訊，是真的嗎？',
+   a:'MUJI <b>不會</b>要求操作 ATM、轉帳、提供 OTP、卡號、密碼；91APP 正式信件只從 <b>@91app.com</b> 寄出。',
+   n:'➜ 一律當詐騙，請顧客撥 165 查證',
+   full:'MUJI 不會透過電話、簡訊、Email 或 LINE 要求您操作 ATM、網銀轉帳，或提供 OTP 驗證碼、信用卡資料和密碼。91APP 的正式通知也不會要您點連結填資料、加 LINE 或操作 ATM，Email 一定是 @91app.com 寄出。只要有這些要求，一律是詐騙，請不要理會，可以打 165 確認。'},
+  {type:'重新登入疑問', tag:'info', q:'為什麼官網要我重新登入？又被駭了嗎？',
+   a:'不是。<b>10/30 凌晨</b>做了安全性更新，所有會員都要重新登入，是預防措施。',
+   n:'➜ 說明即可',
+   full:'不是喔，那是 10 月 30 日凌晨做的安全性更新，所有會員都需要重新登入，是預防措施，不是新的資安事件。'},
+  {type:'持續收到詐騙訊息', tag:'fraud', q:'10/14 以後還一直收到詐騙訊息？',
+   a:'已外流的資料可能被詐騙集團<b>重複使用</b>，不代表又被入侵。',
+   n:'➜ 提醒不點連結、不操作 ATM',
+   full:'已經外流的資料可能被詐騙集團重複使用，所以收到詐騙訊息不代表又被入侵。請您持續提高警覺，不明連結都不要點，有疑慮可以打 165 查證。'},
+  {type:'沒收到通知', tag:'refer', q:'我沒收到通知，可以申請補償嗎？',
+   a:'可能不在這次名單內，或還在作業中。',
+   n:'➜ 請顧客直接洽 91APP 確認',
+   full:'沒收到通知，可能是不在這次名單內，或是還在作業中。建議您直接聯繫 91APP 專線 (02) 7723-1622 按 6，他們可以幫您確認。'},
+  {type:'刪除會員／客訴', tag:'muji', q:'我要刪除會員資料／我要客訴',
+   a:'先安撫並完整記錄顧客需求，<b>不當場承諾</b>處理時效。',
+   n:'➜ 依 MUJI 既有流程後送',
+   full:'非常理解您的心情，我先幫您把需求完整記錄下來，會轉給相關單位處理，有進一步消息會再跟您聯繫。'}
+];
+var s9Filter='', S9_ALL=[];
+
+function s9Esc(s){return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function s9RenderChips(){
+  var el=document.getElementById('s9-chips'); if(!el) return;
+  var list=[['','全部']].concat(Object.keys(S9_TAGS).map(function(k){return [k,S9_TAGS[k][1]];}));
+  el.innerHTML=list.map(function(c){return '<button type="button" class="s9-chip'+(c[0]===s9Filter?' on':'')+'" onclick="s9SetFilter(\''+c[0]+'\')">'+c[1]+'</button>';}).join('');
+}
+function s9SetFilter(k){s9Filter=k;s9RenderChips();s9RenderCards();}
+function s9RenderCards(){
+  var el=document.getElementById('s9-cards'); if(!el) return;
+  el.innerHTML=S9_CASES.map(function(c,i){
+    if(s9Filter && c.tag!==s9Filter) return '';
+    var t=S9_TAGS[c.tag];
+    return '<div class="s9-card"><div class="q"><span>'+s9Esc(c.q)+'</span><span class="tag '+t[0]+'">'+t[1]+'</span></div>'
+      +'<div class="a">'+c.a+'</div><div class="n">'+c.n+'</div>'
+      +'<details><summary>看完整話術</summary><div class="full">'+s9Esc(c.full)+'</div>'
+      +'<button type="button" class="s9-copy" onclick="s9Copy('+i+',this)">複製話術</button></details></div>';
+  }).join('');
+}
+function s9Copy(i,btn){
+  var txt=S9_CASES[i].full;
+  function done(){var o=btn.textContent;btn.textContent='已複製 ✓';setTimeout(function(){btn.textContent=o;},1500);}
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done,function(){s9CopyOld(txt);done();});}
+  else{s9CopyOld(txt);done();}
+}
+function s9CopyOld(txt){var t=document.createElement('textarea');t.value=txt;document.body.appendChild(t);t.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(t);}
+
+function s9NowLocal(){var d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,16);}
+function s9Status(msg,cls){var e=document.getElementById('s9-status');if(e){e.textContent=msg;e.className='s9-status'+(cls?' '+cls:'');}}
+
+function s9InitForm(){
+  var sel=document.getElementById('s9-type'); if(!sel) return;
+  sel.innerHTML='<option value="">請選擇</option>'+S9_CASES.map(function(c){return '<option>'+s9Esc(c.type)+'</option>';}).join('')+'<option>其他</option>';
+  document.getElementById('s9-time').value=s9NowLocal();
+  try{var by=localStorage.getItem('s9_by');if(by)document.getElementById('s9-by').value=by;}catch(e){}
+  if(!S9_URL){document.getElementById('s9-nourl').style.display='block';document.getElementById('s9-submit').disabled=true;}
+}
+
+function s9Submit(){
+  var g=function(id){return document.getElementById(id).value.trim();};
+  var lossEl=document.querySelector('input[name="s9-loss"]:checked');
+  var d={by:g('s9-by'),time:g('s9-time').replace('T',' '),name:g('s9-name'),phone:g('s9-phone'),order:g('s9-order'),
+    type:g('s9-type'),loss:lossEl?lossEl.value:'',amount:g('s9-amount'),action:g('s9-action'),note:g('s9-note')};
+  var miss=[];
+  if(!d.by)miss.push('登記同仁');if(!d.time)miss.push('來電時間');if(!d.name)miss.push('顧客姓名');
+  if(!d.phone)miss.push('聯絡電話');if(!d.type)miss.push('來電類型');if(!d.loss)miss.push('是否有財損');if(!d.action)miss.push('處理方式');
+  if(miss.length){s9Status('還沒填：'+miss.join('、'),'err');return;}
+  if(!/^[0-9+\-\s()#]{6,20}$/.test(d.phone)){s9Status('電話格式看起來不對，請再確認','err');return;}
+  if(!S9_URL){s9Status('登記表還沒連上試算表','err');return;}
+  try{localStorage.setItem('s9_by',d.by);}catch(e){}
+  var btn=document.getElementById('s9-submit');btn.disabled=true;s9Status('送出中…','');
+  fetch(S9_URL,{method:'POST',body:JSON.stringify(d)})
+    .then(function(r){return r.json();})
+    .then(function(res){if(res&&res.ok===false)throw new Error(res.error||'失敗');s9Done();})
+    .catch(function(err){
+      if(err&&err.message&&err.message!=='Failed to fetch'&&!/JSON/i.test(err.message)){s9Status('送出失敗：'+err.message,'err');btn.disabled=false;return;}
+      s9Done();
+    });
+}
+function s9Done(){
+  s9Status('✅ 已登記，謝謝！','ok');
+  ['s9-name','s9-phone','s9-order','s9-amount','s9-note'].forEach(function(id){document.getElementById(id).value='';});
+  document.getElementById('s9-type').value='';document.getElementById('s9-action').value='';
+  var r=document.querySelector('input[name="s9-loss"]:checked');if(r)r.checked=false;
+  document.getElementById('s9-time').value=s9NowLocal();
+  document.getElementById('s9-submit').disabled=false;
+  setTimeout(s9Load,800);
+}
+
+function s9Load(){
+  var body=document.getElementById('s9-rows'); if(!body) return;
+  if(!S9_URL){body.innerHTML='<tr><td colspan="8" style="text-align:center;color:#999">尚未連上試算表</td></tr>';return;}
+  body.innerHTML='<tr><td colspan="8" style="text-align:center;color:#999">載入中…</td></tr>';
+  fetch(S9_URL).then(function(r){return r.json();}).then(function(d){
+    S9_ALL=(d&&d.rows)?d.rows:[];s9RenderRows();
+  }).catch(function(){body.innerHTML='<tr><td colspan="8" style="text-align:center;color:#999">目前無法讀取，稍後再按「重新整理」</td></tr>';});
+}
+function s9RenderRows(){
+  var body=document.getElementById('s9-rows');
+  var st=document.getElementById('s9-stats');
+  var today=s9NowLocal().slice(0,10).replace(/-/g,'/'), cntToday=0, cntLoss=0, byType={};
+  S9_ALL.forEach(function(r){
+    var t=String(r.time||'').replace(/-/g,'/');
+    if(t.indexOf(today)===0)cntToday++;
+    if(r.loss==='有財損')cntLoss++;
+    byType[r.type||'其他']=(byType[r.type||'其他']||0)+1;
+  });
+  var h='<div class="s9-stat">累計<b>'+S9_ALL.length+'</b></div><div class="s9-stat">今日<b>'+cntToday+'</b></div><div class="s9-stat">有財損<b>'+cntLoss+'</b></div>';
+  Object.keys(byType).sort(function(a,b){return byType[b]-byType[a];}).forEach(function(k){h+='<div class="s9-stat">'+s9Esc(k)+'<b>'+byType[k]+'</b></div>';});
+  st.innerHTML=h;
+  if(!S9_ALL.length){body.innerHTML='<tr><td colspan="8" style="text-align:center;color:#999">目前還沒有登記</td></tr>';return;}
+  body.innerHTML=S9_ALL.slice(0,100).map(function(r){
+    return '<tr><td style="white-space:nowrap">'+s9Esc(r.time)+'</td><td>'+s9Esc(r.by)+'</td><td>'+s9Esc(r.name)+'</td><td style="white-space:nowrap">'+s9Esc(r.phone)+'</td><td>'+s9Esc(r.type)+'</td><td>'+s9Esc(r.loss)+(r.amount?'<br>$'+s9Esc(r.amount):'')+'</td><td>'+s9Esc(r.action)+'</td><td>'+s9Esc(r.note)+'</td></tr>';
+  }).join('');
+}
+
+(function(){
+  function init(){s9RenderChips();s9RenderCards();s9InitForm();s9Load();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+
 </body>
 </html>
