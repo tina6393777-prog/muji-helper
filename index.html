@@ -497,7 +497,7 @@ mark.hl{background:#fff176;color:#333;padding:1px 3px;border-radius:3px;font-wei
         <div class="s9-no"><div class="t">🟢 沒有損失</div><div class="d">① 說明 11/2 起會收到 91APP 通知<br>② 提醒防詐（不點連結、不操作 ATM）<br>③ 想先反映可打 91APP 專線</div></div>
       </div>
       <div class="s9-arrow">▼</div>
-      <div class="s9-step"><div class="s9-num">3</div><div><div class="t">掛電話後，填寫下方「來電登記表」</div><div class="d">每一通相關來電都要登記，方便統計回報 MUJI。</div></div></div>
+      <div class="s9-step"><div class="s9-num">3</div><div><div class="t">掛電話後，寫好服務紀錄</div><div class="d">問題摘要請寫到「91APP／個資外洩」等關鍵字，方便每天統計回報 MUJI。</div></div></div>
     </div>
   </div>
 
@@ -525,48 +525,6 @@ mark.hl{background:#fff176;color:#333;padding:1px 3px;border-radius:3px;font-wei
       <div class="row"><b>反詐騙</b><span>165 專線／165 全民防騙網</span></div>
       <div class="row"><b>MUJI 客服</b><span>0800-50-51-51（其他問題）</span></div>
     </div>
-  </div>
-
-  <div class="s9-box" id="s9-reg">
-    <div class="s9-h2" id="s9-reg-title">📝 來電登記表</div>
-    <div class="s9-editbar" id="s9-editbar" style="display:none"><span id="s9-editinfo"></span><br>姓名、電話、訂單編號為保護個資不會顯示，<b>不修改請留空</b>；「登記同仁」請填<b>修改人</b>。</div>
-    <div class="s9-warn" id="s9-nourl" style="display:none">⚙️ 登記表還沒連上 Google 試算表，請督導完成設定後再使用。</div>
-    <div class="s9-form">
-      <div><label>登記同仁 <span class="req">*</span></label><input id="s9-by" type="text" placeholder="例如：王婷"></div>
-      <div><label>來電時間 <span class="req">*</span></label><input id="s9-time" type="datetime-local"></div>
-      <div><label>顧客姓名 <span class="req">*</span><span class="s9-keep" style="display:none">（不改留空）</span></label><input id="s9-name" type="text" placeholder="例如：林小姐"></div>
-      <div><label>聯絡電話 <span class="req">*</span><span class="s9-keep" style="display:none">（不改留空）</span></label><input id="s9-phone" type="tel" placeholder="0912345678"></div>
-      <div><label>官網訂單編號（選填）</label><input id="s9-order" type="text" placeholder="顧客有提供再填"></div>
-      <div><label>後送單號（有後送才填）</label><input id="s9-ticket" type="text" placeholder="例如：後送系統的案件編號"></div>
-      <div class="full"><label>來電類型 <span class="req">*</span></label><select id="s9-type"></select></div>
-      <div class="full"><label>是否有詐騙或財務損失 <span class="req">*</span></label>
-        <div class="s9-radio">
-          <label><input type="radio" name="s9-loss" value="有財損">有財損</label>
-          <label><input type="radio" name="s9-loss" value="接到詐騙但沒損失">接到詐騙但沒損失</label>
-          <label><input type="radio" name="s9-loss" value="沒有">沒有</label>
-        </div>
-      </div>
-      <div><label>損失金額（有財損才填）</label><input id="s9-amount" type="number" min="0" placeholder="例如：15000"></div>
-      <div><label>處理方式 <span class="req">*</span></label>
-        <select id="s9-action">
-          <option value="">請選擇</option>
-          <option>已說明完畢</option>
-          <option>已轉介91APP專線</option>
-          <option>已轉介91APP＋提醒報165</option>
-          <option>需後送MUJI</option>
-          <option>其他（寫在備註）</option>
-        </select>
-      </div>
-      <div class="full"><label>備註</label><textarea id="s9-note" rows="3" placeholder="顧客情緒、特殊要求、後續需追蹤的事"></textarea></div>
-      <div class="full"><button class="s9-btn" id="s9-submit" type="button" onclick="s9Submit()">送出登記</button> <button class="s9-btn2" id="s9-cancel" type="button" onclick="s9CancelEdit()" style="display:none">取消修改</button><span class="s9-status" id="s9-status"></span></div>
-    </div>
-  </div>
-
-  <div class="s9-box">
-    <div class="s9-h2" style="display:flex;justify-content:space-between;align-items:center;gap:8px">📊 登記紀錄 <span style="display:flex;gap:6px;flex-wrap:wrap"><a class="s9-btn2" href="https://docs.google.com/spreadsheets/d/1yh1j6H7CedKMj2So2vi-YviJDNtsDSLtqAc5apxDm0Y/edit?gid=178190589#gid=178190589" target="_blank" rel="noopener" style="text-decoration:none">📄 開啟後台試算表</a><button class="s9-btn2" type="button" onclick="s9Load()">重新整理</button></span></div>
-    <div class="s9-stats" id="s9-stats"></div>
-    <div class="s9-tblwrap"><table class="s9-tbl"><thead><tr><th>來電時間</th><th>同仁</th><th>顧客</th><th>電話</th><th>類型</th><th>財損</th><th>處理方式</th><th>後送單號</th><th>備註</th><th>操作</th></tr></thead><tbody id="s9-rows"><tr><td colspan="10" style="text-align:center;color:#999">載入中…</td></tr></tbody></table></div>
-    <div class="s9-src" style="margin-top:6px">※ 為保護個資，這裡的姓名、電話只顯示部分，完整資料請到 <a href="https://docs.google.com/spreadsheets/d/1yh1j6H7CedKMj2So2vi-YviJDNtsDSLtqAc5apxDm0Y/edit?gid=178190589#gid=178190589" target="_blank" rel="noopener">Google 試算表</a> 查看（需有試算表權限才能開啟）。</div>
   </div>
 
   <div class="s9-src">官方公告：<a href="https://www.muji.tw/muji-journal/news/news/261030.html" target="_blank" rel="noopener">台灣無印良品聲明</a>｜<a href="https://91app.com/91app-202610-security-incident/" target="_blank" rel="noopener">91APP 事件說明</a>｜<a href="https://91app.com/91app-202610-security-incident-compensation/" target="_blank" rel="noopener">91APP 補償與通知說明</a></div>
@@ -2629,7 +2587,7 @@ function s9RenderRows(){
 }
 
 (function(){
-  function init(){s9RenderChips();s9RenderCards();s9InitForm();s9Load();}
+  function init(){s9RenderChips();s9RenderCards();}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 </script>
