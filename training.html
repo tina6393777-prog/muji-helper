@@ -49,6 +49,9 @@ const BOT_LINKS = {
   C: '', // 課程3｜MUJI 官網客服演練
 };
 const HELPER_URL = 'https://tina6393777-prog.github.io/muji-helper/';
+// 進度回報：把 Apps Script 部署後的「網頁應用程式網址」貼在引號裡（https://script.google.com/macros/s/.../exec）
+// 留空 '' 的話，頁面不會顯示回報按鈕
+const REPORT_URL = 'https://script.google.com/macros/s/AKfycbw4RTMYnufww-sGgvnYjqc3_G0K5kRwcVzJbk_j8l0S95PxzKcPdzDjkDe0LN9HQJUn/exec';
 /* ===================== 以下不用修改 ===================== */
 </script>
 <style>
@@ -114,6 +117,9 @@ input[type=text],input[type=number],input[type=date]{font:inherit;font-size:15px
 .final li{padding:4px 0;font-size:15px}
 .final li::before{content:"○ ";color:var(--wait)}
 .final li.ok::before{content:"● ";color:var(--ok)}
+.report{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;background:var(--card);border:2px solid var(--red);border-radius:12px;padding:14px 18px;margin-top:14px}
+.report b{display:block;font-size:15.5px}.report small{color:var(--sub);font-size:13px}
+.rmsg{flex-basis:100%;font-size:14px;font-weight:600}.rmsg:empty{display:none}.rmsg.y{color:var(--ok)}.rmsg.n{color:var(--red)}
 .foot{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;margin-top:20px;color:var(--sub);font-size:13px}
 .modal{position:fixed;inset:0;background:rgba(20,18,16,.78);display:none;align-items:center;justify-content:center;padding:16px;z-index:10}
 .modal.on{display:flex}
@@ -152,7 +158,7 @@ input[type=text],input[type=number],input[type=date]{font:inherit;font-size:15px
     <li>點「▶ 觀看」直接在這一頁播放影片，看完勾「看完」。</li>
     <li>機器人練習完，把成績單上的分數填進來，80 分以上就過關。</li>
     <li>系統操作的每一項，要當著督導的面實際操作一次，督導勾「驗收」才算完成。</li>
-    <li>進度會自動存在這台電腦的瀏覽器裡；換電腦或清除瀏覽紀錄，進度就不會保留。</li>
+    <li>進度會自動存在這台電腦的瀏覽器裡。<span class="rp">每天下課前按「📤 回報進度給督導」；換位子時，填好姓名按「📥 用姓名取回進度」就能接著做。</span></li>
   </ol>
 </div>
 
@@ -168,6 +174,11 @@ input[type=text],input[type=number],input[type=date]{font:inherit;font-size:15px
 <div class="foot">
   <span>遇到不確定的問題，先查 <a href="#" id="helperLink" target="_blank" rel="noopener" style="color:var(--red)">muji-helper 客服查詢小幫手</a>，再問督導，不要用猜的回覆客人。</span>
   <span><button class="btn" onclick="window.print()">列印進度</button> <button class="btn" onclick="resetAll()">清除進度</button></span>
+</div>
+<div class="report rp">
+  <div><b>回報進度給督導</b><small>填好上方「學員姓名」再按。換位子時，用同一個姓名按「取回進度」就能接著做。</small></div>
+  <span><button class="btn solid" id="btnSend" onclick="sendReport()">📤 回報進度給督導</button> <button class="btn" id="btnLoad" onclick="loadReport()">📥 用姓名取回進度</button></span>
+  <div id="rmsg" class="rmsg"></div>
 </div>
 </div>
 
@@ -272,6 +283,45 @@ function closeV(){ document.getElementById('mframe').src=''; document.getElement
 document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeV(); });
 function resetAll(){ if(confirm('確定要清除這台電腦上的所有訓練進度嗎？')){ S={}; save(); location.reload(); } }
 document.getElementById('helperLink').href=HELPER_URL;
+if(!REPORT_URL) document.querySelectorAll('.rp').forEach(el=>el.style.display='none');
+function msg(t,ok){ const m=document.getElementById('rmsg'); m.textContent=t; m.className='rmsg '+(ok?'y':'n'); }
+function needName(){ const n=(document.getElementById('name').value||'').trim(); if(!n){ msg('請先在最上面填「學員姓名」喔！',false); document.getElementById('name').focus(); } return n; }
+function summary(){
+  let all=0,done=0; STAGES.forEach(s=>{ const it=stageItems(s); all+=it.length; done+=it.filter(Boolean).length; });
+  const svK=STAGES.filter(s=>s.sv).flatMap(s=>s.groups.flatMap(g=>g[1]));
+  const vK=Object.keys(V);
+  return { all, done,
+    videos: vK.filter(k=>S['w_'+k]).length+' / '+vK.length,
+    verified: svK.filter(k=>S['v_'+k]).length+' / '+svK.length,
+    missVideos: vK.filter(k=>!S['w_'+k]).map(k=>V[k][0]),
+    missVerify: svK.filter(k=>!S['v_'+k]).map(k=>V[k][0]),
+    finished: document.getElementById('final').classList.contains('done') };
+}
+async function sendReport(){
+  const name=needName(); if(!name) return;
+  const b=document.getElementById('btnSend'); b.disabled=true; msg('傳送中…',true);
+  const d=Object.assign({name, start:S.start||'', scoreA:S.score_A??'', scoreB:S.score_B??'', scoreC:S.score_C??'', fsv:S.fsv||'', fdate:S.fdate||'', state:S}, summary());
+  try{
+    const r=await fetch(REPORT_URL,{method:'POST',body:JSON.stringify(d)}); const j=await r.json();
+    if(j.ok) msg('✅ 已回報給督導（'+j.time+'）',true); else msg('回報失敗：'+(j.msg||'請再試一次'),false);
+  }catch(e){
+    try{ await fetch(REPORT_URL,{method:'POST',mode:'no-cors',body:JSON.stringify(d)}); msg('✅ 已送出（如果督導沒看到，請再按一次）',true); }
+    catch(e2){ msg('回報失敗，請確認網路後再按一次',false); }
+  }
+  b.disabled=false;
+}
+async function loadReport(){
+  const name=needName(); if(!name) return;
+  const b=document.getElementById('btnLoad'); b.disabled=true; msg('查詢中…',true);
+  try{
+    const r=await fetch(REPORT_URL+(REPORT_URL.includes('?')?'&':'?')+'name='+encodeURIComponent(name)); const j=await r.json();
+    if(!j.ok){ msg(j.msg||'找不到這個姓名的回報紀錄',false); }
+    else if(confirm('找到「'+name+'」在 '+j.time+' 回報的進度。\n要載入嗎？（會取代這台電腦上目前的進度）')){
+      S=j.state||{}; S.name=name; save(); location.reload(); return;
+    } else msg('',true);
+  }catch(e){ msg('取回失敗，請確認網路後再按一次',false); }
+  b.disabled=false;
+}
 load(); render();
 </script>
 </body>
