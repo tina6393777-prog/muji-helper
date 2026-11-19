@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MUJI 新人訓練地圖</title>
+<script>
+/* =====================================================================
+   ★★★ 只要改這一區 ★★★
+   影片：把 YouTube 不公開影片的網址貼在引號裡（整串網址貼上即可）
+   機器人：把 Bot Platform 機器人的網址貼在引號裡
+   還沒有網址的就留空 ''，頁面會顯示「連結待補」
+   ===================================================================== */
+const VIDEO_LINKS = {
+  // ── muji-helper 小幫手教學 ──
+  h0: 'https://youtu.be/gCOx1tnw4nQ',  // MUJI小幫手教學_片0_總覽
+  h1: 'https://youtu.be/eF6hL065Lmc',  // MUJI小幫手教學_片1_知識庫
+  h2: 'https://youtu.be/O9-eDa-z98o',  // MUJI小幫手教學_片2_智慧問答
+  h3: 'https://youtu.be/ZFgBuO2W1N4',  // MUJI小幫手教學_片3_門市服務
+  h4: 'https://youtu.be/Q3i4AUKvnlw',  // MUJI小幫手教學_片4_尺寸與洗滌保養
+  h5: 'https://youtu.be/49IIQu8Q_IA',  // MUJI小幫手教學_片5_說明書_DC風扇_大型家具
+  h6: 'https://youtu.be/MsKYnj92JMA',  // MUJI小幫手教學_片6_回應產生器與簡訊範本
+  h7: 'https://youtu.be/g3_p0sU9F5E',  // MUJI小幫手教學_片7_客服SOP
+  // ── 91APP ──
+  a01: 'https://youtu.be/dhs8CdbfL8M', // 91APP_01_基本操作_單號與查詢
+  a03: 'https://youtu.be/cyGwm8uZj-c', // 91APP_03_查退貨單號與逆物流單號
+  a04: 'https://youtu.be/do-e1beM12k', // 91APP_04_代客申請退貨
+  a06: 'https://youtu.be/RTcb6sg4xyw', // 91APP_06_庫缺與缺貨通知
+  a11: 'https://youtu.be/JMH76-XvVs0', // 91APP_11_包裹遺失與取消配送
+  a16: 'https://youtu.be/_IlCrZIFC48', // 91APP_16_物流貨態檢查
+  a17: 'https://youtu.be/tVSiFqJ1-Pi', // 91APP_17_代客修改配送資訊
+  a18: 'https://youtu.be/jOne1R6twas', // 91APP_18_查詢會員資料
+  a23: 'https://youtu.be/GQv46bR7xyE', // 91APP_23_查詢退款進度
+  // ── ECP ──
+  e01: 'https://youtu.be/JSL-STC2y3Y', // ECP_01_後送系統操作
+  e02: 'https://youtu.be/7nngEd8kJuQ', // ECP_02_服務紀錄填寫方式
+  // ── 官網／大型家具 ──
+  w01: 'https://youtu.be/REYQtCjEMVM', // 官網_客人如何取消訂單
+  f01: 'https://youtu.be/FN-HZ5RdOI8', // 大型家具_01_預約配送
+  f02: 'https://youtu.be/oRCOjYL2b34', // 大型家具_02_換貨與補收單與運費退款單
+  // ── 蝦皮 ──
+  s01a: 'https://youtu.be/WiN-dP38bzI', // 蝦皮_01a_賣場後台導覽
+  s01b: 'https://youtu.be/l_O392Th3dE', // 蝦皮_01b_日常作業SOP
+  s02: 'https://youtu.be/_eQpEg0J0AA',  // 蝦皮_02_退貨退款頁面說明
+};
+const BOT_LINKS = {
+  A: '', // 課程1｜MUJI 基本知識＋查詢功力
+  B: '', // 課程2｜MUJI 蝦皮聊聊演練
+  C: '', // 課程3｜MUJI 官網客服演練
+};
+const HELPER_URL = 'https://tina6393777-prog.github.io/muji-helper/';
+/* ===================== 以下不用修改 ===================== */
+</script>
+<style>
+:root{
+  --bg:#F6F4EF; --card:#FFFFFF; --ink:#3B3A37; --sub:#7A766D; --line:#E4DFD4;
+  --red:#7F0019; --red-soft:#F4E9EA; --ok:#4E7A4F; --ok-soft:#E8F0E6; --wait:#B8B2A6;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans TC","Microsoft JhengHei","PingFang TC",sans-serif;line-height:1.6;-webkit-text-size-adjust:100%}
+.wrap{max-width:920px;margin:0 auto;padding:28px 16px 64px}
+header{border-bottom:2px solid var(--red);padding-bottom:18px;margin-bottom:22px}
+.brand{font-size:13px;letter-spacing:.2em;color:var(--red);font-weight:700}
+h1{font-size:28px;margin:4px 0 6px;font-weight:700;letter-spacing:.04em}
+.lead{color:var(--sub);margin:0;font-size:15px}
+.who{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:16px}
+.who label{font-size:14px;color:var(--sub)}
+input[type=text],input[type=number],input[type=date]{font:inherit;font-size:15px;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);min-width:0}
+.prog{flex:1;min-width:220px}
+.bar{height:10px;background:var(--line);border-radius:6px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--red);width:0;transition:width .3s}
+.prog small{color:var(--sub);font-size:13px}
+.how{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin-bottom:22px;font-size:14.5px}
+.how ol{margin:6px 0 0;padding-left:20px}
+.stage{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:18px;overflow:hidden}
+.stage-h{display:flex;gap:14px;align-items:flex-start;padding:18px 20px 12px;border-bottom:1px solid var(--line)}
+.num{flex:none;width:44px;height:44px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px}
+.stage.done .num{background:var(--ok)}
+.stage-h h2{margin:0;font-size:20px}
+.stage-h p{margin:2px 0 0;color:var(--sub);font-size:14px}
+.tag{display:inline-block;font-size:12px;padding:1px 8px;border-radius:10px;background:var(--red-soft);color:var(--red);margin-left:6px;vertical-align:2px;font-weight:600}
+.stage.done .tag{background:var(--ok-soft);color:var(--ok)}
+.body{padding:12px 20px 18px}
+.group{font-size:13px;font-weight:700;color:var(--red);letter-spacing:.08em;margin:12px 0 4px}
+.row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px dashed var(--line)}
+.row:last-child{border-bottom:0}
+.row .t{flex:1;min-width:0;font-size:15px}
+.row .d{color:var(--sub);font-size:13px;flex:none}
+.chk{display:flex;align-items:center;gap:4px;font-size:13px;color:var(--sub);flex:none;cursor:pointer;white-space:nowrap}
+.chk input{width:18px;height:18px;accent-color:var(--red);cursor:pointer}
+.chk.sv input{accent-color:var(--ok)}
+.btn{font:inherit;font-size:14px;border:1px solid var(--red);background:#fff;color:var(--red);border-radius:8px;padding:5px 12px;cursor:pointer;flex:none;text-decoration:none;white-space:nowrap}
+.btn:hover{background:var(--red);color:#fff}
+.btn.solid{background:var(--red);color:#fff}
+.btn.solid:hover{opacity:.88}
+.btn.off{border-color:var(--wait);color:var(--wait);cursor:default;background:#fff}
+.btn.off:hover{background:#fff;color:var(--wait)}
+.bot{display:flex;flex-wrap:wrap;gap:12px;align-items:center;background:var(--red-soft);border-radius:10px;padding:12px 14px;margin-top:14px}
+.bot .t{flex:1;min-width:200px}
+.bot b{display:block;font-size:15.5px}
+.bot small{color:var(--sub);font-size:13px}
+.score{display:flex;align-items:center;gap:6px;font-size:14px}
+.score input{width:92px}
+.pass{font-size:13px;font-weight:700}
+.pass.y{color:var(--ok)} .pass.n{color:var(--red)}
+.tip{font-size:13.5px;color:var(--sub);background:#FAF8F3;border-left:3px solid var(--line);padding:8px 12px;margin-top:12px;border-radius:0 8px 8px 0}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.chip{font:inherit;font-size:13.5px;border:1px solid var(--line);background:#fff;border-radius:16px;padding:4px 12px;cursor:pointer;color:var(--ink)}
+.chip:hover{border-color:var(--red);color:var(--red)}
+.sign{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:12px;font-size:14px}
+.sign input[type=text]{width:120px}
+.final{border:2px solid var(--red)}
+.final ul{margin:4px 0;padding-left:0;list-style:none}
+.final li{padding:4px 0;font-size:15px}
+.final li::before{content:"○ ";color:var(--wait)}
+.final li.ok::before{content:"● ";color:var(--ok)}
+.foot{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;margin-top:20px;color:var(--sub);font-size:13px}
+.modal{position:fixed;inset:0;background:rgba(20,18,16,.78);display:none;align-items:center;justify-content:center;padding:16px;z-index:10}
+.modal.on{display:flex}
+.mbox{width:100%;max-width:960px}
+.mbar{display:flex;justify-content:space-between;align-items:center;color:#fff;margin-bottom:8px;gap:10px}
+.mbar b{font-size:15px}
+.mbar button{font:inherit;background:none;border:1px solid #fff;color:#fff;border-radius:8px;padding:4px 12px;cursor:pointer;flex:none}
+.frame{position:relative;padding-top:56.25%;background:#000;border-radius:10px;overflow:hidden}
+.frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+@media (max-width:600px){
+  h1{font-size:23px}
+  .stage-h{padding:14px 14px 10px}.body{padding:8px 14px 14px}
+  .num{width:36px;height:36px;font-size:16px}
+  .row{flex-wrap:wrap}
+  .row .t{flex-basis:100%}
+}
+@media print{.btn,.chip,.modal{display:none!important}body{background:#fff}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="brand">MUJI 無印良品 ｜ 客服中心</div>
+  <h1>新人訓練地圖</h1>
+  <p class="lead">照順序一關一關走：先看影片，再練機器人。全部完成就可以正式上線囉！</p>
+  <div class="who">
+    <label for="name">學員姓名</label><input type="text" id="name" placeholder="請輸入姓名" style="width:150px">
+    <label for="start">開始日期</label><input type="date" id="start">
+    <div class="prog"><div class="bar"><i id="bar"></i></div><small id="ptext">完成 0 / 0 項</small></div>
+  </div>
+</header>
+
+<div class="how">
+  <b>怎麼使用這一頁</b>
+  <ol>
+    <li>點「▶ 觀看」直接在這一頁播放影片，看完勾「看完」。</li>
+    <li>機器人練習完，把成績單上的分數填進來，80 分以上就過關。</li>
+    <li>系統操作的每一項，要當著督導的面實際操作一次，督導勾「驗收」才算完成。</li>
+    <li>進度會自動存在這台電腦的瀏覽器裡；換電腦或清除瀏覽紀錄，進度就不會保留。</li>
+  </ol>
+</div>
+
+<div id="stages"></div>
+
+<section class="stage final" id="final">
+  <div class="stage-h"><div class="num">★</div><div><h2>結業條件<span class="tag" id="ftag">進行中</span></h2><p>以下全部完成，就可以正式上線接線囉</p></div></div>
+  <div class="body"><ul id="flist"></ul>
+    <div class="sign">督導確認結業：<input type="text" id="fsv" placeholder="督導姓名"><input type="date" id="fdate"></div>
+  </div>
+</section>
+
+<div class="foot">
+  <span>遇到不確定的問題，先查 <a href="#" id="helperLink" target="_blank" rel="noopener" style="color:var(--red)">muji-helper 客服查詢小幫手</a>，再問督導，不要用猜的回覆客人。</span>
+  <span><button class="btn" onclick="window.print()">列印進度</button> <button class="btn" onclick="resetAll()">清除進度</button></span>
+</div>
+</div>
+
+<div class="modal" id="modal" onclick="if(event.target===this)closeV()">
+  <div class="mbox"><div class="mbar"><b id="mtitle"></b><button onclick="closeV()">關閉 ✕</button></div><div class="frame"><iframe id="mframe" allow="autoplay; encrypted-media; fullscreen" allowfullscreen title="教學影片"></iframe></div></div>
+</div>
+
+<script>
+const V = {
+ h0:['小幫手教學 片0｜總覽','1:22'], h1:['小幫手教學 片1｜知識庫','0:53'], h2:['小幫手教學 片2｜智慧問答','0:44'], h3:['小幫手教學 片3｜門市服務','0:43'],
+ h4:['小幫手教學 片4｜尺寸與洗滌保養','0:42'], h5:['小幫手教學 片5｜說明書・DC風扇・大型家具','0:49'], h6:['小幫手教學 片6｜回應產生器與簡訊範本','0:44'], h7:['小幫手教學 片7｜客服SOP','0:40'],
+ a01:['91APP｜基本操作：單號與查詢','1:48'], a03:['91APP｜查退貨單號與逆物流單號','1:30'], a04:['91APP｜代客申請退貨','1:51'], a06:['91APP｜庫缺與缺貨通知','2:04'],
+ a11:['91APP｜包裹遺失與取消配送','1:09'], a16:['91APP｜物流貨態檢查','1:42'], a17:['91APP｜代客修改配送資訊','1:16'], a18:['91APP｜查詢會員資料','2:21'], a23:['91APP｜查詢退款進度','0:34'],
+ e01:['ECP｜後送系統操作','1:26'], e02:['ECP｜服務紀錄填寫方式','1:01'],
+ w01:['官網｜客人如何取消訂單','0:59'], f01:['大型家具｜預約配送','2:03'], f02:['大型家具｜換貨・補收單・運費退款單','2:27'],
+ s01a:['蝦皮｜賣場後台導覽','2:22'], s01b:['蝦皮｜日常作業 SOP','2:10'], s02:['蝦皮｜退貨退款頁面說明','1:57']
+};
+const STAGES = [
+ {id:1, label:'課程1｜認識 MUJI＋查詢工具', badge:'1', title:'認識 MUJI＋查詢工具', when:'第 1 天', desc:'先學會「查」，不是「背」：遇到問題第一步就是打開小幫手。',
+  groups:[['muji-helper 小幫手教學',['h0','h1','h2','h3','h4','h5','h6','h7']]],
+  bot:{k:'A',name:'【無印良品】課程1.MUJI 基本知識＋查詢功力',info:'選擇題＋用小幫手實際查詢，約 30～40 分鐘'},
+  tip:'看完影片後，自己打開小幫手把每個分頁點一遍，再去練課程1 機器人。'},
+ {id:2, label:'必修實作｜系統操作', badge:'✎', title:'系統操作', when:'第 1～2 天', desc:'看完影片，當著督導的面實際操作一次，督導勾「驗收」才算完成。', sv:true,
+  groups:[['91APP 後台',['a01','a03','a04','a06','a11','a16','a17','a18','a23']],['ECP 後送與紀錄',['e01','e02']],['官網與大型家具',['w01','f01','f02']]],
+  tip:'系統操作沒有機器人，因為一定要親手做過才算數。可以用測試訂單或督導指定的訂單練習。'},
+ {id:3, label:'課程2｜蝦皮實戰', badge:'2', title:'蝦皮實戰', when:'第 2～3 天', desc:'蝦皮聊聊占服務量六成以上，是上線後最常遇到的管道。', sv:true,
+  groups:[['蝦皮賣家中心',['s01a','s01b','s02']]],
+  bot:{k:'B',name:'【無印良品】課程2.MUJI 蝦皮聊聊演練',info:'小印扮演蝦皮買家，10 回合，約 20～30 分鐘'},
+  tip:'記住：蝦皮沒有換貨服務、鑑賞期跟官網不同、退款要導回蝦皮平台。'},
+ {id:4, label:'課程3｜官網實戰（電話＋信件＋後送）', badge:'3', title:'官網實戰（電話＋信件＋後送）', when:'第 3～4 天', desc:'練習官網電話、信件，以及判斷案件要不要後送。',
+  groups:[], review:['a04','a23','a03','a06','e01','f01','f02','w01'],
+  bot:{k:'C',name:'【無印良品】課程3. MUJI 官網客服演練',info:'可選電話／信件／混合，10 回合含後送判斷，約 30～40 分鐘'},
+  tip:'建議電話、信件模式各練一次。後送判斷的第一關是「需不需要後送」，不是「客人有沒有生氣」。'}
+];
+let S = {};
+function load(){ try{ S = JSON.parse(localStorage.getItem('muji_training_map')||'{}') || {}; }catch(e){ S = {}; } }
+function save(){ try{ localStorage.setItem('muji_training_map', JSON.stringify(S)); }catch(e){} }
+function ytId(u){ if(!u) return ''; const m=String(u).match(/(?:youtu\.be\/|v=|embed\/|shorts\/|live\/)([A-Za-z0-9_-]{11})/); return m?m[1]:(/^[A-Za-z0-9_-]{11}$/.test(u)?u:''); }
+function esc(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function vrow(k,sv){
+  const [t,d]=V[k]; const has=!!ytId(VIDEO_LINKS[k]);
+  return `<div class="row"><span class="t">${esc(t)}</span><span class="d">${d}</span>
+   ${has?`<button class="btn" onclick="openV('${k}')">▶ 觀看</button>`:`<span class="btn off" title="影片連結待補">連結待補</span>`}
+   <label class="chk"><input type="checkbox" data-k="w_${k}">看完</label>
+   ${sv?`<label class="chk sv"><input type="checkbox" data-k="v_${k}">督導驗收</label>`:''}</div>`;
+}
+function render(){
+  document.getElementById('stages').innerHTML = STAGES.map(s=>{
+    let h=`<section class="stage" id="st${s.id}"><div class="stage-h"><div class="num">${s.badge}</div><div><h2>${esc(s.label)}<span class="tag" id="tag${s.id}">進行中</span></h2><p>${esc(s.when)}・${esc(s.desc)}</p></div></div><div class="body">`;
+    s.groups.forEach(([g,ks])=>{ h+=`<div class="group">${esc(g)}</div>`+ks.map(k=>vrow(k,s.sv)).join(''); });
+    if(s.review){ h+=`<div class="group">練習前建議複習（系統操作的影片）</div><div class="chips">`+s.review.map(k=>ytId(VIDEO_LINKS[k])?`<button class="chip" onclick="openV('${k}')">▶ ${esc(V[k][0])}</button>`:`<span class="chip" style="color:var(--wait);cursor:default">${esc(V[k][0])}（待補）</span>`).join('')+`</div>`; }
+    if(s.bot){ const u=BOT_LINKS[s.bot.k];
+      h+=`<div class="bot"><div class="t"><b>🤖 ${esc(s.bot.name)}</b><small>${esc(s.bot.info)}</small></div>
+      ${u?`<a class="btn solid" href="${esc(u)}" target="_blank" rel="noopener">開始練習</a>`:`<span class="btn off">連結待補</span>`}
+      <span class="score">分數 <input type="number" min="0" max="100" data-k="score_${s.bot.k}" placeholder="0～100"> <span class="pass" id="pass_${s.bot.k}"></span></span></div>`; }
+    if(s.sv){ h+=`<div class="sign">本關督導簽核：<input type="text" data-k="sv_${s.id}" placeholder="督導姓名"><input type="date" data-k="svd_${s.id}"></div>`; }
+    h+=`<div class="tip">💡 ${esc(s.tip)}</div></div></section>`; return h;
+  }).join('');
+  document.querySelectorAll('[data-k]').forEach(el=>{
+    const k=el.dataset.k;
+    if(el.type==='checkbox') el.checked=!!S[k]; else if(S[k]!=null) el.value=S[k];
+    el.addEventListener(el.type==='checkbox'?'change':'input',()=>{ S[k]=el.type==='checkbox'?el.checked:el.value; save(); update(); });
+  });
+  ['name','start','fsv','fdate'].forEach(id=>{ const el=document.getElementById(id); if(S[id]) el.value=S[id]; el.addEventListener('input',()=>{S[id]=el.value;save();}); });
+  update();
+}
+function stageItems(s){
+  const it=[]; s.groups.forEach(([,ks])=>ks.forEach(k=>{ it.push(!!S['w_'+k]); if(s.sv) it.push(!!S['v_'+k]); }));
+  if(s.bot) it.push(Number(S['score_'+s.bot.k])>=80);
+  return it;
+}
+function update(){
+  let all=0,done=0;
+  STAGES.forEach(s=>{
+    const it=stageItems(s); all+=it.length; const d=it.filter(Boolean).length; done+=d;
+    const ok=d===it.length; document.getElementById('st'+s.id).classList.toggle('done',ok);
+    document.getElementById('tag'+s.id).textContent= ok?'已完成':`${d} / ${it.length}`;
+    if(s.bot){ const v=S['score_'+s.bot.k], p=document.getElementById('pass_'+s.bot.k);
+      if(v===undefined||v===''){p.textContent='';p.className='pass';} else if(Number(v)>=80){p.textContent='✅ 過關';p.className='pass y';} else {p.textContent='🔁 再練一次';p.className='pass n';} }
+  });
+  document.getElementById('bar').style.width=(all?done/all*100:0)+'%';
+  document.getElementById('ptext').textContent=`完成 ${done} / ${all} 項`;
+  const allV=Object.keys(V).every(k=>S['w_'+k]);
+  const svK=STAGES.filter(s=>s.sv).flatMap(s=>s.groups.flatMap(g=>g[1]));
+  const F=[['所有教學影片都看完',allV],['系統操作與蝦皮後台全部通過督導驗收',svK.every(k=>S['v_'+k])],
+    ['課程1｜基本知識＋查詢功力 80 分以上',Number(S.score_A)>=80],['課程2｜蝦皮聊聊演練 80 分以上',Number(S.score_B)>=80],['課程3｜官網客服演練 80 分以上',Number(S.score_C)>=80]];
+  document.getElementById('flist').innerHTML=F.map(([t,o])=>`<li class="${o?'ok':''}">${t}</li>`).join('');
+  const fin=F.every(f=>f[1]); document.getElementById('final').classList.toggle('done',fin);
+  document.getElementById('ftag').textContent=fin?'可以上線 🎉':'進行中';
+}
+function openV(k){ const id=ytId(VIDEO_LINKS[k]); if(!id) return;
+  document.getElementById('mtitle').textContent=V[k][0];
+  document.getElementById('mframe').src='https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&rel=0';
+  document.getElementById('modal').classList.add('on'); }
+function closeV(){ document.getElementById('mframe').src=''; document.getElementById('modal').classList.remove('on'); }
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeV(); });
+function resetAll(){ if(confirm('確定要清除這台電腦上的所有訓練進度嗎？')){ S={}; save(); location.reload(); } }
+document.getElementById('helperLink').href=HELPER_URL;
+load(); render();
+</script>
+</body>
+</html>
