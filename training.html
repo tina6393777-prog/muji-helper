@@ -8,8 +8,8 @@
 /* =====================================================================
    ★★★ 只要改這一區 ★★★
    影片：把 YouTube 不公開影片的網址貼在引號裡（整串網址貼上即可）
-   機器人：把 Bot Platform 機器人的網址貼在引號裡
-   還沒有網址的就留空 ''，頁面會顯示「連結待補」
+   機器人：公司平台沒有學員端網址，所以留空 ''，頁面會顯示「複製機器人名稱」按鈕
+   影片還沒有網址的就留空 ''，頁面會顯示「連結待補」
    ===================================================================== */
 const VIDEO_LINKS = {
   // ── muji-helper 小幫手教學 ──
@@ -214,14 +214,20 @@ function vrow(k,sv){
    <label class="chk"><input type="checkbox" data-k="w_${k}">看完</label>
    ${sv?`<label class="chk sv"><input type="checkbox" data-k="v_${k}">督導驗收</label>`:''}</div>`;
 }
+function copyName(btn,k){
+  const st=STAGES.find(x=>x.bot&&x.bot.k===k); const t=st.bot.name;
+  const done=()=>{const o=btn.textContent;btn.textContent='✅ 已複製';setTimeout(()=>btn.textContent=o,1500);};
+  try{ navigator.clipboard.writeText(t).then(done,()=>{fallbackCopy(t);done();}); }catch(e){ fallbackCopy(t);done(); }
+}
+function fallbackCopy(t){ try{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove();}catch(e){} }
 function render(){
   document.getElementById('stages').innerHTML = STAGES.map(s=>{
     let h=`<section class="stage" id="st${s.id}"><div class="stage-h"><div class="num">${s.badge}</div><div><h2>${esc(s.label)}<span class="tag" id="tag${s.id}">進行中</span></h2><p>${esc(s.when)}・${esc(s.desc)}</p></div></div><div class="body">`;
     s.groups.forEach(([g,ks])=>{ h+=`<div class="group">${esc(g)}</div>`+ks.map(k=>vrow(k,s.sv)).join(''); });
     if(s.review){ h+=`<div class="group">練習前建議複習（系統操作的影片）</div><div class="chips">`+s.review.map(k=>ytId(VIDEO_LINKS[k])?`<button class="chip" onclick="openV('${k}')">▶ ${esc(V[k][0])}</button>`:`<span class="chip" style="color:var(--wait);cursor:default">${esc(V[k][0])}（待補）</span>`).join('')+`</div>`; }
     if(s.bot){ const u=BOT_LINKS[s.bot.k];
-      h+=`<div class="bot"><div class="t"><b>🤖 ${esc(s.bot.name)}</b><small>${esc(s.bot.info)}</small></div>
-      ${u?`<a class="btn solid" href="${esc(u)}" target="_blank" rel="noopener">開始練習</a>`:`<span class="btn off">連結待補</span>`}
+      h+=`<div class="bot"><div class="t"><b>🤖 ${esc(s.bot.name)}</b><small>${esc(s.bot.info)}</small>${u?'':'<small style="display:block;margin-top:4px;color:var(--wait)">👉 到公司機器人訓練平台，找這個名稱的機器人開始練習（可按右邊按鈕複製名稱再搜尋）</small>'}</div>
+      ${u?`<a class="btn solid" href="${esc(u)}" target="_blank" rel="noopener">開始練習</a>`:`<button class="btn solid" onclick="copyName(this,'${s.bot.k}')">📋 複製機器人名稱</button>`}
       <span class="score">分數 <input type="number" min="0" max="100" data-k="score_${s.bot.k}" placeholder="0～100"> <span class="pass" id="pass_${s.bot.k}"></span></span></div>`; }
     if(s.sv){ h+=`<div class="sign">本關督導簽核：<input type="text" data-k="sv_${s.id}" placeholder="督導姓名"><input type="date" data-k="svd_${s.id}"></div>`; }
     h+=`<div class="tip">💡 ${esc(s.tip)}</div></div></section>`; return h;
