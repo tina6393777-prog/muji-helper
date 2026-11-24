@@ -226,6 +226,19 @@
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxj1OBUO9tL6PvP4g7RWr0pjjsoKbRRIbVa4xDOsl5o92vCNmS2dBM0uOecsMhO-vVQyQ/exec";
   const CACHE_KEY = "hl_board_cache_v1";
 
+  // ====== 團隊密碼：第一次會跳出視窗請你輸入，之後這台電腦會記住 ======
+  const PW_KEY = "hl_team_pw";
+  function getPw(){
+    let p = "";
+    try{ p = localStorage.getItem(PW_KEY) || ""; }catch(e){}
+    if(!p){
+      p = (prompt("請輸入團隊密碼（只要輸入一次，這台電腦會記住）") || "").trim();
+      if(p){ try{ localStorage.setItem(PW_KEY, p); }catch(e){} }
+    }
+    return p;
+  }
+  function clearPw(){ try{ localStorage.removeItem(PW_KEY); }catch(e){} }
+
   const STATUSES = ["待外撥","已完成","聯絡不到"];
   let allRows = [];
   let filterSt = "全部";
@@ -239,9 +252,15 @@
   let firstFetch = fetchRows();
 
   function fetchRows(){
-    return fetch(SCRIPT_URL, { method:"GET" })
+    const pw = getPw();
+    if(!pw) return Promise.reject(new Error("noPw"));
+    return fetch(SCRIPT_URL + "?pw=" + encodeURIComponent(pw), { method:"GET" })
       .then(res => res.json())
-      .then(json => { if(!json.ok) throw new Error("回傳格式錯誤"); return json.data || []; });
+      .then(json => {
+        if(json.badPw){ clearPw(); throw new Error("badPw"); }
+        if(!json.ok) throw new Error("回傳格式錯誤");
+        return json.data || [];
+      });
   }
 
   function readCache(){
@@ -276,7 +295,14 @@
       if(someoneEditing()){ pendingRender = true; } else { render(); }
       setSyncText("");
     }catch(err){
-      if(allRows.length === 0){
+      const why = err && err.message;
+      if(why === "badPw" || why === "noPw"){
+        allRows = [];
+        try{ localStorage.removeItem(CACHE_KEY); }catch(e){}
+        $("list").innerHTML = '<div class="state err">'+(why==="badPw"?"團隊密碼錯誤。":"需要團隊密碼才能查看。")+'請按上方「重新整理」重新輸入。</div>';
+        $("countText").textContent = "";
+        setSyncText("");
+      }else if(allRows.length === 0){
         $("list").innerHTML = '<div class="state err">載入失敗，請按上方「重新整理」再試一次。</div>';
         $("countText").textContent = "";
         setSyncText("");
@@ -447,8 +473,9 @@
     const btn = $("submitBtn");
     btn.disabled = true; btn.textContent = "送出中…";
     try{
-      const res = await fetch(SCRIPT_URL, { method:"POST", body: JSON.stringify({ order, tracking, customer, task, phone, caseNo, source, creator }) });
+      const res = await fetch(SCRIPT_URL, { method:"POST", body: JSON.stringify({ order, tracking, customer, task, phone, caseNo, source, creator, pw: getPw() }) });
       const json = await res.json();
+      if(json.badPw){ clearPw(); throw new Error("團隊密碼錯誤，請再按一次並重新輸入"); }
       if(!json.ok) throw new Error(json.error || "送出失敗");
       msg.className="form-msg ok"; msg.textContent="已新增！狀態為「待外撥」，顯示於下方清單。";
       $("order").value=""; $("tracking").value=""; $("customer").value=""; $("task").value=""; $("phone").value=""; $("caseNo").value=""; $("source").value="";
@@ -457,7 +484,7 @@
       if(!someoneEditing()) render();
       loadBoard(true);   // 背景再同步一次（取得正式編號）
     }catch(err){
-      msg.className="form-msg err"; msg.textContent="送出失敗，請稍後再試一次。";
+      msg.className="form-msg err"; msg.textContent=(err && /密碼/.test(err.message)) ? err.message : "送出失敗，請稍後再試一次。";
     }finally{
       btn.disabled = false; btn.textContent = "新增交辦";
     }
@@ -487,9 +514,10 @@
     try{
       const res = await fetch(SCRIPT_URL, {
         method:"POST",
-        body: JSON.stringify({ action:"update", rowKey, order, tracking, customer, status, result, handler })
+        body: JSON.stringify({ action:"update", rowKey, order, tracking, customer, status, result, handler, pw: getPw() })
       });
       const json = await res.json();
+      if(json.badPw){ clearPw(); throw new Error("團隊密碼錯誤，請再按一次並重新輸入"); }
       if(!json.ok) throw new Error(json.error || "更新失敗");
       // 【加速4】直接更新這一筆，不整份重抓
       const r = rowOf(item);
@@ -499,7 +527,7 @@
       if(!someoneEditing()) render(); else pendingRender = true;
       loadBoard(true);
     }catch(err){
-      emsg.className="form-msg e-msg err"; emsg.textContent="更新失敗，請稍後再試一次。";
+      emsg.className="form-msg e-msg err"; emsg.textContent=(err && /密碼/.test(err.message)) ? err.message : "更新失敗，請稍後再試一次。";
       saveBtn.disabled = false; saveBtn.textContent = "儲存";
     }
   }
@@ -529,9 +557,10 @@
     try{
       const res = await fetch(SCRIPT_URL, {
         method:"POST",
-        body: JSON.stringify({ action:"editCase", rowKey, oldOrder, oldTracking, oldCustomer, source, order, tracking, customer, phone, caseNo, task })
+        body: JSON.stringify({ action:"editCase", rowKey, oldOrder, oldTracking, oldCustomer, source, order, tracking, customer, phone, caseNo, task, pw: getPw() })
       });
       const json = await res.json();
+      if(json.badPw){ clearPw(); throw new Error("團隊密碼錯誤，請再按一次並重新輸入"); }
       if(!json.ok) throw new Error(json.error || "儲存失敗");
       const r = rowOf(item);
       Object.assign(r, { source, order, tracking, customer, phone, caseNo, task });
@@ -540,7 +569,7 @@
       if(!someoneEditing()) render(); else pendingRender = true;
       loadBoard(true);
     }catch(err){
-      emsg.className="form-msg ec-msg err"; emsg.textContent="儲存失敗，請稍後再試一次。";
+      emsg.className="form-msg ec-msg err"; emsg.textContent=(err && /密碼/.test(err.message)) ? err.message : "儲存失敗，請稍後再試一次。";
       saveBtn.disabled = false; saveBtn.textContent = "儲存修改";
     }
   }
