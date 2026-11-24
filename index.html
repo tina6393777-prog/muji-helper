@@ -1194,7 +1194,7 @@ const LINKS = [
   "name": "📦 91物流查件表",
   "url": "https://forms.zohopublic.com/91apptw/form/Untitled9/formperma/J_APDaa0-lJTpzPl2QLRVb37MdEpLRlFkl-hmJ1e8UM",
   "note": "顧客問出貨進度：先後送倉庫確認；倉庫確定已出貨 → 填這張表。",
-  "cat": "後台"
+  "cat": "幫助工具"
  },
  {
   "name": "91APP後台",
@@ -1215,7 +1215,7 @@ const LINKS = [
   "url": "https://seller.shopee.tw/edu/article/7934",
   "note": "",
   "cred": "",
-  "cat": "後台"
+  "cat": "幫助工具"
  },
  {
   "name": "客服信箱HCRM系統",
@@ -1229,7 +1229,7 @@ const LINKS = [
   "url": "http://biz.every8d.com/chainsea/default.aspx",
   "note": "客戶簡訊發送用",
   "cred": "",
-  "cat": "後台"
+  "cat": "幫助工具"
  },
  {
   "name": "EC事業體三方共用客服件表格",
@@ -1249,7 +1249,7 @@ const LINKS = [
   "name": "🎬 影片壓縮工具",
   "url": "https://www.redpandacompress.com/tw/",
   "note": "影片檔太大上傳不了時（例如蝦皮申請要附的裝箱影片），先用這個壓縮再上傳。",
-  "cat": "後台"
+  "cat": "幫助工具"
  },
  {
   "name": "台灣無印良品官網",
@@ -1774,6 +1774,7 @@ function renderAccounts(kw){
   const links = LINKS.filter(l=>!kw||l.name.toLowerCase().includes(kw)||(l.url||'').toLowerCase().includes(kw));
   const back  = links.filter(l=>(l.cat||'官網賣場物流')==='後台');
   const front = links.filter(l=>(l.cat||'官網賣場物流')==='官網賣場物流');
+  const tools = links.filter(l=>l.cat==='幫助工具');
   document.getElementById('acc-count').textContent = '常用網頁 共 '+links.length+' 筆';
   const card = l =>
     '<div class="link-card">'
@@ -1783,9 +1784,10 @@ function renderAccounts(kw){
     +'</div>';
   let html='<div class="smart-tabs">'
     +'<button class="smart-tabbtn'+(ACC_VIEW==='後台'?' on':'')+'" onclick="accSwitch(\'後台\')">🗂️ 後台常用 ('+back.length+')</button>'
+    +'<button class="smart-tabbtn'+(ACC_VIEW==='幫助工具'?' on':'')+'" onclick="accSwitch(\'幫助工具\')">🧰 幫助工具 ('+tools.length+')</button>'
     +'<button class="smart-tabbtn'+(ACC_VIEW==='官網賣場物流'?' on':'')+'" onclick="accSwitch(\'官網賣場物流\')">🌐 官網／賣場／物流 ('+front.length+')</button>'
     +'</div>';
-  const cur = ACC_VIEW==='後台' ? back : front;
+  const cur = ACC_VIEW==='後台' ? back : (ACC_VIEW==='幫助工具' ? tools : front);
   if(cur.length){ html += cur.map(card).join(''); }
   else if(links.length){ html += '<div class="empty">這一區沒有符合的，點上面另一顆看看 👆</div>'; }
   else { html += '<div class="empty">找不到相關網頁</div>'; }
