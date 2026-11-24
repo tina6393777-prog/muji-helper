@@ -219,9 +219,13 @@ function clean(text,fullName,masked){let t=text.split("\n").filter(l=>!PII_LINE.
   return t||"（無文字內容）"}
 // ★ 個資自動隱碼：同仁手動輸入的進度／結案／新增內容，送出前一律先過這一關
 function maskPII(t,masked){if(!t)return t;
-  t=String(t).split("\n").filter(l=>!PII_LINE.test(l)).join("\n");
-  t=t.replace(/(客戶姓名|姓名|收件人|寄件人|聯絡人)\s*[:：]\s*([一-鿿]{2,4})/g,(m,a,b)=>a+"："+maskName(b));
-  t=t.replace(/((?=[0-9]*[A-Z])[A-Z0-9]{8,}(?:-\d+)?)\s*-\s*([一-鿿]{2,4})(?=\s*[-／\/\d]|\s*$)/gm,(m,a,b)=>a+"-"+maskName(b));
+  t=String(t);const names=new Set();let m;
+  const r1=/(?:客戶姓名|姓名|收件人|寄件人|聯絡人)\s*[:：]\s*([一-鿿]{2,4})(?![一-鿿])/g;
+  while((m=r1.exec(t)))if(!/無印|門市|倉庫|新竹/.test(m[1]))names.add(m[1]);
+  const r2=/(?=[0-9]*[A-Z])[A-Z0-9]{8,}(?:-\d+)?\s*-\s*([一-鿿]{2,4})(?![一-鿿*＊])/g;
+  while((m=r2.exec(t)))if(!/[已退取配請待謝貨件倉單號收派送]/.test(m[1]))names.add(m[1]);
+  names.forEach(n=>{t=t.split(n).join(maskName(n))});
+  t=t.split("\n").filter(l=>!PII_LINE.test(l)).join("\n");
   const r=clean(t,nameOf(t),masked);return r==="（無文字內容）"?"（個資已隱藏）":r}
 function nameById(id){const r=DATA.find(x=>String(x.id)===String(id));return r&&r.name?String(r.name).replace(/＊/g,"*"):""}
 function statusLine(text){ // 第一行若以單號開頭，拿掉「單號-姓名-單號」那段
@@ -256,11 +260,11 @@ function buildSuggestions(msgs,cases,since){
       recent=recent.filter(x=>x.label!==label);recent.push({dt:m.dt,label})}
     const md=`${m.dt.getMonth()+1}/${m.dt.getDate()}`; const who=m.side==="hct"?"新竹":m.side==="muji"?"MUJI":"我方";
     const hit=keys.map(k=>idx.get(k)).find(Boolean)||null;
-    const full=nameOf(m.text); const mk=hit&&hit.name?hit.name.replace(/＊/g,"*"):maskName(full); const note=`${md} ${who}：${clean(statusLine(m.text),full,mk).slice(0,140)}`;
+    const full=nameOf(m.text); const mk=hit&&hit.name?hit.name.replace(/＊/g,"*"):maskName(full); const note=`${md} ${who}：${maskPII(statusLine(m.text),mk).slice(0,140)}`;
     const j=judge(m);
     if(hit){ if(hit.state==="已結案"){manual.push(m);continue}
       const u=upd.get(hit.id)||{type:"update",id:hit.id,c:hit,notes:[],cat:"",close:false,closeNote:""};
-      u.notes.push(note); if(j.close){u.close=true;u.closeNote=clean(statusLine(m.text),full,mk).slice(0,60)}else{u.close=false;if(j.cat&&j.cat!==hit.cat)u.cat=j.cat;else u.cat=""}
+      u.notes.push(note); if(j.close){u.close=true;u.closeNote=maskPII(statusLine(m.text),mk).slice(0,60)}else{u.close=false;if(j.cat&&j.cat!==hit.cat)u.cat=j.cat;else u.cat=""}
       const f=faultOf(m.text);if(f&&!hit.fault)u.fault=f;
       upd.set(hit.id,u); continue}
     // 新案件：以第一個單號為鍵
