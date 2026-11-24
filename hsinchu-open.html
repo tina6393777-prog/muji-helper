@@ -115,6 +115,7 @@ function applyLocal(id,action,note,by){
   ls.set(CACHE_KEY,JSON.stringify(DATA));render();
 }
 async function act(id,action,note){
+  if(note)note=maskPII(note,nameById(id));
   const by=myName();if(!by)return;const pw=myPw();if(!pw)return;
   const card=document.querySelector(`.card[data-id="${id}"]`);if(card)card.classList.add("busy");
   toast("儲存中…");
@@ -130,6 +131,7 @@ const QUICK=["已配達","已退倉","已取消取件","客戶已取件"];
 const HIDDEN=new Set();   // 已按結案的案件，背景同步回來也不再顯示
 // 樂觀結案：卡片立刻消失，背景存檔；失敗會自動放回來
 async function fastClose(id,note){
+  if(note)note=maskPII(note,nameById(id));
   const by=myName();if(!by)return;const pw=myPw();if(!pw)return;
   const i=DATA.findIndex(r=>String(r.id)===String(id));if(i<0)return;
   const row=DATA[i];HIDDEN.add(String(id));DATA.splice(i,1);ls.set(CACHE_KEY,JSON.stringify(DATA));render();
@@ -215,6 +217,13 @@ function clean(text,fullName,masked){let t=text.split("\n").filter(l=>!PII_LINE.
   if(fullName&&!fullName.includes("*")&&!fullName.includes("＊"))t=t.split(fullName).join(maskName(fullName));
   if(masked&&/^[\u4e00-\u9fff][*]+[\u4e00-\u9fff]$/.test(masked)){const re=new RegExp(masked[0]+"[\u4e00-\u9fff]{"+(masked.length-2)+"}"+masked[masked.length-1],"g");t=t.replace(re,masked)}
   return t||"（無文字內容）"}
+// ★ 個資自動隱碼：同仁手動輸入的進度／結案／新增內容，送出前一律先過這一關
+function maskPII(t,masked){if(!t)return t;
+  t=String(t).split("\n").filter(l=>!PII_LINE.test(l)).join("\n");
+  t=t.replace(/(客戶姓名|姓名|收件人|寄件人|聯絡人)\s*[:：]\s*([一-鿿]{2,4})/g,(m,a,b)=>a+"："+maskName(b));
+  t=t.replace(/((?=[0-9]*[A-Z])[A-Z0-9]{8,}(?:-\d+)?)\s*-\s*([一-鿿]{2,4})(?=\s*[-／\/\d]|\s*$)/gm,(m,a,b)=>a+"-"+maskName(b));
+  const r=clean(t,nameOf(t),masked);return r==="（無文字內容）"?"（個資已隱藏）":r}
+function nameById(id){const r=DATA.find(x=>String(x.id)===String(id));return r&&r.name?String(r.name).replace(/＊/g,"*"):""}
 function statusLine(text){ // 第一行若以單號開頭，拿掉「單號-姓名-單號」那段
   const lines=text.split("\n");
   if(/^\s*(蝦皮\S*\s*)?[0-9A-Z][0-9A-Z]{7,}/.test(lines[0])){lines[0]=lines[0].replace(/^\s*(蝦皮\S*\s*)?[0-9A-Z][0-9A-Z\-]*(\s*-?\s*[^\s\-\d]{1,8}\s*-\s*\d{9,10})?(\s*[\/／+]\s*\d{9,10})*[\s，,]*/,"")}
@@ -389,9 +398,9 @@ async function submitAdd(){
   if(!ok){toast("讀取資料失敗，請稍後再試");btn.disabled=false;btn.textContent="新增";return}
   const dup=findDup();
   if(dup&&dup.state!=="已結案"&&!confirm(`${dup.order||dup.trk} 已經在清單裡還沒結案，確定還要再新增一筆嗎？`)){btn.disabled=false;btn.textContent="新增";return}
-  const by=myName(),pw=myPw(); const now=new Date(); const st=$("adSt").value.trim().replace(/\s*\n\s*/g," ");
+  const by=myName(),pw=myPw(); const now=new Date(); const nm=maskName($("adName").value.trim()); const st=maskPII($("adSt").value.trim(),nm).replace(/\s*\n\s*/g," ");
   const cat=$("adCat").value;
-  const row={cat,fault:$("adFault").value,first:ymd(now),order,trk,name:$("adName").value.trim(),
+  const row={cat,fault:$("adFault").value,first:ymd(now),order,trk,name:nm,
     status:st?`${md(now)} ${by}：${st}`:"",next:cat==="我方"?"回覆新竹":"追蹤新竹回覆",hold:$("adHold").value||""};
   btn.textContent="新增中…";
   try{const res=await (await fetch(SCRIPT_URL,{method:"POST",body:JSON.stringify({action:"import",ops:[{type:"add",row}],lastImport:ADD.last,by,pw})})).json();
